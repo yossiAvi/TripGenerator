@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FE5B25">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>מסלול · בונה אתרי טיול</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@300;400;600;700&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* לוח צבעים: דיו כמעט־שחור, משטחים לבנים, כתום חי אחד, וכחול־לילה לכותרת */
+  --ink:#14161A; --ink-2:#3D444E; --muted:#6E7683;
+  --paper:#FFFFFF; --wash:#F6F4F1; --line:#E6E2DC;
+  --accent:#FE5B25; --accent-ink:#C63C0C; --accent-soft:#FFEDE5;
+  --night:#0E1B2B; --night-2:#16304A;
+  --ok:#1F7A4C; --warn:#B4530C;
+  --sh-1:0 1px 2px rgba(20,22,26,.05), 0 8px 24px -12px rgba(20,22,26,.12);
+  --sh-2:0 2px 4px rgba(20,22,26,.06), 0 24px 48px -20px rgba(20,22,26,.22);
+  --r-s:12px; --r:18px; --r-l:26px;
+  --display:'Secular One', 'Heebo', system-ui, sans-serif;
+  --body:'Assistant', system-ui, -apple-system, sans-serif;
+  --util:'Heebo', system-ui, sans-serif;
+  --pad:clamp(18px,4vw,28px);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--wash);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+h1,h2,h3,h4{font-family:var(--display);font-weight:400;line-height:1.12;margin:0;letter-spacing:-.01em}
+p{margin:0 0 1em}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+button{-webkit-appearance:none;cursor:pointer}
+a{color:var(--accent-ink);text-underline-offset:3px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.narrow{max-width:660px}
+.center{text-align:center}
+.eyebrow{font-family:var(--util);font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 10px;display:flex;align-items:center;gap:9px}
+.eyebrow:before{content:"";width:22px;height:2px;background:var(--accent);border-radius:2px;flex:0 0 auto}
+.center .eyebrow{justify-content:center}
+.hint{font-size:14px;color:var(--muted);line-height:1.6}
+
+/* ---------- כפתורים ---------- */
+.btn{border:0;border-radius:999px;padding:14px 30px;font-weight:700;font-size:16px;transition:transform .15s,box-shadow .15s,background .15s;
+  font-family:var(--body);display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 10px 22px -10px rgba(254,91,37,.75)}
+.btn-primary:hover{background:var(--accent-ink);transform:translateY(-2px);box-shadow:0 16px 30px -12px rgba(254,91,37,.8)}
+.btn-primary:active{transform:translateY(0)}
+.btn-ghost{background:var(--paper);border:1.5px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--ink);transform:translateY(-1px)}
+.btn-plain{background:none;color:var(--muted);padding:11px 14px}
+.btn-plain:hover{color:var(--ink)}
+.btn:disabled{opacity:.42;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-sm{padding:9px 18px;font-size:14.5px}
+.btn-lg{padding:18px 42px;font-size:18px}
+.btn-block{width:100%}
+
+/* ---------- שדות ---------- */
+.field{display:flex;flex-direction:column;gap:7px}
+.field label{font-family:var(--util);font-weight:700;font-size:12.5px;letter-spacing:.03em;color:var(--ink-2)}
+.field input,.field select,.field textarea{border:1.5px solid var(--line);background:var(--paper);border-radius:var(--r-s);
+  padding:13px 15px;width:100%;transition:border-color .15s,box-shadow .15s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 4px var(--accent-soft)}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.chips{display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1.5px solid var(--line);background:var(--paper);border-radius:999px;padding:9px 18px;font-size:15px;
+  user-select:none;transition:.15s;font-weight:600}
+.chip:hover{border-color:var(--ink)}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.box{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:var(--pad);margin-bottom:16px;
+  box-shadow:var(--sh-1)}
+.box h4{font-size:19px;margin-bottom:12px}
+.cards{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(258px,1fr))}
+.kv{display:flex;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid var(--line);font-size:16px}
+.kv:last-child{border:0;padding-bottom:0}
+.kv b{font-family:var(--util);font-weight:700;color:var(--ink-2);white-space:nowrap}
+ul.clean{margin:0;padding-inline-start:20px}ul.clean li{margin-bottom:6px}
+code{background:var(--wash);border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:13.5px;
+  direction:ltr;display:inline-block;font-family:var(--util)}
+.err-box{background:#FFF3EF;border:1px solid #F3C4B4;color:#8E2F0E;border-radius:var(--r-s);padding:14px 16px;margin:12px 0;font-size:15px}
+.ok-box{background:#EEF8F2;border:1px solid #B9E0CA;color:#14603A;border-radius:var(--r-s);padding:14px 16px;margin:12px 0;font-size:15px}
+.status{display:inline-flex;align-items:center;gap:8px;font-family:var(--util);font-size:13px;font-weight:700;
+  border-radius:999px;padding:7px 15px;border:1.5px solid var(--line);background:var(--paper)}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.status.ok{color:var(--ok);border-color:#B9E0CA;background:#EEF8F2}.status.ok i{background:var(--ok)}
+.status.bad{color:var(--warn);border-color:#F3C4B4;background:#FFF3EF}.status.bad i{background:var(--warn)}
+
+/* ---------- פס עליון ---------- */
+.topbar{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:13px;padding-bottom:13px}
+.brand{font-family:var(--display);font-size:20px;display:flex;align-items:center;gap:10px;letter-spacing:-.02em}
+.brand span{width:32px;height:32px;border-radius:10px;background:var(--accent);display:grid;place-items:center;
+  color:#fff;font-size:15px;box-shadow:0 6px 14px -6px rgba(254,91,37,.9)}
+.iconbtn{border:1.5px solid var(--line);background:var(--paper);border-radius:12px;width:42px;height:42px;
+  font-size:17px;display:grid;place-items:center;transition:.15s}
+.iconbtn:hover{border-color:var(--ink);transform:translateY(-1px)}
+
+/* ---------- אשף ---------- */
+.stage{min-height:70vh;display:flex;flex-direction:column;justify-content:center;padding:36px 0 70px;
+  animation:rise .4s cubic-bezier(.2,.7,.3,1)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.stage h2{font-size:clamp(30px,6vw,50px)}
+.stage .sub{color:var(--muted);font-size:17.5px;margin:12px 0 30px;max-width:52ch}
+.center .sub{margin-inline:auto}
+.dots{display:flex;gap:6px;justify-content:center;margin-bottom:28px}
+.dots i{width:6px;height:6px;border-radius:99px;background:var(--line);transition:.3s}
+.dots i.on{background:var(--accent);width:26px}
+.opts{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(158px,1fr))}
+.opt{border:1.5px solid var(--line);background:var(--paper);border-radius:var(--r);padding:22px 16px;
+  text-align:center;transition:.16s;font-family:inherit;box-shadow:var(--sh-1)}
+.opt:hover{border-color:var(--ink);transform:translateY(-3px);box-shadow:var(--sh-2)}
+.opt.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px rgba(254,91,37,.18)}
+.opt .ico{font-size:32px;line-height:1;display:block;margin-bottom:10px}
+.opt b{display:block;font-family:var(--util);font-size:16px;font-weight:700}
+.opt small{color:var(--muted);font-size:13px;display:block;margin-top:3px}
+.bigin{width:100%;border:0;border-bottom:2.5px solid var(--line);background:transparent;font-family:var(--display);
+  font-size:clamp(26px,5.4vw,40px);padding:12px 4px;text-align:center;transition:border-color .2s}
+.bigin::placeholder{color:#C9C4BC}
+.bigin:focus{outline:none;border-color:var(--accent)}
+.navrow{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:34px}
+.stepper{display:flex;align-items:center;gap:20px;justify-content:center}
+.stepper button{width:54px;height:54px;border-radius:50%;border:1.5px solid var(--line);background:var(--paper);
+  font-size:24px;color:var(--ink);transition:.15s}
+.stepper button:hover{border-color:var(--accent);color:var(--accent)}
+.stepper .val{font-family:var(--util);font-weight:900;font-size:52px;min-width:88px;text-align:center;letter-spacing:-.03em}
+
+/* ---------- מגירה ---------- */
+.sheet{position:fixed;inset:0;z-index:100;display:none}
+.sheet.on{display:block}
+.sheet .scrim{position:absolute;inset:0;background:rgba(14,27,43,.5);backdrop-filter:blur(3px)}
+.sheet .panel-in{position:absolute;inset-inline-start:0;top:0;bottom:0;width:min(580px,100%);background:var(--wash);
+  box-shadow:var(--sh-2);overflow:auto;padding-bottom:40px;animation:slide .3s cubic-bezier(.2,.7,.3,1)}
+@keyframes slide{from{transform:translateX(-24px);opacity:0}to{transform:none;opacity:1}}
+.sheet header{position:sticky;top:0;background:var(--wash);border-bottom:1px solid var(--line);
+  padding:16px 20px;display:flex;justify-content:space-between;align-items:center;z-index:2}
+.sheet header h3{font-size:21px}
+.sheet .body{padding:20px}
+.setup .step{display:flex;gap:15px;padding:18px 0;border-top:1px solid var(--line)}
+.setup .step:first-child{border-top:0;padding-top:4px}
+.setup .step>div{flex:1;min-width:0}
+.setup .step b{font-family:var(--util);font-size:16px}
+.setup .step p{margin:5px 0 0}
+.num{flex:0 0 32px;height:32px;border-radius:10px;background:var(--ink);color:#fff;display:grid;place-items:center;
+  font-family:var(--util);font-weight:900;font-size:14px}
+details.help{border:1px solid var(--line);border-radius:var(--r-s);background:var(--paper);padding:15px 18px;margin-top:14px}
+details.help summary{font-family:var(--util);font-weight:700;font-size:15px}
+details.help[open] summary{margin-bottom:8px}
+
+/* ---------- מסך בנייה ---------- */
+.progress{max-width:680px;margin:56px auto 90px;background:var(--paper);border:1px solid var(--line);
+  border-radius:var(--r-l);padding:34px;box-shadow:var(--sh-2)}
+.bar{height:8px;background:var(--wash);border-radius:99px;overflow:hidden;margin:20px 0}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .5s cubic-bezier(.2,.7,.3,1)}
+.steps{list-style:none;margin:0;padding:0;font-size:15px;max-height:330px;overflow:auto}
+.steps li{display:flex;gap:11px;align-items:center;padding:6px 0;color:var(--muted)}
+.steps li.done{color:var(--ink)}.steps li.err{color:var(--warn)}
+.dot{width:19px;height:19px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto}
+.steps li.done .dot{background:var(--accent);border-color:var(--accent)}
+.steps li.err .dot{background:var(--warn);border-color:var(--warn)}
+.steps li.run .dot{border-color:var(--accent);border-left-color:transparent;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- כותרת אתר הטיול ---------- */
+.site-hero{background:var(--night);color:#fff;padding:64px 0 56px;position:relative;overflow:hidden}
+.hero-photo{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;
+  transition:opacity 1s;transform:scale(1.04)}
+.hero-photo.loaded{opacity:.5}
+.site-hero:before{content:"";position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg,rgba(14,27,43,.72) 0%,rgba(14,27,43,.86) 60%,rgba(14,27,43,.96) 100%)}
+.site-hero .wrap{position:relative;z-index:2}
+.site-hero h1{font-size:clamp(34px,7vw,64px);color:#fff;max-width:16ch}
+.site-hero .eyebrow{color:#FFB394}
+.site-hero .eyebrow:before{background:var(--accent)}
+.tagline{font-size:clamp(17px,2.4vw,20px);color:rgba(255,255,255,.82);margin:16px 0 0;max-width:46ch;font-weight:300}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:999px;
+  padding:8px 16px;font-size:13.5px;font-family:var(--util);font-weight:700;color:rgba(255,255,255,.92)}
+
+/* ---------- ניווט לשוניות ---------- */
+nav.tabs{position:sticky;top:0;z-index:40;background:rgba(246,244,241,.94);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line)}
+nav.tabs .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-top:8px;padding-bottom:8px}
+nav.tabs .wrap::-webkit-scrollbar{display:none}
+.tab{background:none;border:0;padding:10px 16px;font-weight:600;color:var(--muted);white-space:nowrap;
+  border-radius:999px;transition:.15s;font-size:15px}
+.tab:hover{color:var(--ink);background:rgba(20,22,26,.05)}
+.tab.on{color:#fff;background:var(--ink)}
+.panel{display:none;padding:44px 0 90px;animation:fade .35s}
+.panel.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.panel h2{font-size:clamp(26px,4.4vw,38px);margin-bottom:10px}
+.lead{color:var(--muted);margin:0 0 30px;font-size:17px;max-width:58ch}
+
+/* ---------- עכשיו ---------- */
+.now-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-l);box-shadow:var(--sh-2);
+  overflow:hidden;margin-bottom:18px}
+.now-top{background:var(--ink);color:#fff;padding:20px 26px;display:flex;justify-content:space-between;
+  align-items:center;gap:12px;flex-wrap:wrap}
+.now-top h3{color:#fff;font-size:22px}
+.clock{font-family:var(--util);font-weight:900;font-size:28px;letter-spacing:-.02em;color:var(--accent)}
+.now-body{padding:26px}
+.live{display:inline-flex;align-items:center;gap:8px;font-family:var(--util);font-size:11.5px;font-weight:900;
+  letter-spacing:.14em;color:var(--accent)}
+.live i{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.85)}}
+.nowseg{border-inline-start:3px solid var(--accent);padding:2px 18px;margin:14px 0 6px}
+.nowseg h4{font-size:24px;margin:4px 0}
+.nextlist{margin-top:22px;border-top:1px solid var(--line);padding-top:16px}
+.nextrow{display:flex;gap:14px;padding:8px 0;font-size:15px;color:var(--muted);align-items:baseline}
+.nextrow b{font-family:var(--util);color:var(--ink);flex:0 0 54px;font-weight:900}
+.quick{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:11px;margin-top:24px}
+.qbtn{background:var(--wash);border:1px solid var(--line);border-radius:var(--r-s);padding:16px;text-align:start;transition:.15s}
+.qbtn:hover{border-color:var(--accent);background:var(--paper);transform:translateY(-2px);box-shadow:var(--sh-1)}
+.qbtn b{display:block;font-family:var(--util);font-size:15px;margin-bottom:2px}
+.qbtn span{font-size:13px;color:var(--muted)}
+
+/* ---------- כרטיסי ימים ---------- */
+.day-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh-1);
+  margin-bottom:14px;display:flex;width:100%;padding:0;text-align:start;font-family:inherit;overflow:hidden;
+  transition:.18s cubic-bezier(.2,.7,.3,1)}
+.day-card:hover{transform:translateY(-3px);box-shadow:var(--sh-2);border-color:#D6D0C7}
+.day-card.today{border-color:var(--accent);box-shadow:0 0 0 2px rgba(254,91,37,.2),var(--sh-1)}
+.thumb{flex:0 0 128px;background:var(--night-2) center/cover no-repeat;position:relative}
+.thumb:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,27,43,.25),transparent)}
+.thumb.nophoto{background:linear-gradient(150deg,var(--night-2),var(--night))}
+.stamp{flex:0 0 74px;background:var(--wash);display:grid;place-content:center;text-align:center;
+  border-inline-end:1px solid var(--line);padding:16px 6px}
+.stamp b{display:block;font-family:var(--util);font-size:30px;font-weight:900;line-height:1;letter-spacing:-.04em}
+.stamp span{font-size:11px;color:var(--muted);font-family:var(--util);font-weight:700}
+.day-card .body{padding:20px 22px;flex:1;min-width:0}
+.day-card h3{font-size:21px;margin-bottom:5px}
+.day-card p{margin:0;color:var(--muted);font-size:15px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.tag{background:var(--wash);border:1px solid var(--line);border-radius:7px;padding:4px 10px;font-size:12px;
+  font-family:var(--util);font-weight:700;color:var(--ink-2)}
+.dayselect{display:flex;gap:8px;overflow-x:auto;padding-bottom:14px;margin-bottom:26px;scrollbar-width:none}
+.dayselect::-webkit-scrollbar{display:none}
+.dsbtn{border:1.5px solid var(--line);background:var(--paper);border-radius:var(--r-s);padding:10px 18px;
+  white-space:nowrap;font-family:var(--util);font-weight:700;color:var(--muted);transition:.15s;font-size:14.5px}
+.dsbtn:hover{border-color:var(--ink);color:var(--ink)}
+.dsbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ---------- ציר הזמן — האלמנט המרכזי ---------- */
+.timeline{border-inline-start:2px solid var(--line);margin-inline-start:52px;padding-inline-start:30px;margin-top:8px}
+.slot{position:relative;padding-bottom:34px}
+.slot:before{content:"";position:absolute;inset-inline-start:-39px;top:7px;width:14px;height:14px;border-radius:50%;
+  background:var(--accent);border:3px solid var(--wash);box-shadow:0 0 0 2px var(--accent)}
+.slot.depart:before{background:var(--paper);box-shadow:0 0 0 2px var(--line)}
+.slot .time{position:absolute;inset-inline-start:-134px;top:0;width:82px;text-align:end;
+  font-family:var(--util);font-weight:900;font-size:19px;letter-spacing:-.02em;line-height:1.3}
+.slot .time small{display:block;font-size:11.5px;font-weight:700;color:var(--muted);letter-spacing:0}
+.slot h4{font-size:21px;margin:0 0 6px}
+.slot p{margin:0 0 10px;color:var(--ink-2)}
+.slot .tip{background:var(--accent-soft);border-radius:var(--r-s);padding:11px 15px;font-size:15px;color:var(--accent-ink)}
+.travel{font-size:13.5px;color:var(--muted);font-family:var(--util);font-weight:700;margin-top:12px;
+  display:inline-flex;align-items:center;gap:7px;background:var(--wash);border-radius:999px;padding:6px 14px}
+.navlinks{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.navlink{font-family:var(--util);font-size:13px;font-weight:700;text-decoration:none;border:1.5px solid var(--line);
+  border-radius:999px;padding:7px 15px;color:var(--ink);background:var(--paper);transition:.15s}
+.navlink:hover{border-color:var(--accent);color:var(--accent-ink)}
+
+/* ---------- גלריה ---------- */
+.gal{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(232px,1fr))}
+.galcard{position:relative;border:0;padding:0;border-radius:var(--r);overflow:hidden;aspect-ratio:4/3;
+  background:var(--night-2);box-shadow:var(--sh-1);font-family:inherit;transition:.2s}
+.galcard:hover{transform:translateY(-4px);box-shadow:var(--sh-2)}
+.galcard img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s,transform .5s}
+.galcard img.loaded{opacity:1}
+.galcard:hover img{transform:scale(1.06)}
+.galcard .shade{position:absolute;inset:0;background:linear-gradient(0deg,rgba(14,27,43,.9),rgba(14,27,43,.05) 62%)}
+.galcard .txt{position:absolute;inset-inline:0;bottom:0;padding:18px;text-align:start;color:#fff}
+.galcard h3{font-size:21px;color:#fff}
+.galcard p{margin:3px 0 0;font-size:13.5px;color:rgba(255,255,255,.78)}
+.modal{position:fixed;inset:0;z-index:120;background:rgba(14,27,43,.88);display:grid;place-items:center;padding:20px}
+.modal .inner{background:var(--paper);border-radius:var(--r-l);overflow:hidden;max-width:780px;width:100%;box-shadow:var(--sh-2)}
+.modal img{width:100%;max-height:62vh;object-fit:cover;display:block;background:var(--wash)}
+.modal .cap{padding:22px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+
+/* ---------- יומן ---------- */
+.journal textarea{width:100%;min-height:132px;border:1.5px solid var(--line);border-radius:var(--r-s);padding:16px;
+  resize:vertical;background:var(--paper);line-height:1.75}
+.journal textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.moods{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}
+.mood{border:1.5px solid var(--line);background:var(--paper);border-radius:var(--r-s);padding:9px 15px;font-size:21px;
+  line-height:1;transition:.15s}
+.mood:hover{transform:translateY(-2px);border-color:var(--ink)}
+.mood.on{border-color:var(--accent);background:var(--accent-soft);transform:scale(1.06)}
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:14px;margin-top:18px}
+.photo{position:relative;border-radius:var(--r-s);overflow:hidden;border:1px solid var(--line);background:var(--paper);
+  box-shadow:var(--sh-1)}
+.photo img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+.photo .cap{padding:10px 12px;font-size:13px}
+.photo .cap b{display:block;font-family:var(--util);font-size:13px}
+.photo .cap span{color:var(--muted);font-size:12.5px}
+.photo button.rm{position:absolute;top:8px;inset-inline-end:8px;border:0;background:rgba(14,27,43,.72);color:#fff;
+  border-radius:50%;width:28px;height:28px;backdrop-filter:blur(4px)}
+.saved{font-size:13px;color:var(--ok);font-family:var(--util);font-weight:700;opacity:0;transition:.3s}
+.saved.on{opacity:1}
+
+/* ---------- רשימות וטבלאות ---------- */
+.check{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+.check:last-child{border:0}
+.check input{width:21px;height:21px;accent-color:var(--accent);margin-top:2px;flex:0 0 auto}
+.check.done span{text-decoration:line-through;color:var(--muted)}
+.addrow{display:flex;gap:9px;margin-top:14px}
+.addrow input{flex:1;border:1.5px solid var(--line);border-radius:var(--r-s);padding:11px 14px;background:var(--paper)}
+.addrow input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:start;padding:11px 8px;border-bottom:1px solid var(--line)}
+th{font-family:var(--util);font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+tfoot td{font-weight:700;border-top:2px solid var(--ink);border-bottom:0;font-family:var(--util)}
+.catbar{margin-bottom:14px}
+.catbar .lbl{display:flex;justify-content:space-between;font-size:14px;font-family:var(--util);font-weight:700}
+.catbar .track{height:8px;background:var(--wash);border-radius:99px;overflow:hidden;margin-top:6px}
+.catbar .track i{display:block;height:100%;background:var(--accent)}
+
+/* ---------- מזג אוויר וכסף ---------- */
+.wgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(98px,1fr));gap:11px;margin-top:18px}
+.wday{background:var(--wash);border:1px solid var(--line);border-radius:var(--r-s);padding:14px 8px;text-align:center}
+.wday .d{font-family:var(--util);font-size:11.5px;color:var(--muted);font-weight:700}
+.wday .i{font-size:27px;margin:6px 0}
+.wday .t{font-family:var(--util);font-weight:900;font-size:14px}
+.wnow{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.wnow .big{font-family:var(--util);font-size:60px;font-weight:900;line-height:1;letter-spacing:-.04em;color:var(--accent)}
+.conv{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:end}
+.conv .swap{border:1.5px solid var(--line);background:var(--paper);border-radius:50%;width:46px;height:46px;font-size:18px;transition:.15s}
+.conv .swap:hover{border-color:var(--accent);color:var(--accent);transform:rotate(180deg)}
+.toolbar{display:flex;gap:11px;flex-wrap:wrap;align-items:center;margin-top:34px;padding-top:24px;border-top:1px solid var(--line)}
+footer{padding:34px 0 48px;color:var(--muted);font-size:14px;text-align:center}
+.saved-trip{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--paper);
+  border:1px solid var(--line);border-radius:var(--r-s);padding:14px 18px;font-size:15px;margin-bottom:10px;
+  box-shadow:var(--sh-1)}
+
+/* ---------- מצב ילדים ---------- */
+body.kids{background:#FFF6EF;background-image:radial-gradient(circle at 12% 8%,rgba(254,91,37,.16),transparent 46%),
+  radial-gradient(circle at 88% 4%,rgba(24,144,255,.14),transparent 44%)}
+.kidwrap{max-width:640px;margin:0 auto;padding:0 18px}
+.kidtop{display:flex;justify-content:space-between;align-items:center;padding:18px 0;gap:10px}
+.kidtop .who{font-family:var(--display);font-size:21px}
+.kidcard{background:#fff;border:2px solid var(--line);border-radius:30px;padding:28px 24px;margin-bottom:18px;
+  box-shadow:var(--sh-2);text-align:center}
+.kidcard .emoji{font-size:68px;line-height:1;margin-bottom:8px}
+.kidcard h2{font-size:31px;margin:8px 0 12px}
+.kidcard p{font-size:21px;line-height:1.55;margin:0;color:var(--ink-2)}
+.kidbig{background:linear-gradient(145deg,#FF8A3D,var(--accent));border-color:transparent}
+.kidbig h2,.kidbig p{color:#fff}
+.kidteal{background:linear-gradient(145deg,var(--night-2),var(--night));border-color:transparent}
+.kidteal h2,.kidteal p{color:#fff}
+.speak{border:0;background:rgba(255,255,255,.22);color:inherit;border-radius:999px;padding:13px 26px;font-size:18px;
+  font-weight:700;margin-top:16px;font-family:var(--util);backdrop-filter:blur(4px)}
+.kidcard:not(.kidbig):not(.kidteal) .speak{background:var(--accent-soft);color:var(--accent-ink)}
+.speak.talking{animation:pulse 1s infinite}
+.mission{background:#fff;border:2px dashed var(--accent);border-radius:26px;padding:22px;margin-bottom:18px}
+.mission h3{font-size:23px;color:var(--accent-ink);margin-bottom:12px;text-align:center}
+.mission .task{display:flex;gap:14px;align-items:center;padding:13px;border-radius:16px;font-size:19px;transition:.15s}
+.mission .task:active{background:var(--accent-soft)}
+.mission .task .bx{width:38px;height:38px;border-radius:12px;border:2.5px solid var(--line);flex:0 0 auto;
+  display:grid;place-items:center;font-size:20px;background:#fff}
+.mission .task.done .bx{background:var(--ok);border-color:var(--ok);color:#fff}
+.mission .task.done span{text-decoration:line-through;opacity:.5}
+.stickers{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:14px;min-height:46px}
+.stickers i{font-size:34px;font-style:normal;animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(0) rotate(-40deg)}to{transform:none}}
+.kidcount{font-family:var(--util);font-weight:900;font-size:80px;line-height:1;letter-spacing:-.05em}
+.kidnav{display:flex;gap:10px;justify-content:center;margin:20px 0 48px;flex-wrap:wrap}
+.kidnav button{border:2px solid var(--line);background:#fff;border-radius:18px;padding:14px 22px;font-size:17px;
+  font-weight:700;font-family:var(--util);transition:.15s}
+.kidnav button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.kidphoto{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.kidphoto img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:20px;border:3px solid #fff;box-shadow:var(--sh-1)}
+.kidpic{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:22px;box-shadow:var(--sh-1);opacity:0;transition:.6s}
+.kidpic.loaded{opacity:1}
+
+@media (max-width:720px){
+  .timeline{margin-inline-start:0;padding-inline-start:26px}
+  .slot .time{position:static;width:auto;text-align:start;margin-bottom:4px;font-size:17px}
+  .slot .time small{display:inline;margin-inline-start:8px}
+  .slot:before{inset-inline-start:-34px}
+  .thumb{flex-basis:96px}
+}
+@media (max-width:640px){
+  body{font-size:16px}
+  .stage{min-height:auto;padding:26px 0 56px}
+  .conv{grid-template-columns:1fr}
+  .conv .swap{justify-self:center}
+  .now-body,.box{padding:20px}
+  .kidcard h2{font-size:27px}.kidcard p{font-size:19px}
+  .stamp{flex-basis:60px}.stamp b{font-size:24px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{
+  nav.tabs,.toolbar,.quick,.topbar,button,.dayselect{display:none!important}
+  .panel{display:block!important;page-break-before:always}
+  body{background:#fff}.site-hero{background:#fff;color:#000}
+  .site-hero h1,.tagline{color:#000}.hero-photo,.site-hero:before{display:none}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="sheet" id="sheet"><div class="scrim" data-close></div>
+  <div class="panel-in"><header><h3>הגדרות</h3><button class="iconbtn" data-close>✕</button></header>
+  <div class="body" id="sheetbody"></div></div></div>
+<script>
+/* ===================== יסודות ===================== */
+const SELF_HTML='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const EMBEDDED=!!window.__EMBEDDED_TRIP__;
+const TRIP_PARAM=(()=>{ try{ return new URLSearchParams(location.search).get('trip')||''; }catch(e){ return ''; } })();
+const GUEST=EMBEDDED||!!TRIP_PARAM;   // מי שנכנס לצפות בטיול, לא לבנות אחד
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const localGet=k=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):null; }catch(e){ return null; } };
+const localSet=(k,v)=>{ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } };
+const localDel=k=>{ try{ localStorage.removeItem(k); }catch(e){} };
+
+/* ===================== ענן ===================== */
+function newTripId(){
+  const a=new Uint8Array(9); (crypto.getRandomValues?crypto.getRandomValues(a):a.fill(0));
+  return 't'+[...a].map(x=>x.toString(36)).join('').slice(0,14)+Date.now().toString(36).slice(-4);
+}
+function normSbUrl(u){
+  let v=String(u||'').trim();
+  if(!v) return '';
+  if(!/^https?:\/\//i.test(v)) v='https://'+v.replace(/^\/+/,'');
+  try{ return new URL(v).origin; }                    // מסיר /rest/v1, פרמטרים וסיומות
+  catch(e){ return v.replace(/\/.*$/,'').replace(/\/+$/,''); }
+}
+const SB={ url:'', key:'', ok:false, shared:false,
+  get on(){ return !!(this.url&&this.key&&this.ok); },
+  h(x){ return Object.assign({apikey:this.key,Authorization:'Bearer '+this.key},x||{}); },
+  async rest(path,opts={}){
+    const o=Object.assign({},opts);
+    o.headers=this.h(Object.assign({'Content-Type':'application/json'},opts.headers));
+    const r=await fetch(normSbUrl(this.url)+'/rest/v1/'+path,o);
+    if(!r.ok) throw new Error('שגיאת ענן '+r.status);
+    const t=await r.text(); return t?JSON.parse(t):null;
+  },
+  async test(url,key){
+    const clean=normSbUrl(url);
+    if(!clean||!/^https:\/\/[^/]+$/i.test(clean)) return {ok:false,msg:'הכתובת צריכה להיראות כך: https://xxxx.supabase.co'};
+    try{
+      const r=await fetch(clean+'/rest/v1/rpc/trip_get',{method:'POST',
+        headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json'},
+        body:JSON.stringify({p_trip:'__ping__',p_key:'__ping__'})});
+      if(r.status===401||r.status===403) return {ok:false,msg:'המפתח נדחה. ודאו שהעתקתם את המפתח המסומן anon public.'};
+      if(r.status===404) return {ok:false,msg:'החיבור תקין אבל הטבלאות עוד לא נוצרו. הריצו את סקריפט ההקמה.'};
+      if(!r.ok) return {ok:false,msg:'שגיאה '+r.status+' מהשרת.'};
+      return {ok:true,msg:'מעולה, הענן מחובר. מעכשיו הכול נשמר ומשותף.'};
+    }catch(e){ return {ok:false,msg:'לא הצלחנו להגיע לשרת. בדקו את הכתובת ואת החיבור לרשת.'}; }
+  },
+  async rpc(fn,args){
+    return this.rest('rpc/'+fn,{method:'POST',body:JSON.stringify(args)});
+  },
+  async viaRpc(fn,args,fallback){
+    if(this.rpcOff) return fallback();
+    try{ return await this.rpc(fn,args); }
+    catch(e){
+      if(/ 40[04]| 42883/.test(e.message)||/404|Not Found/.test(e.message)){ this.rpcOff=true; return fallback(); }
+      throw e;
+    }
+  },
+  kv(trip,key,value){
+    return this.viaRpc('trip_set',{p_trip:trip,p_key:key,p_value:value},()=>
+      this.rest('trip_shared_data?on_conflict=trip_id,data_key',{method:'POST',
+        headers:{Prefer:'resolution=merge-duplicates,return=minimal'},
+        body:JSON.stringify({trip_id:trip,data_key:key,value,updated_at:new Date().toISOString()})}));
+  },
+  async kvGet(trip,key){
+    return this.viaRpc('trip_get',{p_trip:trip,p_key:key},async()=>{
+      const r=await this.rest(`trip_shared_data?trip_id=eq.${encodeURIComponent(trip)}&data_key=eq.${encodeURIComponent(key)}&select=value`);
+      return (r&&r[0])?r[0].value:null;
+    });
+  },
+  upsertEntry(trip,kind,day,payload){ return this.kv(trip,kind+(day?':'+day:''),payload); },
+  getEntry(trip,kind,day){ return this.kvGet(trip,kind+(day?':'+day:'')); },
+  saveTrip(t){ return this.kv(t.id,'plan',t); },
+  getTrip(id){ return this.kvGet(id,'plan'); },
+  async listTrips(){
+    if(this.shared){                       // ענן משותף לכל המשתמשים: מציגים רק את הטיולים של המכשיר
+      const mine=localGet('trips:index')||[];
+      return mine;
+    }
+    const r=await this.rest('trip_shared_data?data_key=eq.plan&select=trip_id,value&order=updated_at.desc&limit=20');
+    return (r||[]).map(x=>({id:x.trip_id,title:(x.value||{}).title||'',dest:(x.value||{}).dest||'',days:(x.value||{}).days||0}));
+  },
+  async photos(trip,day){
+    const r=await this.viaRpc('story_list',{p_trip:trip,p_day:String(day)},()=>
+      this.rest(`trip_stories?trip_id=eq.${encodeURIComponent(trip)}&day_key=eq.${day}&select=*&order=visit_date.asc`));
+    return (r||[]).flatMap(row=>((row.images||[]).map((u,i)=>({id:row.id,url:u,path:(row.image_paths||[])[i]||'',
+      place:row.location_name||'',uploaded_by:row.author||''}))));
+  },
+  async countPhotos(trip){
+    if(this._count&&this._count.id===trip) return this._count.n;
+    const n=await this.viaRpc('photo_count',{p_trip:trip},async()=>{
+      const r=await this.rest(`trip_stories?trip_id=eq.${encodeURIComponent(trip)}&select=images`);
+      return (r||[]).reduce((s,row)=>s+((row.images||[]).length||0),0);
+    });
+    this._count={id:trip,n:+n||0};
+    return this._count.n;
+  },
+  bumpCount(trip,delta){ if(this._count&&this._count.id===trip) this._count.n=Math.max(0,this._count.n+delta); },
+  async addPhoto(trip,day,blob,meta){
+    const path=`${trip}/${day}/${Date.now()}-${Math.random().toString(36).slice(2,7)}.jpg`;
+    const up=await fetch(normSbUrl(this.url)+'/storage/v1/object/trip-story-images/'+path,
+      {method:'POST',headers:this.h({'Content-Type':'image/jpeg','x-upsert':'true'}),body:blob});
+    if(!up.ok) throw new Error('העלאת התמונה נכשלה');
+    const url=normSbUrl(this.url)+'/storage/v1/object/public/trip-story-images/'+path;
+    const row=await this.viaRpc('story_add',{p_trip:trip,p_day:String(day),p_day_title:meta.dayTitle||'',
+        p_author:meta.by||'',p_place:meta.place||'',p_images:[url],p_paths:[path]},()=>
+      this.rest('trip_stories',{method:'POST',headers:{Prefer:'return=representation'},
+        body:JSON.stringify({trip_id:trip,day_key:String(day),day_title:meta.dayTitle||'',
+          author:meta.by||'',location_name:meta.place||'',images:[url],image_paths:[path],
+          visit_date:new Date().toISOString()})}));
+    const r=Array.isArray(row)?row[0]:row;
+    this.bumpCount(trip,1);
+    return r?{id:r.id,url,path,place:meta.place||'',uploaded_by:meta.by||''}:null;
+  },
+  async delPhoto(row){
+    if(row.path) await fetch(normSbUrl(this.url)+'/storage/v1/object/trip-story-images/'+row.path,{method:'DELETE',headers:this.h()}).catch(()=>{});
+    if(row.id) await this.viaRpc('story_del',{p_trip:(this._count?this._count.id:''),p_id:row.id},()=>
+      this.rest('trip_stories?id=eq.'+row.id,{method:'DELETE'}));
+    this.bumpCount(this._count?this._count.id:'',-1);
+  }
+};
+const PHOTO_LIMIT=50;   // תקרת תמונות לטיול כשמשתמשים בענן המשותף
+const parseKey=k=>{ const m=/^(journal|budget|pack|stay|kids):([^:]+)(?::(\d+))?$/.exec(k); return m?{kind:m[1],trip:m[2],day:+(m[3]||0)}:null; };
+const store={
+  async get(k){
+    if(SB.on){ try{
+      if(k==='trips:index') return await SB.listTrips();
+      if(k.startsWith('tripdata:')) return await SB.getTrip(k.slice(9));
+      const p=parseKey(k); if(p) return await SB.getEntry(p.trip,p.kind,p.day);
+    }catch(e){} }
+    if(window.storage&&!SB.on){ try{ const r=await window.storage.get(k,false); return r?JSON.parse(r.value):null; }catch(e){} }
+    return localGet(k);
+  },
+  async set(k,v){
+    if(SB.on){ try{
+      if(k.startsWith('tripdata:')){ await SB.saveTrip(v); return true; }
+      if(k==='trips:index') return true;
+      const p=parseKey(k); if(p){ await SB.upsertEntry(p.trip,p.kind,p.day,v); return true; }
+    }catch(e){} }
+    if(window.storage&&!SB.on){ try{ await window.storage.set(k,JSON.stringify(v),false); return true; }catch(e){} }
+    return localSet(k,v);
+  }
+};
+async function loadSB(){
+  let cfg=window.__SB__||localGet('sb:config');
+  if(!cfg&&/^https?:/.test(location.protocol)){
+    try{ const r=await fetch('/api/config');
+      if(r.ok){ const j=await r.json();
+        if(j.supabase&&j.supabase.url&&j.supabase.key){ cfg=j.supabase; SB.shared=true; } } }catch(e){}
+  }
+  if(cfg&&cfg.url&&cfg.key){ SB.url=normSbUrl(cfg.url); SB.key=cfg.key;
+    if(cfg.shared) SB.shared=true;
+    const t=await SB.test(cfg.url,cfg.key); SB.ok=t.ok; }
+}
+
+/* ===================== ספקי מודל ===================== */
+const AI={
+  proxy: window.__AI_PROXY__||'',
+  provider: localGet('ai:provider')||'auto',
+  key: localGet('ai:key')||'',
+  gkey: localGet('ai:gkey')||'',
+  gmodel: localGet('ai:gmodel')||'gemini-2.5-flash',
+  get hasKey(){ return !!(this.proxy||this.gkey||this.key); },
+  get slow(){ return this.modes()[0]==='gemini'; },
+  modes(){
+    if(this.provider==='gemini') return this.gkey?['gemini']:[];
+    if(this.provider==='anthropic') return this.key?['anthropic']:['host'];
+    const m=[]; if(this.proxy)m.push('proxy'); if(this.gkey)m.push('gemini'); if(this.key)m.push('anthropic');
+    m.push('host'); return m;
+  },
+  label(){
+    if(this.provider==='manual') return 'הדבקה מהצ׳אט';
+    return {gemini:'Gemini (חינם)',anthropic:'Claude',proxy:'שרת מתווך',host:'אוטומטי'}[this.modes()[0]]||'הדבקה מהצ׳אט';
+  },
+  async call(mode,prompt){
+    if(mode==='gemini'){
+      const url=`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(this.gmodel)}:generateContent?key=${encodeURIComponent(this.gkey)}`;
+      const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],
+          generationConfig:{maxOutputTokens:4000,temperature:.8,responseMimeType:'application/json'}})});
+      if(!r.ok) return {ok:false,status:r.status};
+      const d=await r.json();
+      const parts=(((d.candidates||[])[0]||{}).content||{}).parts||[];
+      return {ok:true,status:200,text:parts.map(p=>p.text||'').join('')};
+    }
+    const body=JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1200,messages:[{role:"user",content:prompt}]});
+    let r;
+    if(mode==='proxy') r=await fetch(this.proxy,{method:'POST',headers:{'Content-Type':'application/json'},body});
+    else if(mode==='anthropic') r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':this.key,'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'},body});
+    else r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body});
+    if(!r.ok) return {ok:false,status:r.status};
+    const d=await r.json();
+    return {ok:true,status:200,text:(d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n')};
+  },
+  async test(mode,val){
+    const prev={key:this.key,gkey:this.gkey};
+    if(mode==='gemini') this.gkey=val; else this.key=val;
+    try{ const r=await this.call(mode,'Reply with {"ok":true}');
+      if(r.ok) return {ok:true,msg:'מצוין, המפתח עובד.'};
+      if(r.status===400) return {ok:false,msg:'המפתח או שם הדגם לא תקינים.'};
+      if(r.status===401||r.status===403) return {ok:false,msg:'המפתח נדחה. ודאו שהעתקתם אותו במלואו.'};
+      if(r.status===429) return {ok:false,msg:'חריגה ממכסת השימוש. נסו שוב בעוד דקה.'};
+      if(r.status===404) return {ok:false,msg:'שם הדגם לא נמצא. נסו שם אחר.'};
+      return {ok:false,msg:'שגיאה '+r.status+'.'};
+    }catch(e){ return {ok:false,msg:'הדפדפן לא הצליח להגיע לשרת. אם פתחתם את הקובץ מהמחשב, העלו אותו לאינטרנט.'}; }
+    finally{ this.key=prev.key; this.gkey=prev.gkey; }
+  }
+};
+function parseJSON(txt){
+  let t=String(txt).replace(/```json|```/g,'').trim();
+  const s=t.indexOf('{'); if(s>0) t=t.slice(s);
+  try{ return JSON.parse(t); }catch(e){}
+  const cut=Math.max(t.lastIndexOf('}'),t.lastIndexOf(']'));
+  if(cut>0){ let c=t.slice(0,cut+1),o=[];
+    for(const ch of c){ if(ch==='{'||ch==='[')o.push(ch); else if(ch==='}'||ch===']')o.pop(); }
+    while(o.length) c+=o.pop()==='{'?'}':']';
+    try{ return JSON.parse(c); }catch(e){} }
+  throw new Error('התשובה לא בפורמט תקין');
+}
+async function ask(prompt){
+  const modes=AI.modes();
+  if(!modes.length) throw new Error('לא הוגדר מפתח.');
+  let blocked=0,status=0;
+  for(const mode of modes){
+    for(let a=0;a<3;a++){
+      let r;
+      try{ r=await AI.call(mode,prompt); }catch(e){ blocked++; break; }
+      if(r.ok) return r.text;
+      status=r.status;
+      if(r.status===429){ await wait(8000*(a+1)); continue; }
+      break;
+    }
+    if(status===429) throw new Error('הגענו למכסת הבקשות. המתינו דקה ונסו שוב.');
+    if(status===401||status===403) throw new Error('המפתח נדחה. בדקו אותו בהגדרות.');
+    if(status===402) throw new Error('אין יתרה בחשבון המשויך למפתח.');
+  }
+  if(blocked&&!status) throw new Error('לא הצלחנו להגיע לשרת המודל.');
+  throw new Error('הבקשה נדחתה (שגיאה '+status+').');
+}
+const askJSON=async p=>parseJSON(await ask(p+'\n\nהחזר JSON תקין בלבד, בלי טקסט נוסף ובלי סימני קוד.'));
+async function probeProxy(){
+  if(AI.proxy) return true;
+  if(!/^https?:/.test(location.protocol)) return false;
+  try{
+    const r=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:[{role:'user',content:'Reply with {"ok":true}'}],max_tokens:16})});
+    if(r.ok){ AI.proxy='/api/generate'; AI.serverReady=true; return true; }
+  }catch(e){}
+  return false;
+}
+async function hostWorks(){ try{ const r=await AI.call('host','Reply with {"ok":true}'); return !!r.ok; }catch(e){ return false; } }
+
+/* ===================== מצב ===================== */
+const INTERESTS=[['🍝','אוכל ושווקים'],['🏛️','היסטוריה ואתרים'],['🥾','טבע וטיולים'],['🎠','אטרקציות לילדים'],
+  ['🏖️','חופים'],['🎨','מוזיאונים ואמנות'],['🛍️','קניות'],['🌃','חיי לילה'],['🚵','ספורט אתגרי'],['☕','מנוחה ונופש']];
+const CATS=['תחבורה','לינה','אוכל','אטרקציות','קניות','אחר'];
+const STICKERS=['⭐','🏆','🎈','🦋','🐬','🚀','🌈','🍦','🐻','🎪','🦁','🌻'];
+const app=$('#app');
+const state={
+  form:{dest:'',who:'משפחה עם ילדים',kids:'',days:5,start:'',pace:'מאוזן',budget:'בינוני',transport:'רכב שכור',interests:['אוכל ושווקים','היסטוריה ואתרים'],title:'',notes:''},
+  trip:null, tab:'now', day:1, step:0, kidMode:false, kidView:'today'
+};
+
+/* ===================== הקראה בקול ===================== */
+const Speech={
+  supported: 'speechSynthesis' in window,
+  speak(text,btn){
+    if(!this.supported) return;
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(String(text));
+    u.lang='he-IL'; u.rate=.92; u.pitch=1.05;
+    const v=speechSynthesis.getVoices().find(x=>/he|iw/i.test(x.lang));
+    if(v) u.voice=v;
+    if(btn){ btn.classList.add('talking');
+      u.onend=u.onerror=()=>btn.classList.remove('talking'); }
+    speechSynthesis.speak(u);
+  },
+  stop(){ if(this.supported) speechSynthesis.cancel(); }
+};
+if(Speech.supported) speechSynthesis.getVoices();
+
+/* ===================== פס עליון ===================== */
+function topbar(extra){
+  return `<div class="topbar"><div class="wrap">
+    <div class="brand"><span>מ</span>מסלול</div>
+    <div style="display:flex;gap:8px;align-items:center">${extra||''}
+      ${GUEST?'':'<button class="iconbtn" id="gear" title="הגדרות" aria-label="הגדרות">⚙</button>'}</div>
+  </div></div>`;
+}
+function wireTop(){
+  const g=$('#gear'); if(g) g.onclick=openSheet;
+}
+function openSheet(){
+  const sh=$('#sheet'); sh.classList.add('on');
+  $('#sheetbody').innerHTML=settingsHTML();
+  wireSettings();
+  $$('[data-close]',sh).forEach(b=>b.onclick=()=>sh.classList.remove('on'));
+}
+function settingsHTML(){
+  return `
+  <p class="hint" style="margin-top:0">כל ההגדרות כאן הן לא חובה. בלעדיהן האתר עובד — הן רק מוסיפות נוחות.</p>
+
+  <div class="box"><h4>מי כותב את המסלול</h4>
+    ${AI.serverReady?'<div class="ok-box" style="margin-top:0">האתר הזה מחובר לשרת שכותב את המסלולים. אין צורך להגדיר כלום — פשוט בונים טיול.</div>':'<p class="hint" style="margin-top:0">אפשר לבנות דרך הצ׳אט שלכם בלי שום הרשמה, או להוסיף מפתח חינמי כדי שהכול יקרה לבד.</p>'}
+    <div class="field" style="margin-top:10px"><label>שיטה</label>
+      <select id="aiprov">
+        <option value="auto" ${AI.provider==='auto'?'selected':''}>אוטומטי — לפי מה שזמין</option>
+        <option value="manual" ${AI.provider==='manual'?'selected':''}>דרך הצ'אט שלי (בלי מפתח)</option>
+        <option value="gemini" ${AI.provider==='gemini'?'selected':''}>Gemini — מפתח חינמי</option>
+        <option value="anthropic" ${AI.provider==='anthropic'?'selected':''}>Claude — מפתח בתשלום</option></select></div>
+    <details class="help"><summary>מפתח Gemini — חינם, שתי דקות</summary>
+      <p class="hint">נכנסים ל־<a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com</a>, מתחברים עם חשבון גוגל ולוחצים Get API key. בלי כרטיס אשראי.</p>
+      <div class="grid" style="margin-top:10px">
+        <div class="field"><label>מפתח</label><input id="gkey" dir="ltr" type="password" placeholder="AIza..." value="${esc(AI.gkey)}"></div>
+        <div class="field"><label>שם הדגם</label><input id="gmodel" dir="ltr" value="${esc(AI.gmodel)}"></div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+        <button class="btn btn-primary btn-sm" id="gtest">בדיקה</button>
+        <button class="btn btn-ghost btn-sm" id="gclear">מחיקה</button><span class="hint" id="gmsg"></span></div>
+      <div id="gres"></div>
+      <p class="hint" style="margin-top:8px">בשכבה החינמית, מה שנשלח עשוי לשמש את גוגל לשיפור המודלים שלה.</p></details>
+    <details class="help"><summary>מפתח Claude — איכות גבוהה יותר</summary>
+      <p class="hint">מ־<a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>. טיול שבועי עולה סנטים בודדים.</p>
+      <div class="field" style="margin-top:10px"><label>מפתח</label><input id="aikey" dir="ltr" type="password" placeholder="sk-ant-..." value="${esc(AI.key)}"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+        <button class="btn btn-primary btn-sm" id="aitest">בדיקה</button>
+        <button class="btn btn-ghost btn-sm" id="aiclear">מחיקה</button><span class="hint" id="aimsg"></span></div>
+      <div id="aires"></div></details>
+  </div>
+
+  <div class="box"><h4>שמירה בענן ושיתוף</h4>
+    ${SB.shared? `
+      <div style="margin-bottom:12px">${SB.on?'<span class="status ok"><i></i>מחובר לענן של האתר</span>':'<span class="status bad"><i></i>הענן של האתר לא זמין כרגע</span>'}</div>
+      <p class="hint" style="margin-top:0">האתר הזה מגיע עם ענן מוכן. היומן, התמונות והתקציב מסתנכרנים אוטומטית לכל מי שיש לו את קישור הטיול — אין מה להגדיר, ואי אפשר לשנות זאת מכאן.</p>
+      <details class="help"><summary>אני רוצה להשתמש בענן פרטי משלי</summary>
+        <p class="hint">אפשר לחבר פרויקט סופאבייס אישי. הוא יגבר על הענן של האתר במכשיר הזה בלבד, ויסיר את מגבלת ${PHOTO_LIMIT} התמונות.</p>
+        <div class="grid" style="margin-top:10px">
+          <div class="field"><label>Project URL</label><input id="sburl" dir="ltr" placeholder="https://xxxx.supabase.co"></div>
+          <div class="field"><label>anon public key</label><input id="sbkey" dir="ltr" type="password"></div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <button class="btn btn-primary btn-sm" id="sbtest">חיבור</button>
+          <button class="btn btn-ghost btn-sm" id="copysql">העתקת סקריפט ההקמה</button>
+          <span class="hint" id="sbmsg"></span><span class="hint" id="sqlmsg"></span></div>
+        <div id="sbres"></div>
+        <pre id="sqlbox" style="display:none;direction:ltr;text-align:left;background:var(--sand);border-radius:12px;padding:12px;overflow:auto;max-height:220px;font-size:12px;margin-top:8px"></pre>
+        <button class="btn btn-plain btn-sm" id="showsql" style="margin-top:6px">הצגת הסקריפט</button>
+        <button class="btn btn-plain btn-sm" id="sbclear">חזרה לענן של האתר</button>
+      </details>` : `
+      <div style="margin-bottom:12px">${SB.on?'<span class="status ok"><i></i>הענן מחובר</span>':'<span class="status"><i></i>נשמר במכשיר הזה בלבד</span>'}</div>
+      <p class="hint" style="margin-top:0">בלי זה הכול עובד, אבל היומן והתמונות נשארים במכשיר אחד. עם חשבון סופאבייס חינמי, כל המשפחה רואה את אותו יומן מכל טלפון.</p>
+      <details class="help" ${SB.url?'open':''}><summary>חיבור בשלושה שלבים</summary>
+        <div class="setup" style="margin-top:10px">
+          <div class="step"><span class="num">1</span><div><b>פותחים פרויקט חינמי</b>
+            <p class="hint">ב־<a href="https://supabase.com/dashboard" target="_blank" rel="noopener">supabase.com</a> ← New project.</p></div></div>
+          <div class="step"><span class="num">2</span><div><b>מריצים את הסקריפט</b>
+            <p class="hint">בתפריט: SQL Editor ← New query ← מדביקים ← Run.</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+              <button class="btn btn-ghost btn-sm" id="copysql">העתקת הסקריפט</button>
+              <button class="btn btn-ghost btn-sm" id="showsql">הצגה</button><span class="hint" id="sqlmsg"></span></div>
+            <pre id="sqlbox" style="display:none;direction:ltr;text-align:left;background:var(--sand);border-radius:12px;padding:12px;overflow:auto;max-height:220px;font-size:12px;margin-top:8px"></pre></div></div>
+          <div class="step"><span class="num">3</span><div><b>מדביקים שני פרטים</b>
+            <p class="hint">Project Settings ← API. לוקחים את Project URL ואת המפתח <b>anon public</b> (לא service_role).</p>
+            <div class="grid" style="margin-top:10px">
+              <div class="field"><label>Project URL</label><input id="sburl" dir="ltr" placeholder="https://xxxx.supabase.co" value="${esc(SB.url)}"></div>
+              <div class="field"><label>anon public key</label><input id="sbkey" dir="ltr" type="password" value="${esc(SB.key)}"></div></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+              <button class="btn btn-primary btn-sm" id="sbtest">חיבור</button>
+              <button class="btn btn-ghost btn-sm" id="sbclear">ניתוק</button><span class="hint" id="sbmsg"></span></div>
+            <div id="sbres"></div></div></div>
+        </div></details>`}
+  </div>`;
+}
+function wireSettings(){
+  const on=(id,ev,fn)=>{ const el=$('#'+id); if(el) el[ev]=fn; };
+  $('#aiprov').onchange=()=>{ AI.provider=$('#aiprov').value; localSet('ai:provider',AI.provider); };
+  on('gtest','onclick',async()=>{ const k=$('#gkey').value.trim(); if(!k)return;
+    AI.gmodel=$('#gmodel').value.trim()||'gemini-2.5-flash'; localSet('ai:gmodel',AI.gmodel);
+    $('#gmsg').textContent='בודק…'; const r=await AI.test('gemini',k); $('#gmsg').textContent='';
+    $('#gres').innerHTML=`<div class="${r.ok?'ok-box':'err-box'}">${esc(r.msg)}</div>`;
+    if(r.ok){ AI.gkey=k; localSet('ai:gkey',k); } });
+  on('gclear','onclick',()=>{ AI.gkey=''; localDel('ai:gkey'); $('#gkey').value=''; $('#gres').innerHTML=''; });
+  on('aitest','onclick',async()=>{ const k=$('#aikey').value.trim(); if(!k)return;
+    $('#aimsg').textContent='בודק…'; const r=await AI.test('anthropic',k); $('#aimsg').textContent='';
+    $('#aires').innerHTML=`<div class="${r.ok?'ok-box':'err-box'}">${esc(r.msg)}</div>`;
+    if(r.ok){ AI.key=k; localSet('ai:key',k); } });
+  on('aiclear','onclick',()=>{ AI.key=''; localDel('ai:key'); $('#aikey').value=''; $('#aires').innerHTML=''; });
+  on('copysql','onclick',async()=>{
+    try{ await navigator.clipboard.writeText(SQL_SCRIPT); $('#sqlmsg').textContent='הועתק ✓'; }
+    catch(e){ $('#sqlbox').style.display='block'; $('#sqlbox').textContent=SQL_SCRIPT; $('#sqlmsg').textContent='העתיקו מכאן'; }
+    setTimeout(()=>{ const m=$('#sqlmsg'); if(m)m.textContent=''; },2500); });
+  on('showsql','onclick',()=>{ const b=$('#sqlbox'); b.textContent=SQL_SCRIPT; b.style.display=b.style.display==='none'?'block':'none'; });
+  on('sbtest','onclick',async()=>{ const url=$('#sburl').value.trim(),key=$('#sbkey').value.trim();
+    $('#sbmsg').textContent='בודק…'; const r=await SB.test(url,key); $('#sbmsg').textContent='';
+    $('#sbres').innerHTML=`<div class="${r.ok?'ok-box':'err-box'}">${esc(r.msg)}</div>`;
+    if(r.ok){ SB.url=url; SB.key=key; SB.ok=true; localSet('sb:config',{url,key}); } });
+  on('sbclear','onclick',()=>{ SB.url='';SB.key='';SB.ok=false; localDel('sb:config');
+    $('#sburl').value=''; $('#sbkey').value=''; $('#sbres').innerHTML=''; });
+}
+
+/* ===================== מסך פתיחה ===================== */
+async function renderHome(){
+  const saved=(await store.get('trips:index'))||[];
+  app.innerHTML=`${topbar()}
+  <div class="wrap narrow">
+    <div class="stage center">
+      <p class="eyebrow">בונה אתרי טיול</p>
+      <h2>לאן נוסעים?</h2>
+      <p class="sub">תגידו לנו לאן, ונבנה לכם אתר טיול שלם — מסלול לפי שעות, ניווט, יומן תמונות, תרגום, תקציב ומצב מיוחד לילדים.</p>
+      <input class="bigin" id="dest" placeholder="איטליה, יוון, תאילנד…" value="${esc(state.form.dest)}" autocomplete="off">
+      <div class="chips" style="justify-content:center;margin-top:20px" id="destchips">
+        ${['איטליה','יוון','ספרד','תאילנד','יפן','גאורגיה','קפריסין','דובאי'].map(d=>`<span class="chip" data-d="${d}">${d}</span>`).join('')}</div>
+      <div style="margin-top:30px"><button class="btn btn-primary btn-lg" id="go">בואו נתחיל</button></div>
+    </div>
+    ${saved.length?`<div style="padding-bottom:60px"><p class="eyebrow" style="margin-bottom:12px">הטיולים שלכם</p>
+      ${saved.map(t=>`<div class="saved-trip"><span><b>${esc(t.title)}</b><br><span class="hint">${esc(t.dest)} · ${t.days} ימים</span></span>
+      <button class="btn btn-ghost btn-sm" data-open="${esc(t.id)}">פתיחה</button></div>`).join('')}</div>`:''}
+    <footer>הכול נשמר אצלכם. אפשר לפרסם את האתר בלחיצה כשמסיימים.</footer>
+  </div>`;
+  wireTop();
+  const go=()=>{ const v=$('#dest').value.trim(); if(!v){ $('#dest').focus(); return; }
+    state.form.dest=v; state.step=1; renderStep(); };
+  $('#go').onclick=go;
+  $('#dest').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); go(); } };
+  $('#destchips').onclick=e=>{ const d=e.target.dataset.d; if(!d)return; $('#dest').value=d; go(); };
+  $$('[data-open]').forEach(b=>b.onclick=async()=>{
+    const t=await store.get('tripdata:'+b.dataset.open);
+    if(t){ state.trip=t; state.tab='now'; state.day=todayIndex(t)||1; renderSite(); } });
+}
+
+/* ===================== שלבי האשף ===================== */
+const STEPS=[
+  {q:'מי נוסע?', sub:'זה משנה את כל אופי המסלול', render:()=>optGrid('who',[
+      ['👨‍👩‍👧‍👦','משפחה עם ילדים','מסלול עם קצב נוח'],['💑','זוגי','יותר אוכל, פחות ריצה'],
+      ['👯','חבורת חברים','אנרגיה גבוהה'],['🎒','לבד','גמישות מלאה'],['👵','משפחה מורחבת','נגישות וקצב רגוע']])},
+  {q:'בני כמה הילדים?', sub:'כדי להתאים אטרקציות ומרחקי הליכה', when:()=>state.form.who==='משפחה עם ילדים'||state.form.who==='משפחה מורחבת',
+    render:()=>`<div class="chips" style="justify-content:center" id="kidchips">
+      ${['0-2','3-5','6-9','10-13','14+'].map(a=>`<span class="chip ${(state.form.kids||'').includes(a)?'on':''}" data-a="${a}">${a}</span>`).join('')}</div>
+      <p class="hint center" style="margin-top:14px">אפשר לבחור כמה טווחים</p>`},
+  {q:'כמה ימים?', sub:'כולל יום הנחיתה', render:()=>`
+      <div class="stepper"><button data-n="-1">−</button><div class="val" id="dval">${state.form.days}</div><button data-n="1">+</button></div>
+      <div class="field" style="max-width:280px;margin:26px auto 0"><label>תאריך יציאה (לא חובה)</label>
+        <input type="date" id="start" value="${esc(state.form.start)}">
+        <p class="hint">מפעיל את מסך "עכשיו" ואת הספירה לאחור</p></div>`},
+  {q:'איזה קצב מתאים לכם?', sub:'', render:()=>optGrid('pace',[
+      ['🐢','רגוע','2-3 עצירות ביום'],['⚖️','מאוזן','4 עצירות, זמן לנשום'],['⚡','אינטנסיבי','לראות כמה שיותר']])},
+  {q:'איך מסתובבים?', sub:'', render:()=>optGrid('transport',[
+      ['🚗','רכב שכור',''],['🚆','תחבורה ציבורית',''],['🚌','טיול מאורגן',''],['🔀','שילוב','']])},
+  {q:'מה התקציב?', sub:'משפיע על המלצות אוכל ולינה', render:()=>optGrid('budget',[
+      ['💰','חסכוני',''],['💳','בינוני',''],['💎','מפנק','']])},
+  {q:'מה אתם אוהבים?', sub:'בחרו כמה שבא לכם', render:()=>`
+      <div class="chips" style="justify-content:center" id="ints">
+        ${INTERESTS.map(([e,i])=>`<span class="chip ${state.form.interests.includes(i)?'on':''}" data-i="${i}">${e} ${i}</span>`).join('')}</div>`},
+  {q:'עוד משהו שכדאי לדעת?', sub:'לא חובה — אבל זה מה שהופך מסלול לאישי', render:()=>`
+      <div class="field" style="max-width:520px;margin:0 auto">
+        <textarea id="notes" rows="3" placeholder="למשל: יש עגלה, שומרי כשרות, סבתא לא הולכת הרבה, רוצים יום אחד בים">${esc(state.form.notes)}</textarea></div>
+      <div class="field" style="max-width:520px;margin:18px auto 0"><label>שם האתר</label>
+        <input id="title" placeholder="הטיול שלנו ב${esc(state.form.dest)}" value="${esc(state.form.title)}"></div>`}
+];
+function activeSteps(){ return STEPS.filter(s=>!s.when||s.when()); }
+function optGrid(key,opts){
+  return `<div class="opts" data-opt="${key}">${opts.map(([e,label,sub])=>`
+    <button class="opt ${state.form[key]===label?'on':''}" data-v="${esc(label)}">
+      <span class="ico">${e}</span><b>${esc(label)}</b>${sub?`<small>${esc(sub)}</small>`:''}</button>`).join('')}</div>`;
+}
+function renderStep(){
+  const list=activeSteps(), i=state.step-1;
+  if(i>=list.length) return renderReview();
+  const st=list[i];
+  app.innerHTML=`${topbar()}
+  <div class="wrap narrow"><div class="stage center">
+    <div class="dots">${list.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div>
+    <h2>${esc(st.q)}</h2>${st.sub?`<p class="sub">${esc(st.sub)}</p>`:'<div style="height:14px"></div>'}
+    ${st.render()}
+    <div class="navrow">
+      <button class="btn btn-plain" id="back">חזרה</button>
+      <button class="btn btn-primary" id="next">${i===list.length-1?'סיימנו':'הבא'}</button></div>
+  </div></div>`;
+  wireTop();
+  const grid=$('[data-opt]');
+  if(grid) grid.onclick=e=>{ const b=e.target.closest('.opt'); if(!b)return;
+    state.form[grid.dataset.opt]=b.dataset.v; $$('.opt',grid).forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); setTimeout(nextStep,180); };
+  const kc=$('#kidchips');
+  if(kc) kc.onclick=e=>{ const a=e.target.dataset.a; if(!a)return; e.target.classList.toggle('on');
+    state.form.kids=$$('#kidchips .chip.on').map(c=>c.dataset.a).join(', '); };
+  const ints=$('#ints');
+  if(ints) ints.onclick=e=>{ const c=e.target.closest('.chip'); if(!c)return; c.classList.toggle('on');
+    state.form.interests=$$('#ints .chip.on').map(x=>x.dataset.i); };
+  const dv=$('#dval');
+  if(dv) $$('.stepper button').forEach(b=>b.onclick=()=>{
+    state.form.days=Math.max(1,Math.min(21,state.form.days+(+b.dataset.n)));
+    dv.textContent=state.form.days; });
+  $('#back').onclick=()=>{ state.step--; state.step<1?renderHome():renderStep(); };
+  $('#next').onclick=nextStep;
+}
+function nextStep(){
+  const st=activeSteps()[state.step-1];
+  if(st&&st.q.startsWith('כמה ימים')){ const s=$('#start'); if(s) state.form.start=s.value; }
+  if(st&&st.q.startsWith('עוד משהו')){ const n=$('#notes'),t=$('#title');
+    if(n) state.form.notes=n.value; if(t) state.form.title=t.value; }
+  state.step++; renderStep();
+}
+function renderReview(){
+  const f=state.form;
+  if(!f.title) f.title='הטיול שלנו ב'+f.dest;
+  const row=(k,v)=>v?`<div class="kv"><b>${k}</b><span>${esc(v)}</span></div>`:'';
+  app.innerHTML=`${topbar()}
+  <div class="wrap narrow"><div class="stage">
+    <p class="eyebrow center">הכול מוכן</p>
+    <h2 class="center">${esc(f.title)}</h2>
+    <p class="sub center">בדקו שהכול נכון, ונתחיל לבנות</p>
+    <div class="box">
+      ${row('יעד',f.dest)}${row('מי נוסע',f.who+(f.kids?' · גילאים '+f.kids:''))}
+      ${row('משך',f.days+' ימים'+(f.start?' · מ-'+new Date(f.start).toLocaleDateString('he-IL'):''))}
+      ${row('קצב',f.pace)}${row('תחבורה',f.transport)}${row('תקציב',f.budget)}
+      ${row('תחומי עניין',f.interests.join(', '))}${row('הערות',f.notes)}
+    </div>
+    <p class="hint center">${AI.provider==='manual'||!AI.hasKey?'הבנייה תיעשה דרך הצ׳אט שלכם — נכין לכם הנחיה מוכנה להעתקה.':'נבנה באמצעות '+esc(AI.label())+'.'}</p>
+    <div class="navrow"><button class="btn btn-plain" id="back">חזרה</button>
+      <button class="btn btn-primary btn-lg" id="build">בנו לי את האתר</button></div>
+  </div></div>`;
+  wireTop();
+  $('#back').onclick=()=>{ state.step--; renderStep(); };
+  $('#build').onclick=build;
+}
+
+/* --- מסך המתנה קצר --- */
+function renderWorking(msg){
+  app.innerHTML=`${topbar()}<div class="wrap narrow"><div class="stage center">
+    <div class="bar" style="max-width:220px;margin:0 auto"><i style="width:60%"></i></div>
+    <p class="sub" style="margin-top:18px">${esc(msg)}…</p></div></div>`;
+}
+
+/* --- מסך בחירת שיטה, בשפה של בני אדם --- */
+function renderChooser(){
+  app.innerHTML=`${topbar()}<div class="wrap narrow"><div class="stage">
+    <p class="eyebrow center">שלב אחרון</p>
+    <h2 class="center">איך נכתוב את המסלול?</h2>
+    <p class="sub center">שתי דרכים, שתיהן בחינם. בוחרים פעם אחת וזוכרים את הבחירה.</p>
+
+    <button class="opt" id="ch-auto" style="text-align:start;padding:22px;margin-bottom:14px;width:100%">
+      <span class="ico" style="float:inline-start;margin-inline-end:14px">✨</span>
+      <b style="font-size:18px">אוטומטי — הכול קורה לבד</b>
+      <small style="display:block;margin-top:6px;line-height:1.5">צריך מפתח חינמי מגוגל. פעם אחת, שתי דקות, בלי כרטיס אשראי.
+        אחר כך כל טיול נבנה בלחיצה אחת.</small></button>
+
+    <button class="opt" id="ch-manual" style="text-align:start;padding:22px;width:100%">
+      <span class="ico" style="float:inline-start;margin-inline-end:14px">💬</span>
+      <b style="font-size:18px">דרך ChatGPT שלי</b>
+      <small style="display:block;margin-top:6px;line-height:1.5">בלי להירשם לשום דבר. נכין לכם שאלה מוכנה, תדביקו את התשובה חזרה.
+        לוקח כמה דקות יותר.</small></button>
+
+    <div class="navrow"><button class="btn btn-plain" id="ch-back">חזרה</button><span></span></div>
+  </div></div>`;
+  wireTop();
+  $('#ch-back').onclick=renderReview;
+  $('#ch-manual').onclick=()=>{ AI.provider='manual'; localSet('ai:provider','manual'); startManual(); };
+  $('#ch-auto').onclick=renderKeyGuide;
+}
+
+/* --- מדריך השגת מפתח, שלושה צעדים עם הסבר ויזואלי --- */
+function renderKeyGuide(err){
+  app.innerHTML=`${topbar()}<div class="wrap narrow"><div class="stage">
+    <p class="eyebrow center">מפתח חינמי מגוגל</p>
+    <h2 class="center">שתי דקות, פעם אחת</h2>
+    <p class="sub center">המפתח נשמר רק בדפדפן שלכם. אין תשלום ואין צורך בכרטיס אשראי.</p>
+    <div class="setup">
+      <div class="step"><span class="num">1</span><div><b>פותחים את הדף של גוגל</b>
+        <p class="hint">מתחברים עם חשבון גוגל רגיל, ולוחצים על הכפתור הכחול <b>Create API key</b>.</p>
+        <a class="btn btn-primary btn-sm" style="text-decoration:none;display:inline-block;margin-top:10px"
+           target="_blank" rel="noopener" href="https://aistudio.google.com/apikey">פתיחת הדף של גוגל</a></div></div>
+      <div class="step"><span class="num">2</span><div><b>מעתיקים את המפתח</b>
+        <p class="hint">מופיעה שורה ארוכה שמתחילה ב-<code>AIza</code>. לוחצים על סמל ההעתקה לידה.</p></div></div>
+      <div class="step"><span class="num">3</span><div><b>מדביקים כאן</b>
+        <div class="field" style="margin-top:8px"><input id="ck" dir="ltr" type="password" placeholder="AIza..."></div>
+        ${err?`<div class="err-box">${esc(err)}</div>`:''}
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+          <button class="btn btn-primary" id="ck-go">שמירה ובנייה</button>
+          <span class="hint" id="ck-msg"></span></div></div></div>
+    </div>
+    <div class="navrow"><button class="btn btn-plain" id="ck-back">חזרה</button>
+      <button class="btn btn-plain" id="ck-manual">מעדיף דרך ChatGPT</button></div>
+  </div></div>`;
+  wireTop();
+  $('#ck-back').onclick=renderChooser;
+  $('#ck-manual').onclick=()=>{ AI.provider='manual'; localSet('ai:provider','manual'); startManual(); };
+  const go=async()=>{
+    const k=$('#ck').value.trim();
+    if(!k) return renderKeyGuide('הדביקו את המפתח בשדה.');
+    $('#ck-msg').textContent='בודק…';
+    const r=await AI.test('gemini',k);
+    if(!r.ok) return renderKeyGuide(r.msg);
+    AI.gkey=k; localSet('ai:gkey',k); AI.provider='auto'; localSet('ai:provider','auto');
+    build();
+  };
+  $('#ck-go').onclick=go;
+  $('#ck').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); go(); } };
+}
+
+/* ===================== בנייה ===================== */
+function dateISO(i){ if(!state.form.start)return''; const d=new Date(state.form.start); d.setDate(d.getDate()+i); return d.toISOString().slice(0,10); }
+function dateFor(i){ if(!state.form.start)return''; const d=new Date(state.form.start); d.setDate(d.getDate()+i);
+  return d.toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'long'}); }
+function ctx(){ const f=state.form;
+  return `יעד: ${f.dest}. הרכב: ${f.who}${f.kids?' (גילאי הילדים: '+f.kids+')':''}. ${f.days} ימים. קצב ${f.pace}. תקציב ${f.budget}. תחבורה: ${f.transport}. תחומי עניין: ${f.interests.join(', ')}.${f.notes?' הערות: '+f.notes:''} הקהל ישראלי, כתוב בעברית טבעית וחמה.`; }
+const hasKids=()=>/ילדים|מורחבת/.test(state.form.who);
+
+const P={
+  plan:()=>`אתה מתכנן טיולים מנוסה. ${ctx()}
+בנה שלד מסלול הגיוני גאוגרפית, בלי קפיצות מיותרות בין אזורים.
+מבנה: {"tagline":"משפט קולע","summary":"2 משפטים","practical":{"currency":"","currencyCode":"קוד ISO כמו EUR","language":"","langCode":"קוד שפה כמו it","plug":"","emergency":"","transport":"","weather":""},"skeleton":[{"day":1,"title":"שם היום","base":"עיר הלינה","focus":"במשפט"}]}
+בדיוק ${state.form.days} ימים ב-skeleton.`,
+  guide:sk=>`${ctx()} המסלול: ${sk.join(' · ')}.
+מבנה: {"tips":[{"title":"","text":""}],"packing":[{"group":"","items":[""]}],"budgetPlan":[{"cat":"","estimate":"","note":""}]}
+6 טיפים ספציפיים ליעד (לא כלליים), 4 קבוצות ציוד עם 6 פריטים מותאמים להרכב ולעונה, 5 שורות תקציב.`,
+  lang:l=>`${ctx()} שפת היעד: ${l}.
+מבנה: {"categories":[{"name":"","words":[{"he":"","local":"","translit":"תעתיק באותיות עבריות"}]}]}
+5 קטגוריות: בסיסי, במסעדה, בדרכים, קניות, חירום. 5 מילים בכל אחת.`,
+  extras:bases=>`${ctx()} בסיסי הלינה: ${bases}.
+מבנה: {"lodging":[{"base":"","area":"אזור מומלץ ללינה","why":"עד 12 מילים","tip":"עד 10 מילים"}],"cams":[{"place":"אתר מפורסם","note":"עד 8 מילים"}]}
+שורה לכל בסיס, ו-5 מקומות מוכרים שסביר שיש להם מצלמת לייב.`,
+  day:(i,n,sk,prev)=>`${ctx()}
+תכנן את יום ${i+1} מתוך ${n}. נושא: "${sk.title}". בסיס לינה: ${sk.base}. אתמול: ${prev}. ${dateFor(i)?'תאריך: '+dateFor(i)+'.':''}
+מבנה: {"title":"","base":"","summary":"משפט","wake":"07:30","depart":"08:45","departNote":"עד 10 מילים","segments":[{"time":"09:15","title":"","place":"שם מדויק לניווט","desc":"עד 16 מילים","stay":"כמה זמן להישאר","travel":"זמן ואופן הנסיעה ליעד הבא","tip":"עד 10 מילים"}],"food":[{"name":"","type":"","note":""}],"evening":"משפט","backAt":"20:30"${hasKids()?`,"kid":{"emoji":"אימוג׳י אחד שמייצג את היום","simple":"משפט אחד לילד בן חמש, מילים קצרות ופשוטות","fact":"עובדה מפתיעה וכיפית לילד, עד 12 מילים","missions":["משימה כיפית לילד באותו יום, עד 7 מילים"]}`:''}}
+4 עד 5 סגמנטים בשעות אמיתיות, מקומות שקיימים באמת ב${sk.base}. 2 המלצות אוכל.${hasKids()?' ב-missions שלוש משימות חיפוש כיפיות שילד יכול לעשות באותם מקומות.':''}`
+};
+
+async function build(){
+  if(AI.provider==='manual') return startManual();
+  if(!AI.hasKey){
+    renderWorking('בודקים חיבור');
+    if(!await probeProxy() && !await hostWorks()) return renderChooser();
+  }
+  const n=state.form.days;
+  const steps=[{k:'plan',t:'מתכנן את המסלול הכללי'},{k:'guide',t:'אוסף טיפים, ציוד ותקציב'},
+    {k:'lang',t:'מכין מילון בשפה המקומית'},{k:'extra',t:'מחפש לינה ומצלמות לייב'}]
+    .concat([...Array(n)].map((_,i)=>({k:'d'+(i+1),t:`בונה את יום ${i+1}`})))
+    .concat([{k:'save',t:'שומר הכול'}]);
+  let done=0;
+  app.innerHTML=`${topbar()}<div class="wrap"><div class="progress">
+    <p class="eyebrow">בונים עבורכם</p>
+    <h2 style="font-size:26px;margin:6px 0 2px">${esc(state.form.dest)} · ${n} ימים</h2>
+    <p class="hint" style="margin:0">${esc(AI.label())} · זה לוקח כדקה</p>
+    <div class="bar"><i id="bari" style="width:3%"></i></div>
+    <ul class="steps" id="steps">${steps.map(s=>`<li id="st-${s.k}"><span class="dot"></span>${s.t}</li>`).join('')}</ul>
+    <div id="berr"></div></div></div>`;
+  wireTop();
+  const mark=(k,c)=>{ const e=$('#st-'+k); if(e)e.className=c; };
+  const tick=()=>{ done++; const b=$('#bari'); if(b) b.style.width=Math.round(done/steps.length*100)+'%'; };
+  try{
+    mark('plan','run');
+    const plan=await askJSON(P.plan());
+    mark('plan','done'); tick();
+    const trip={id:newTripId(),form:{...state.form},title:state.form.title,dest:state.form.dest,
+      days:n,start:state.form.start,kidsMode:hasKids(),tagline:plan.tagline||'',summary:plan.summary||'',
+      practical:plan.practical||{},skeleton:plan.skeleton||[],guide:{},lang:{},extras:{},plan:[]};
+
+    mark('guide','run');
+    try{ trip.guide=await askJSON(P.guide(trip.skeleton.map(s=>s.title))); mark('guide','done'); }
+    catch(e){ mark('guide','err'); } tick();
+    mark('lang','run');
+    try{ trip.lang=await askJSON(P.lang(trip.practical.language||'')); mark('lang','done'); }
+    catch(e){ mark('lang','err'); } tick();
+    mark('extra','run');
+    try{ trip.extras=await askJSON(P.extras([...new Set(trip.skeleton.map(s=>s.base))].join(', '))); mark('extra','done'); }
+    catch(e){ mark('extra','err'); } tick();
+
+    const makeDay=async i=>{
+      const sk=trip.skeleton[i]||{title:'יום '+(i+1),base:state.form.dest};
+      const d=await askJSON(P.day(i,n,sk,i>0?(trip.skeleton[i-1].base||''):'הנחיתה'));
+      d.day=i+1; d.date=dateFor(i); d.iso=dateISO(i); return d; };
+    const BATCH=AI.slow?2:3;
+    for(let i=0;i<n;i+=BATCH){ const batch=[];
+      for(let j=i;j<Math.min(i+BATCH,n);j++){ mark('d'+(j+1),'run');
+        batch.push(makeDay(j).then(d=>{trip.plan[j]=d;mark('d'+(j+1),'done');tick();})
+        .catch(()=>{trip.plan[j]=fallbackDay(trip,j);mark('d'+(j+1),'err');tick();})); }
+      await Promise.all(batch);
+      if(AI.slow&&i+BATCH<n) await wait(2500); }
+
+    mark('save','run');
+    state.trip=trip; state.day=todayIndex(trip)||1;
+    await store.set('tripdata:'+trip.id,trip);
+    { const idx=(localGet('trips:index')||[]).filter(x=>x.id!==trip.id);
+      idx.unshift({id:trip.id,title:trip.title,dest:trip.dest,days:trip.days});
+      localSet('trips:index',idx.slice(0,12)); }
+    mark('save','done'); tick();
+    renderSite();
+  }catch(err){
+    if(!AI.hasKey) return startManual('לא הצלחנו להגיע למודל מהאתר הזה, אז עברנו לדרך שלא דורשת מפתח — דרך הצ׳אט שלכם.');
+    $('#berr').innerHTML=`<div class="err-box">${esc(err.message)}</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+        <button class="btn btn-primary btn-sm" id="retry">ניסיון נוסף</button>
+        <button class="btn btn-ghost btn-sm" id="tomanual">בנייה דרך הצ׳אט</button>
+        <button class="btn btn-plain btn-sm" id="tohome">חזרה</button></div>`;
+    const r=$('#retry'); if(r) r.onclick=build;
+    const t=$('#tomanual'); if(t) t.onclick=()=>startManual();
+    const h=$('#tohome'); if(h) h.onclick=renderHome;
+  }
+}
+function fallbackDay(trip,j){
+  const sk=trip.skeleton[j]||{};
+  return {day:j+1,title:sk.title||'יום '+(j+1),base:sk.base||'',date:dateFor(j),iso:dateISO(j),
+    summary:sk.focus||'',segments:[],food:[],failed:true};
+}
+
+/* ===================== בנייה דרך הצ'אט ===================== */
+/* הכול בהנחיה אחת. אם התשובה נקטעת, מבקשים "המשך" ומדביקים שוב — אותה שיחה. */
+function fullPrompt(){
+  const n=state.form.days;
+  return `${ctx()}
+בנה לי תוכנית טיול מלאה. ענה אך ורק ב-JSON תקין, בלי טקסט לפני או אחרי ובלי סימני קוד.
+היה תמציתי: בלי רווחים מיותרים, בלי שורות ריקות, ערכים קצרים.
+
+מבנה:
+{"tagline":"משפט קולע","summary":"2 משפטים",
+"practical":{"currency":"","currencyCode":"קוד ISO","language":"","langCode":"קוד שפה","plug":"","emergency":"","transport":"","weather":""},
+"guide":{"tips":[{"title":"","text":""}],"packing":[{"group":"","items":[""]}],"budgetPlan":[{"cat":"","estimate":"","note":""}]},
+"lang":{"categories":[{"name":"","words":[{"he":"","local":"","translit":"תעתיק עברי"}]}]},
+"extras":{"lodging":[{"base":"","area":"","why":"","tip":""}],"cams":[{"place":"","note":""}]},
+"days":[{"day":1,"title":"","base":"עיר הלינה","summary":"משפט","wake":"07:30","depart":"08:45","departNote":"עד 8 מילים","segments":[{"time":"09:15","title":"","place":"שם מדויק לניווט","desc":"עד 14 מילים","stay":"כמה זמן","travel":"זמן ואופן הנסיעה הלאה","tip":"עד 8 מילים"}],"food":[{"name":"","type":"","note":""}],"evening":"משפט","backAt":"20:30"${hasKids()?`,"kid":{"emoji":"","simple":"משפט לילד בן חמש","fact":"עובדה כיפית","missions":["משימה קצרה","משימה קצרה","משימה קצרה"]}`:''}}]}
+
+דרישות: בדיוק ${n} ימים במערך days, ממוספרים 1 עד ${n}, הגיוניים גאוגרפית בלי קפיצות מיותרות.
+לכל יום 4 עד 5 סגמנטים בשעות אמיתיות ומקומות שקיימים באמת. 2 המלצות אוכל ליום.
+6 טיפים ליעד, 4 קבוצות ציוד עם 6 פריטים, 5 שורות תקציב, 5 קטגוריות מילון עם 5 מילים בכל אחת.
+אם אתה מתקרב למגבלת אורך — אל תקצר ימים, פשוט עצור באמצע ואני אבקש המשך.`;
+}
+function contPrompt(missing){
+  const from=missing[0], to=missing[missing.length-1];
+  return `המשך את התשובה הקודמת. החזר JSON תקין בלבד עם המפתח days בלבד, לימים ${from} עד ${to}, באותו מבנה מדויק:
+{"days":[{"day":${from},"title":"","base":"","summary":"","wake":"","depart":"","departNote":"","segments":[{"time":"","title":"","place":"","desc":"","stay":"","travel":"","tip":""}],"food":[{"name":"","type":"","note":""}],"evening":"","backAt":""${hasKids()?',"kid":{"emoji":"","simple":"","fact":"","missions":[""]}':''}}]}
+בלי טקסט נוסף ובלי סימני קוד.`;
+}
+function mergeAnswer(j,t){
+  if(!j||typeof j!=='object') return;
+  if(j.tagline) t.tagline=j.tagline;
+  if(j.summary) t.summary=j.summary;
+  if(j.practical) t.practical=j.practical;
+  if(j.guide) t.guide=j.guide;
+  if(j.lang) t.lang=j.lang;
+  if(j.extras) t.extras=j.extras;
+  const days=j.days||(j.day?[j]:null);
+  (days||[]).forEach(d=>{
+    const idx=(+d.day||0)-1;
+    if(idx<0||idx>=t.days) return;
+    if(!d.segments||!d.segments.length) return;      // יום חלקי מהקטיעה — מתעלמים
+    d.date=dateFor(idx); d.iso=dateISO(idx); d.day=idx+1;
+    t.plan[idx]=d;
+  });
+}
+function missingDays(t){
+  const out=[];
+  for(let i=0;i<t.days;i++) if(!t.plan[i]||!(t.plan[i].segments||[]).length) out.push(i+1);
+  return out;
+}
+function startManual(note){
+  state.manual={ note:note||'', chunks:0,
+    trip:{id:newTripId(),form:{...state.form},title:state.form.title||('הטיול שלנו ב'+state.form.dest),
+      dest:state.form.dest,days:state.form.days,start:state.form.start,kidsMode:hasKids(),
+      tagline:'',summary:'',practical:{},skeleton:[],guide:{},lang:{},extras:{},plan:[]} };
+  renderManual();
+}
+function renderManual(err){
+  const m=state.manual, t=m.trip;
+  const missing=missingDays(t);
+  const started=m.chunks>0;
+  const prompt=started&&missing.length?contPrompt(missing):fullPrompt();
+  const done=t.days-missing.length;
+  const pct=Math.round(done/t.days*100);
+  app.innerHTML=`${topbar()}<div class="wrap narrow"><div class="progress" style="max-width:100%">
+    <p class="eyebrow">בנייה דרך הצ'אט</p>
+    <h2 style="font-size:25px;margin-top:6px">${started?`נקלטו ${done} מתוך ${t.days} ימים`:'שאלה אחת, תשובה אחת'}</h2>
+    <div class="bar"><i style="width:${started?pct:4}%"></i></div>
+    ${m.note?`<div class="ok-box">${esc(m.note)}</div>`:''}
+    ${started&&missing.length?`<div class="box" style="border-color:var(--amber)">
+      <b>התשובה נקטעה באמצע — זה נורמלי.</b>
+      <p style="margin:6px 0 0">חסרים ימים ${missing.join(', ')}. חזרו <b>לאותה שיחה</b> בצ'אט, הדביקו את הבקשה למטה, והדביקו לכאן את ההמשך.</p></div>`:''}
+    <div class="setup">
+      <div class="step"><span class="num">1</span><div><b>${started?'מבקשים את ההמשך':'פותחים צ׳אט עם השאלה מוכנה'}</b>
+        <p class="hint">${started?'חשוב: באותה שיחה, לא בחדשה — אחרת הוא לא יזכור את המסלול.':'השאלה גם מועתקת ללוח. אם היא לא הופיעה בשדה, הדביקו ושלחו.'}</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          ${started?'<button class="btn btn-primary btn-sm" id="mcopy">העתקת בקשת ההמשך</button>'
+            :`<button class="btn btn-primary btn-sm" data-chat="chatgpt">פתיחה ב-ChatGPT</button>
+              <button class="btn btn-ghost btn-sm" data-chat="claude">Claude</button>
+              <button class="btn btn-ghost btn-sm" data-chat="gemini">Gemini</button>
+              <button class="btn btn-ghost btn-sm" id="mcopy">העתקה בלבד</button>`}
+          <button class="btn btn-plain btn-sm" id="mshow">הצגה</button><span class="hint" id="mmsg"></span></div>
+        <pre id="mtext" style="display:none;background:var(--sand);border-radius:12px;padding:12px;overflow:auto;max-height:200px;font-size:12.5px;white-space:pre-wrap;margin-top:10px"></pre></div></div>
+      <div class="step"><span class="num">2</span><div><b>מדביקים את התשובה</b>
+        <p class="hint">בצ'אט יש כפתור העתקה מתחת לתשובה.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <button class="btn btn-primary btn-sm" id="mclip">קליטה מהלוח</button><span class="hint" id="mclipmsg"></span></div>
+        <textarea id="mpaste" rows="4" placeholder="או הדביקו כאן" style="width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;direction:ltr;text-align:left;font-size:13px"></textarea>
+        ${err?`<div class="err-box">${esc(err)}</div>`:''}
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+          <button class="btn btn-primary btn-sm" id="mnext">קליטה</button>
+          ${started&&missing.length?`<button class="btn btn-ghost btn-sm" id="mskip">סיום עם ${done} ימים</button>`:''}
+          <button class="btn btn-plain btn-sm" id="mcancel">ביטול</button></div></div></div>
+    </div></div></div>`;
+  wireTop();
+  const copy=async()=>{ try{ await navigator.clipboard.writeText(prompt); return true; }catch(e){ return false; } };
+  $$('[data-chat]').forEach(b=>b.onclick=async()=>{
+    const okc=await copy(), enc=encodeURIComponent(prompt);
+    const urls={chatgpt:'https://chatgpt.com/?q='+enc,claude:'https://claude.ai/new?q='+enc,gemini:'https://gemini.google.com/app'};
+    let url=urls[b.dataset.chat];
+    if(enc.length>6000&&b.dataset.chat!=='gemini') url=url.split('?')[0];
+    $('#mmsg').textContent=okc?'הועתק גם ללוח':'לא הצלחנו להעתיק — לחצו הצגה';
+    window.open(url,'_blank','noopener'); });
+  $('#mcopy').onclick=async()=>{ if(await copy()) $('#mmsg').textContent='הועתק ✓';
+    else { $('#mtext').style.display='block'; $('#mtext').textContent=prompt; $('#mmsg').textContent='העתיקו מכאן'; }
+    setTimeout(()=>{ const e=$('#mmsg'); if(e)e.textContent=''; },2500); };
+  $('#mshow').onclick=()=>{ const b=$('#mtext'); b.textContent=prompt; b.style.display=b.style.display==='none'?'block':'none'; };
+  $('#mclip').onclick=async()=>{ try{ const x=await navigator.clipboard.readText();
+      if(!x||!x.trim()) throw 0; $('#mpaste').value=x; $('#mnext').click(); }
+    catch(e){ $('#mclipmsg').textContent='הדפדפן לא איפשר קריאה מהלוח — הדביקו למטה.'; } };
+  $('#mcancel').onclick=renderHome;
+  const sk=$('#mskip'); if(sk) sk.onclick=()=>finishManual();
+  $('#mnext').onclick=()=>{
+    const raw=$('#mpaste').value.trim();
+    if(!raw) return renderManual('הדביקו את התשובה מהצ׳אט.');
+    let j; try{ j=parseJSON(raw); }
+    catch(e){ return renderManual('לא הצלחנו לקרוא את התשובה. ודאו שהעתקתם את כל הטקסט.'); }
+    const before=missingDays(t).length;
+    mergeAnswer(j,t);
+    m.chunks++;
+    const after=missingDays(t).length;
+    if(after===before&&before===t.days) return renderManual('לא זיהינו ימים בתשובה. בקשו מהצ׳אט לענות שוב ב-JSON בלבד.');
+    if(after===0) return finishManual();
+    renderManual();
+  };
+}
+async function finishManual(){
+  const t=state.manual.trip;
+  if(!t.skeleton.length) t.skeleton=t.plan.map((d,i)=>({day:i+1,title:(d||{}).title||'',base:(d||{}).base||'',focus:(d||{}).summary||''}));
+  for(let i=0;i<t.days;i++) if(!t.plan[i]||!(t.plan[i].segments||[]).length) t.plan[i]=fallbackDay(t,i);
+  state.trip=t; state.day=todayIndex(t)||1;
+  await store.set('tripdata:'+t.id,t);
+  { const idx=(localGet('trips:index')||[]).filter(x=>x.id!==t.id);
+    idx.unshift({id:t.id,title:t.title,dest:t.dest,days:t.days});
+    localSet('trips:index',idx.slice(0,12)); }
+  renderSite();
+}
+
+/* ===================== עזרים ===================== */
+function todayIndex(t){ const s=t.start||(t.form||{}).start; if(!s)return 0;
+  const a=new Date(s);a.setHours(0,0,0,0); const b=new Date();b.setHours(0,0,0,0);
+  const i=Math.round((b-a)/864e5); return (i>=0&&i<t.days)?i+1:0; }
+function daysTo(t){ const s=t.start||(t.form||{}).start; if(!s)return null;
+  const a=new Date(s);a.setHours(0,0,0,0); const b=new Date();b.setHours(0,0,0,0); return Math.round((a-b)/864e5); }
+const mapsUrl=(q,d)=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q+', '+d);
+const wazeUrl=(q,d)=>'https://waze.com/ul?q='+encodeURIComponent(q+', '+d)+'&navigate=yes';
+const mins=t=>{ const m=/^(\d{1,2}):(\d{2})/.exec(String(t)||''); return m?+m[1]*60+ +m[2]:null; };
+const WMO={0:['☀️','בהיר'],1:['🌤️','בהיר בעיקר'],2:['⛅','מעונן חלקית'],3:['☁️','מעונן'],45:['🌫️','ערפל'],48:['🌫️','ערפל'],
+ 51:['🌦️','טפטוף'],53:['🌦️','טפטוף'],55:['🌦️','טפטוף חזק'],61:['🌧️','גשם קל'],63:['🌧️','גשם'],65:['🌧️','גשם חזק'],
+ 71:['🌨️','שלג קל'],73:['🌨️','שלג'],75:['❄️','שלג כבד'],80:['🌦️','ממטרים'],81:['🌧️','ממטרים'],82:['⛈️','ממטרים עזים'],95:['⛈️','רעמים'],96:['⛈️','רעמים'],99:['⛈️','רעמים']};
+async function fetchWeather(place){
+  const g=await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=he&name='+encodeURIComponent(place)).then(r=>r.json());
+  const loc=(g.results||[])[0]; if(!loc) throw new Error('לא נמצא מיקום');
+  const w=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m,apparent_temperature&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=7`).then(r=>r.json());
+  return {loc,w};
+}
+async function fetchRate(from,to){
+  try{ const r=await fetch(`https://api.frankfurter.app/latest?from=${from}&to=${to}`).then(r=>r.json());
+    if(r&&r.rates&&r.rates[to]) return {rate:r.rates[to],date:r.date,src:'ECB'}; }catch(e){}
+  try{ const r=await fetch(`https://open.er-api.com/v6/latest/${from}`).then(r=>r.json());
+    if(r&&r.rates&&r.rates[to]) return {rate:r.rates[to],date:(r.time_last_update_utc||'').slice(0,16),src:'open.er-api'}; }catch(e){}
+  return null;
+}
+function shrink(file){ return new Promise((res,rej)=>{ const r=new FileReader();
+  r.onload=()=>{ const img=new Image(); img.onload=()=>{ const m=1400,s=Math.min(1,m/Math.max(img.width,img.height));
+    const c=document.createElement('canvas'); c.width=Math.round(img.width*s); c.height=Math.round(img.height*s);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    c.toBlob(b=>b?res(b):rej(new Error('דחיסת התמונה נכשלה')),'image/jpeg',.72); };
+    img.onerror=()=>rej(new Error('קובץ תמונה לא תקין')); img.src=r.result; };
+  r.onerror=()=>rej(new Error('קריאת הקובץ נכשלה')); r.readAsDataURL(file); }); }
+const blobToDataURL=b=>new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(b); });
+
+
+/* ===================== תמונות מקומות ===================== */
+const Photos={
+  mem:{},
+  cacheKey:'photo:',
+  wiki:'https://he.wikipedia.org/w/api.php',
+  async find(name,ctx){
+    if(!name) return null;
+    const k=(name+'|'+(ctx||'')).slice(0,80);
+    if(this.mem[k]!==undefined) return this.mem[k];
+    const cached=localGet(this.cacheKey+k);
+    if(cached!==null&&cached!==undefined){ this.mem[k]=cached; return cached; }
+    let url=null;
+    for(const host of ['he.wikipedia.org','en.wikipedia.org','commons.wikimedia.org']){
+      try{
+        const q=encodeURIComponent(name+(ctx&&host!=='commons.wikimedia.org'?' '+ctx:''));
+        const api=`https://${host}/w/api.php?action=query&generator=search&gsrsearch=${q}&gsrlimit=1&gsrnamespace=${host.includes('commons')?6:0}&prop=pageimages&piprop=original|thumbnail&pithumbsize=1200&format=json&origin=*`;
+        const r=await fetch(api);
+        if(!r.ok) continue;
+        const j=await r.json();
+        const pages=((j.query||{}).pages)||{};
+        for(const id in pages){
+          const p=pages[id];
+          const src=(p.original&&p.original.source)||(p.thumbnail&&p.thumbnail.source);
+          if(src){ url=src; break; }
+        }
+        if(url) break;
+      }catch(e){}
+    }
+    this.mem[k]=url; localSet(this.cacheKey+k,url);
+    return url;
+  },
+  /* ממלא תמונות ברקע לתוך אלמנטים עם data-photo */
+  hydrate(root=document){
+    $$('[data-photo]',root).forEach(async el=>{
+      if(el.dataset.done) return; el.dataset.done='1';
+      const url=await this.find(el.dataset.photo,el.dataset.photoCtx||'');
+      if(!url){ el.classList.add('nophoto'); return; }
+      if(el.tagName==='IMG'){ el.src=url; el.classList.add('loaded'); }
+      else { el.style.backgroundImage=`url("${url}")`; el.classList.add('loaded'); }
+    });
+  }
+};
+
+/* ===================== אתר הטיול ===================== */
+const TABS=[{k:'now',t:'עכשיו'},{k:'places',t:'המקומות'},{k:'route',t:'המסלול'},{k:'daily',t:'יום־יום'},{k:'journal',t:'יומן'},
+ {k:'stay',t:'לינה'},{k:'lang',t:'תרגום'},{k:'tools',t:'מזג אוויר וכסף'},{k:'cams',t:'מצלמות'},
+ {k:'pack',t:'ציוד'},{k:'money',t:'תקציב'},{k:'info',t:'מידע'}].concat(GUEST?[{k:'family',t:'המשפחה'}]:[{k:'publish',t:'פרסום'}]);
+
+function renderSite(){
+  if(state.kidMode) return renderKids();
+  if(!TABS.some(x=>x.k===state.tab)) state.tab='now';
+  document.body.classList.remove('kids');
+  const t=state.trip,f=t.form||{},ti=todayIndex(t);
+  const kidBtn=t.kidsMode?'<button class="iconbtn" id="kidon" title="מצב ילדים">🧸</button>':'';
+  app.innerHTML=`${topbar(kidBtn+'<button class="iconbtn" id="share" title="שיתוף">↗</button>')}
+  <header class="site-hero">
+    <div class="hero-photo" data-photo="${esc((t.plan[0]||{}).base||t.dest)}" data-photo-ctx="${esc(t.dest)}"></div>
+    <div class="wrap">
+    <p class="eyebrow" style="color:#EBD9B4">${esc(t.dest)}${t.start?' · '+new Date(t.start).toLocaleDateString('he-IL'):''}</p>
+    <h1>${esc(t.title)}</h1><p class="tagline">${esc(t.tagline||t.summary)}</p>
+    <div class="meta-row"><span class="pill">${t.days} ימים</span><span class="pill">${esc(f.who||'')}</span>
+      <span class="pill">קצב ${esc(f.pace||'')}</span><span class="pill">${esc(f.transport||'')}</span>
+      ${ti?`<span class="pill" style="background:var(--amber);border-color:var(--amber);color:#fff">היום: יום ${ti}</span>`:''}
+      <span class="pill">${SB.on?'☁️ מסונכרן':'📱 במכשיר'}</span>
+      ${!GUEST&&!shareLink()?'<span class="pill" style="background:rgba(217,138,31,.35);border-color:transparent">עוד לא פורסם</span>':''}</div>
+  </div></header>
+  <nav class="tabs"><div class="wrap">${TABS.map(x=>`<button class="tab ${state.tab===x.k?'on':''}" data-tab="${x.k}">${x.t}</button>`).join('')}</div></nav>
+  <main class="wrap">
+    ${panelNow()}${panelPlaces()}${panelRoute()}${panelDaily()}${panelJournal()}${panelStay()}${panelLang()}
+    ${panelTools()}${panelCams()}${panelPack()}${panelMoney()}${panelInfo()}${GUEST?panelFamily():panelPublish()}
+    <div class="toolbar">
+      ${GUEST?'':'<button class="btn btn-ghost btn-sm" id="home">טיול חדש</button>'}
+      <button class="btn btn-ghost btn-sm" onclick="window.print()">הדפסה / PDF</button></div>
+    <footer>${esc(t.title)}</footer></main>`;
+  wireTop();
+  const go=fn=>async()=>{ if(window._flush) await window._flush(); fn(); renderSite(); };
+  $$('.tab').forEach(b=>b.onclick=go(()=>{state.tab=b.dataset.tab;}));
+  $$('[data-day]').forEach(b=>b.onclick=go(()=>{state.day=+b.dataset.day; if(b.dataset.goto)state.tab=b.dataset.goto;}));
+  const h=$('#home'); if(h) h.onclick=async()=>{ state.step=0; renderHome(); };
+  const k=$('#kidon'); if(k) k.onclick=()=>{ state.kidMode=true; renderKids(); };
+  const sh=$('#share'); if(sh) sh.onclick=async()=>{
+    if(!shareLink()){                     // אין עדיין קישור לשתף
+      state.tab='publish'; renderSite();
+      setTimeout(()=>{ const n=$('#nfstate');
+        if(n&&n.scrollIntoView) try{ n.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){} },200);
+      return; }
+    const link=shareLink();
+    const d={title:t.title,text:t.tagline||'',url:link};
+    if(navigator.share){ try{ await navigator.share(d); return; }catch(e){} }
+    try{ await navigator.clipboard.writeText(link); alert('הקישור הועתק:\n'+link); }
+    catch(e){ prompt('העתיקו את הקישור:',link); } };
+  ({now:wireNow,journal:wireJournal,lang:wireLang,tools:wireTools,pack:wirePack,money:wireMoney,stay:wireStay,publish:wirePublish,places:wirePlaces,family:wireFamily}[state.tab]||function(){})();
+  Photos.hydrate();
+  window.scrollTo(0,0);
+}
+function panelNow(){
+  const t=state.trip,ti=todayIndex(t),dt=daysTo(t);
+  let inner='';
+  if(!t.start){ inner=`<div class="box"><h4>מתי יוצאים?</h4>
+    <p style="margin-top:0">הוסיפו תאריך יציאה, ומסך זה יראה לכם בכל רגע איפה אתם אמורים להיות.</p>
+    <div class="addrow"><input type="date" id="setstart"><button class="btn btn-primary btn-sm" id="savestart">שמירה</button></div></div>`; }
+  else if(dt>0){ inner=`<div class="now-card"><div class="now-top"><h3>עוד ${dt} ימים ליציאה</h3><span class="clock" id="clk"></span></div>
+    <div class="now-body"><p style="margin-top:0">${esc(t.summary||'')}</p><div class="quick">
+      <button class="qbtn" data-tab2="pack"><b>רשימת ציוד</b><span>מה לארוז</span></button>
+      <button class="qbtn" data-tab2="route"><b>המסלול</b><span>${t.days} ימים</span></button>
+      <button class="qbtn" data-tab2="money"><b>תקציב</b><span>תכנון</span></button>
+      <button class="qbtn" data-tab2="lang"><b>מילון</b><span>${esc((t.practical||{}).language||'')}</span></button></div></div></div>`; }
+  else if(!ti){ inner=`<div class="now-card"><div class="now-top"><h3>הטיול הסתיים</h3><span class="clock" id="clk"></span></div>
+    <div class="now-body"><p style="margin-top:0">נשארו התמונות והיומן — שווה לעבור עליהם ולהשלים.</p>
+    <button class="qbtn" data-tab2="journal" style="max-width:260px"><b>יומן המסע</b><span>לקריאה</span></button></div></div>`; }
+  else {
+    const d=t.plan[ti-1]||{},now=new Date().getHours()*60+new Date().getMinutes();
+    const segs=(d.segments||[]).map(s=>({...s,m:mins(s.time)})).filter(s=>s.m!==null);
+    let cur=null,next=null;
+    for(let i=0;i<segs.length;i++){ if(segs[i].m<=now)cur=segs[i]; else {next=segs[i];break;} }
+    if(!cur&&segs.length) next=next||segs[0];
+    const dep=mins(d.depart);
+    inner=`<div class="now-card"><div class="now-top"><h3>יום ${ti} · ${esc(d.title||'')}</h3><span class="clock" id="clk"></span></div>
+      <div class="now-body"><span class="live"><i></i>עכשיו</span>
+      ${cur?`<div class="nowseg"><div style="font-family:var(--util);font-weight:900;color:var(--sea)">${esc(cur.time)}${cur.stay?' · '+esc(cur.stay):''}</div>
+        <h4>${esc(cur.title)}</h4><p style="margin:4px 0 8px">${esc(cur.desc||'')}</p>
+        ${cur.place?`<div class="navlinks"><a class="navlink" target="_blank" rel="noopener" href="${mapsUrl(cur.place,t.dest)}">מפות</a>
+        <a class="navlink" target="_blank" rel="noopener" href="${wazeUrl(cur.place,t.dest)}">Waze</a></div>`:''}</div>`
+      :`<div class="nowseg"><h4>${dep&&now<dep?`יציאה מהחדר ב-${esc(d.depart)}`:'היום עוד לא התחיל'}</h4><p style="margin:4px 0 0">${esc(d.departNote||d.summary||'')}</p></div>`}
+      ${next?`<div class="nextlist"><div class="nextrow"><b>הבא</b><span><b style="font-family:var(--display)">${esc(next.title)}</b> · ${esc(next.desc||'')}</span></div>
+        ${segs.filter(s=>s.m>(next.m||0)).map(s=>`<div class="nextrow"><b>${esc(s.time)}</b><span>${esc(s.title)}</span></div>`).join('')}</div>`
+        :`<div class="nextlist"><div class="nextrow"><b>ערב</b><span>${esc(d.evening||'')}</span></div></div>`}
+      <div class="quick">
+        <button class="qbtn" data-day="${ti}" data-goto="daily"><b>כל היום</b><span>ציר זמן</span></button>
+        <button class="qbtn" data-day="${ti}" data-goto="journal"><b>יומן</b><span>תמונות</span></button>
+        <button class="qbtn" data-tab2="tools"><b>מזג אוויר</b><span>${esc(d.base||'')}</span></button>
+        <button class="qbtn" data-tab2="stay"><b>הלינה</b><span>${esc(d.base||'')}</span></button></div></div></div>`;
+  }
+  return `<section class="panel ${state.tab==='now'?'on':''}"><p class="eyebrow">עכשיו</p><h2>איפה אנחנו ברגע זה</h2>
+   <p class="lead">המסך מתעדכן לפי השעה במכשיר שלכם, כדי שתמיד תדעו מה הדבר הבא.</p>${inner}</section>`;
+}
+function wireNow(){
+  const c=$('#clk');
+  if(c){ let iv; const tk=()=>{ if(!document.body.contains(c)) return clearInterval(iv);
+    c.textContent=new Date().toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'}); }; tk(); iv=setInterval(tk,20000); }
+  $$('[data-tab2]').forEach(b=>b.onclick=()=>{ state.tab=b.dataset.tab2; renderSite(); });
+  const ss=$('#savestart'); if(ss) ss.onclick=async()=>{ const v=$('#setstart').value; if(!v)return;
+    state.trip.start=v; state.trip.plan.forEach((d,i)=>{ const x=new Date(v); x.setDate(x.getDate()+i);
+      d.iso=x.toISOString().slice(0,10); d.date=x.toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'long'}); });
+    await store.set('tripdata:'+state.trip.id,state.trip); state.day=todayIndex(state.trip)||1; renderSite(); };
+}
+/* --- גלריית המקומות --- */
+function tripPlaces(){
+  const t=state.trip, out=[], seen={};
+  ((t.extras||{}).gallery||[]).forEach(g=>{ if(g&&g.name&&!seen[g.name]){ seen[g.name]=1; out.push({name:g.name,sub:g.subtitle||''}); } });
+  (t.plan||[]).forEach(d=>{
+    (d.segments||[]).forEach(sg=>{ const n=sg.place||sg.title;
+      if(n&&!seen[n]&&out.length<12){ seen[n]=1; out.push({name:n,sub:(d.title||'').replace(/^יום \d+ · ?/,'')||sg.title||''}); } });
+  });
+  if(!out.length&&t.dest) out.push({name:t.dest,sub:''});
+  return out.slice(0,12);
+}
+function panelPlaces(){
+  const t=state.trip, list=tripPlaces();
+  return `<section class="panel ${state.tab==='places'?'on':''}"><p class="eyebrow">גלריה</p><h2>המקומות שמחכים לנו</h2>
+   <p class="lead">לחצו על מקום כדי לראות תמונה גדולה ולנווט אליו.</p>
+   <div class="gal">${list.map((p,i)=>`<button class="galcard" data-gal="${i}">
+     <img alt="${esc(p.name)}" loading="lazy" data-photo="${esc(p.name)}" data-photo-ctx="${esc(t.dest)}">
+     <span class="shade"></span>
+     <span class="txt"><h3>${esc(p.name)}</h3>${p.sub?`<p>${esc(p.sub)}</p>`:''}</span></button>`).join('')}</div>
+   <p class="hint" style="margin-top:16px">התמונות נטענות מוויקיפדיה ומוויקימדיה קומונס לפי שם המקום. אם מקום לא מזוהה, הכרטיס יישאר בצבע רקע.</p>
+  </section>`;
+}
+function wirePlaces(){
+  const t=state.trip, list=tripPlaces();
+  $$('[data-gal]').forEach(b=>b.onclick=async()=>{
+    const p=list[+b.dataset.gal];
+    const url=await Photos.find(p.name,t.dest);
+    const m=document.createElement('div');
+    m.className='modal';
+    m.innerHTML=`<div class="inner">
+      ${url?`<img src="${url}" alt="${esc(p.name)}">`:'<div style="height:180px;background:linear-gradient(140deg,var(--sea),var(--teal))"></div>'}
+      <div class="cap"><div><h3 style="font-size:22px">${esc(p.name)}</h3>${p.sub?`<p class="hint" style="margin:2px 0 0">${esc(p.sub)}</p>`:''}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <a class="btn btn-primary btn-sm" style="text-decoration:none" target="_blank" rel="noopener" href="${mapsUrl(p.name,t.dest)}">ניווט</a>
+          <button class="btn btn-ghost btn-sm" data-x>סגירה</button></div></div></div>`;
+    m.onclick=e=>{ if(e.target===m||e.target.hasAttribute('data-x')) m.remove(); };
+    document.body.appendChild(m);
+  });
+}
+/* --- שיתוף עם המשפחה (מוצג רק באתר המיוצא) --- */
+function panelFamily(){
+  const t=state.trip;
+  return `<section class="panel ${state.tab==='family'?'on':''}"><p class="eyebrow">ביחד</p><h2>המשפחה שלנו</h2>
+   <p class="lead">${SB.on?'כל מי שנכנס לקישור הזה רואה את אותו יומן, אותן תמונות ואותו תקציב — בזמן אמת.'
+     :'האתר הזה שומר את היומן במכשיר שלכם בלבד. כל אחד יראה רק את מה שהוא עצמו כתב.'}</p>
+   <div class="box"><h4>איך שולחים לכולם</h4>
+     <p style="margin-top:0">שלחו את הקישור הזה בוואטסאפ המשפחתי. אין צורך בהתקנה או בהרשמה.</p>
+     <div class="addrow"><input id="famlink" dir="ltr" readonly value="${esc(location.href.split('#')[0])}">
+       <button class="btn btn-primary btn-sm" id="famcopy">העתקה</button></div>
+     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+       <a class="btn btn-ghost btn-sm" style="text-decoration:none" target="_blank" rel="noopener"
+          href="https://wa.me/?text=${encodeURIComponent(t.title+' — '+location.href.split('#')[0])}">שליחה בוואטסאפ</a>
+       <button class="btn btn-ghost btn-sm" id="famshare">שיתוף</button>
+       <span class="hint" id="fammsg"></span></div></div>
+   <div class="box"><h4>הוספה למסך הבית</h4>
+     <p style="margin:0">בטלפון: פותחים את תפריט הדפדפן ובוחרים "הוסף למסך הבית". האתר ייפתח כמו אפליקציה, גם בלי אינטרנט טוב.</p></div>
+   <div class="box"><h4>מי כתב מה</h4>
+     <p style="margin-top:0">כשמעלים תמונה או מזינים הוצאה, כדאי לרשום את השם — כך כולם יודעים מי צילם ומי שילם.</p>
+     <div class="field" style="max-width:320px"><label>השם שלי באתר</label><input id="famname" placeholder="למשל: אבא"></div>
+     <span class="saved" id="famsaved">נשמר ✓</span></div>
+  </section>`;
+}
+function wireFamily(){
+  const t=state.trip;
+  $('#famcopy').onclick=async()=>{ try{ await navigator.clipboard.writeText($('#famlink').value);
+      $('#fammsg').textContent='הקישור הועתק ✓'; }catch(e){ $('#famlink').select(); $('#fammsg').textContent='סמנו והעתיקו'; }
+    setTimeout(()=>{ const m=$('#fammsg'); if(m)m.textContent=''; },2500); };
+  $('#famshare').onclick=async()=>{
+    const data={title:t.title,text:t.tagline||'',url:location.href.split('#')[0]};
+    if(navigator.share){ try{ await navigator.share(data); }catch(e){} }
+    else $('#famcopy').click(); };
+  const n=$('#famname'); n.value=localGet('me:'+t.id)||'';
+  n.oninput=()=>{ localSet('me:'+t.id,n.value); const s=$('#famsaved');
+    s.classList.add('on'); clearTimeout(n._t); n._t=setTimeout(()=>s.classList.remove('on'),1400); };
+}
+function panelRoute(){ const t=state.trip,ti=todayIndex(t);
+  return `<section class="panel ${state.tab==='route'?'on':''}"><p class="eyebrow">מבט־על</p><h2>המסלול, יום אחרי יום</h2><p class="lead">${esc(t.summary||'')}</p>
+  ${t.plan.map((d,i)=>`<button class="day-card ${ti===i+1?'today':''}" data-day="${i+1}" data-goto="daily">
+    <div class="thumb" data-photo="${esc(((d.segments||[])[0]||{}).place||d.base||'')}" data-photo-ctx="${esc(t.dest)}"></div>
+    <div class="stamp"><b>${i+1}</b><span>${esc((d.date||'').split(',')[0]||'יום')}</span></div>
+    <div class="body"><h3>${esc(d.title||'')}</h3><p>${esc(d.summary||(t.skeleton[i]||{}).focus||'')}</p>
+    <div class="tags"><span class="tag">לינה: ${esc(d.base||'')}</span>${d.depart?`<span class="tag">יציאה ${esc(d.depart)}</span>`:''}
+    ${(d.segments||[]).slice(0,2).map(s=>`<span class="tag">${esc(s.title)}</span>`).join('')}</div></div></button>`).join('')}</section>`; }
+function panelDaily(){ const t=state.trip,d=t.plan[state.day-1]||t.plan[0];
+  if(!d) return '<section class="panel"></section>';
+  return `<section class="panel ${state.tab==='daily'?'on':''}">
+   <div class="dayselect">${t.plan.map((x,i)=>`<button class="dsbtn ${state.day===i+1?'on':''}" data-day="${i+1}">יום ${i+1}</button>`).join('')}</div>
+   <p class="eyebrow">יום ${state.day} מתוך ${t.days}${d.date?' · '+esc(d.date):''}</p>
+   <h2>${esc(d.title||'')}</h2>
+   <p class="lead">${d.base?'לינה ב'+esc(d.base)+' · ':''}${esc(d.summary||'')}</p>
+   ${d.failed?'<div class="err-box">היום הזה לא נוצר במלואו.</div>':''}
+   <div class="timeline">
+     ${(d.wake||d.depart)?`<div class="slot depart"><div class="time">${esc(d.depart||d.wake||'')}<small>יציאה מהחדר</small></div>
+       <h4>יוצאים לדרך</h4><p>${esc(d.departNote||'')}</p></div>`:''}
+     ${(d.segments||[]).map(s=>`<div class="slot"><div class="time">${esc(s.time||'')}${s.stay?`<small>${esc(s.stay)}</small>`:''}</div>
+       <h4>${esc(s.title||'')}</h4><p>${esc(s.desc||'')}</p>${s.tip?`<div class="tip">${esc(s.tip)}</div>`:''}
+       ${s.place?`<div class="navlinks"><a class="navlink" target="_blank" rel="noopener" href="${mapsUrl(s.place,t.dest)}">מפות</a>
+         <a class="navlink" target="_blank" rel="noopener" href="${wazeUrl(s.place,t.dest)}">Waze</a>
+         <span class="navlink" style="border-style:dashed">${esc(s.place)}</span></div>`:''}
+       ${s.travel?`<div class="travel">→ ${esc(s.travel)}</div>`:''}</div>`).join('')}
+     ${d.backAt?`<div class="slot depart"><div class="time">${esc(d.backAt)}<small>סוף היום</small></div>
+       <h4>חוזרים ללינה</h4><p>${esc(d.evening||'')}</p></div>`:''}</div>
+   ${(d.food||[]).length?`<div class="box"><h4>איפה אוכלים</h4>${d.food.map(x=>`<div class="kv"><b>${esc(x.name)}</b>
+     <span>${esc(x.type||'')} · ${esc(x.note||'')} <a class="navlink" target="_blank" rel="noopener" href="${mapsUrl(x.name,d.base||t.dest)}">מפה</a></span></div>`).join('')}</div>`:''}</section>`; }
+function panelJournal(){ const t=state.trip;
+  return `<section class="panel ${state.tab==='journal'?'on':''} journal"><p class="eyebrow">יומן</p><h2>מה היה לנו היום</h2>
+   <p class="lead">${SB.on?'נשמר בענן — כל המשפחה רואה את אותו יומן.':'נשמר במכשיר הזה. אפשר לחבר ענן בהגדרות.'}</p>
+   <div class="dayselect">${t.plan.map((x,i)=>`<button class="dsbtn ${state.day===i+1?'on':''}" data-day="${i+1}">יום ${i+1}</button>`).join('')}</div>
+   <div class="box"><h4>יום ${state.day} · ${esc((t.plan[state.day-1]||{}).title||'')}</h4>
+     <div class="moods" id="moods">${['🤩','😍','😄','😌','😅','🥵','🌧️'].map(m=>`<button class="mood" data-m="${m}">${m}</button>`).join('')}</div>
+     <textarea id="jtext" placeholder="מה היה היום, מה צחקנו, מה נזכור..."></textarea>
+     <div class="grid" style="margin-top:14px">
+       <div class="field"><label>מי מעלה</label><input id="jby" placeholder="השם שלך"></div>
+       <div class="field"><label>מאיפה התמונה</label>
+         <select id="jplace"><option value="">בחרו מקום</option>
+           ${((t.plan[state.day-1]||{}).segments||[]).map(s=>`<option>${esc(s.place||s.title)}</option>`).join('')}
+           <option value="__other">מקום אחר…</option></select>
+         <input id="jplace2" placeholder="שם המקום" style="display:none"></div></div>
+     <div style="display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap">
+       <label class="btn btn-ghost btn-sm" style="cursor:pointer">מהגלריה<input type="file" id="jgal" accept="image/*" multiple hidden></label>
+       <label class="btn btn-ghost btn-sm" style="cursor:pointer">מהמצלמה<input type="file" id="jcam" accept="image/*" capture="environment" hidden></label>
+       <span class="saved" id="jsaved">נשמר ✓</span><span class="hint" id="jup"></span></div>
+     <div id="jquota" class="hint" style="margin-top:10px"></div>
+     <div class="photos" id="jphotos"></div></div></section>`; }
+async function wireJournal(){
+  const t=state.trip,key='journal:'+t.id+':'+state.day;
+  let data=(await store.get(key))||{text:'',mood:''};
+  if(!data.photos) data.photos=[];
+  const ta=$('#jtext'),ph=$('#jphotos'),sv=$('#jsaved'),by=$('#jby'),pl=$('#jplace'),pl2=$('#jplace2'),up=$('#jup');
+  if(!ta) return;
+  ta.value=data.text||''; by.value=localGet('me:'+t.id)||'';
+  let cloud=[];
+  if(SB.on){ try{ cloud=await SB.photos(t.id,state.day); }catch(e){ up.textContent='לא הצלחנו לטעון תמונות מהענן'; } }
+  const list=()=>SB.on?cloud:data.photos;
+  const paint=()=>{ $$('.mood').forEach(b=>b.classList.toggle('on',b.dataset.m===data.mood));
+    ph.innerHTML=list().map((p,i)=>`<div class="photo"><img src="${p.url||p.src}" alt="" loading="lazy">
+      <button class="rm" data-rm="${i}">×</button>
+      <div class="cap"><b>${esc(p.place||'')}</b><span>${esc(p.uploaded_by||p.by||'')}</span></div></div>`).join('');
+    $$('[data-rm]',ph).forEach(b=>b.onclick=async()=>{ const i=+b.dataset.rm;
+      if(SB.on){ try{ await SB.delPhoto(cloud[i]); cloud.splice(i,1); used=Math.max(0,used-1); refreshQuota(); }
+        catch(e){ up.textContent='המחיקה נכשלה'; } }
+      else { data.photos.splice(i,1); save(); } paint(); }); };
+  let tm; const save=async()=>{ await store.set(key,data); sv.classList.add('on'); clearTimeout(tm); tm=setTimeout(()=>sv.classList.remove('on'),1500); };
+  window._flush=async()=>{ if(!document.body.contains(ta))return; data.text=ta.value; await store.set(key,data); };
+  ta.oninput=()=>{ data.text=ta.value; clearTimeout(ta._t); ta._t=setTimeout(save,700); };
+  by.onchange=()=>localSet('me:'+t.id,by.value);
+  pl.onchange=()=>{ pl2.style.display=pl.value==='__other'?'block':'none'; };
+  $('#moods').onclick=e=>{ const m=e.target.dataset.m; if(!m)return; data.mood=data.mood===m?'':m; paint(); save(); };
+  // מכסת תמונות — חלה רק בענן המשותף
+  const limited=SB.on&&SB.shared;
+  let used=0;
+  const quota=$('#jquota'), gal=$('#jgal'), cam=$('#jcam');
+  const setBusy=b=>{ gal.disabled=b; cam.disabled=b;
+    gal.closest('label').style.opacity=b?.5:1; cam.closest('label').style.opacity=b?.5:1; };
+  const refreshQuota=async()=>{
+    if(!limited){ quota.textContent=''; return; }
+    try{ used=await SB.countPhotos(t.id); }catch(e){ return; }
+    const left=Math.max(0,PHOTO_LIMIT-used);
+    quota.innerHTML=`<div style="display:flex;justify-content:space-between;font-family:var(--util);font-size:13px">
+        <span>${used} מתוך ${PHOTO_LIMIT} תמונות בטיול</span><span>${left?'נשארו '+left:'הגעתם למכסה'}</span></div>
+      <div class="track" style="height:7px;background:var(--sand);border-radius:99px;overflow:hidden;margin-top:5px">
+        <i style="display:block;height:100%;width:${Math.min(100,Math.round(used/PHOTO_LIMIT*100))}%;
+           background:${left?'var(--sea)':'var(--rust)'}"></i></div>
+      ${left?'':'<p class="hint" style="margin:8px 0 0">כדי להוסיף עוד, מחקו תמונות קיימות. אפשר גם לחבר ענן פרטי בהגדרות ולהסיר את המגבלה.</p>'}`;
+    setBusy(left===0);
+  };
+  const addFiles=async files=>{
+    const place=pl.value==='__other'?(pl2.value||''):pl.value, who=by.value;
+    let arr=[...files].slice(0,8);
+    if(limited){
+      const left=Math.max(0,PHOTO_LIMIT-used);
+      if(left===0){ up.textContent='הגעתם למכסת '+PHOTO_LIMIT+' התמונות לטיול.'; return; }
+      if(arr.length>left){ arr=arr.slice(0,left); up.textContent=`נשאר מקום ל-${left} תמונות בלבד, מעלים אותן.`; }
+    }
+    let i=0;
+    for(const f of arr){ i++; up.textContent=`מעלה ${i} מתוך ${arr.length}…`;
+      try{ const blob=await shrink(f);
+        if(SB.on){ const row=await SB.addPhoto(t.id,state.day,blob,{place,by:who,dayTitle:(t.plan[state.day-1]||{}).title||''});
+          if(row){ cloud.push(row); used++; } }
+        else { data.photos=data.photos.concat({src:await blobToDataURL(blob),place,by:who}).slice(0,16); await save(); }
+      }catch(e){ up.textContent=e.message; }
+      paint(); }
+    if(!/נשאר מקום/.test(up.textContent)) up.textContent='';
+    refreshQuota(); };
+  $('#jgal').onchange=e=>{ addFiles(e.target.files); e.target.value=''; };
+  $('#jcam').onchange=e=>{ addFiles(e.target.files); e.target.value=''; };
+  paint(); refreshQuota();
+}
+function panelStay(){ const t=state.trip,L=(t.extras||{}).lodging||[];
+  return `<section class="panel ${state.tab==='stay'?'on':''}"><p class="eyebrow">לינה</p><h2>איפה ישנים</h2>
+   <p class="lead">אזורים מומלצים, ומקום להזין את ההזמנה שלכם.</p>
+   ${L.length?L.map((l,i)=>`<div class="box"><h4>${esc(l.base)}</h4>
+     <div class="kv"><b>אזור מומלץ</b><span>${esc(l.area||'')}</span></div>
+     ${l.why?`<div class="kv"><b>למה</b><span>${esc(l.why)}</span></div>`:''}
+     ${l.tip?`<div class="kv"><b>טיפ</b><span>${esc(l.tip)}</span></div>`:''}
+     <div class="grid" style="margin-top:12px">
+       <div class="field"><label>שם המלון</label><input data-st="${i}" data-k="name"></div>
+       <div class="field"><label>כתובת</label><input data-st="${i}" data-k="addr"></div>
+       <div class="field"><label>צ'ק אין / אאוט</label><input data-st="${i}" data-k="dates" placeholder="15:00 / 10:00"></div>
+       <div class="field"><label>מספר הזמנה</label><input data-st="${i}" data-k="ref"></div></div>
+     <div style="margin-top:10px"><a class="navlink" target="_blank" rel="noopener" id="stmap-${i}" href="${mapsUrl(l.area||l.base,t.dest)}">ניווט</a>
+       <span class="saved" id="stsaved-${i}">נשמר ✓</span></div></div>`).join('')
+     :'<div class="box"><p style="margin:0" class="hint">לא נוצרו המלצות לינה לטיול הזה.</p></div>'}</section>`; }
+async function wireStay(){
+  const key='stay:'+state.trip.id; const data=(await store.get(key))||{};
+  $$('[data-st]').forEach(inp=>{ const i=inp.dataset.st,k=inp.dataset.k;
+    inp.value=(data[i]||{})[k]||'';
+    inp.oninput=()=>{ data[i]=data[i]||{}; data[i][k]=inp.value; clearTimeout(inp._t);
+      inp._t=setTimeout(async()=>{ await store.set(key,data);
+        const s=$('#stsaved-'+i); if(s){ s.classList.add('on'); setTimeout(()=>s.classList.remove('on'),1400); }
+        if(k==='addr'&&inp.value){ const a=$('#stmap-'+i); if(a) a.href=mapsUrl(inp.value,state.trip.dest); } },700); }; });
+}
+function panelLang(){ const t=state.trip,L=t.lang||{},p=t.practical||{};
+  return `<section class="panel ${state.tab==='lang'?'on':''}"><p class="eyebrow">שפה</p><h2>איך אומרים את זה</h2>
+   <p class="lead">מילון כיס ב${esc(p.language||'שפה המקומית')}, וחיבור לגוגל טרנסלט.</p>
+   <div class="box"><h4>תרגום מהיר</h4>
+     <div class="addrow"><input id="trin" placeholder="כתבו מילה או משפט"><button class="btn btn-primary btn-sm" id="trgo">תרגום</button></div>
+     <div style="margin-top:10px"><a class="navlink" target="_blank" rel="noopener" href="https://translate.google.com/?sl=${esc(p.langCode||'auto')}&tl=iw&op=images">תרגום תמונה של תפריט או שלט</a></div></div>
+   ${(L.categories||[]).map(c=>`<div class="box"><h4>${esc(c.name)}</h4>
+     ${(c.words||[]).map(w=>`<div class="kv"><b>${esc(w.he)}</b><span>${esc(w.local)} <span style="color:var(--muted)">${esc(w.translit||'')}</span></span></div>`).join('')}</div>`).join('')}</section>`; }
+function wireLang(){ const code=(state.trip.practical||{}).langCode||'auto';
+  const go=()=>{ const v=$('#trin').value.trim(); if(!v)return;
+    window.open(`https://translate.google.com/?sl=iw&tl=${encodeURIComponent(code)}&text=${encodeURIComponent(v)}&op=translate`,'_blank','noopener'); };
+  const b=$('#trgo'); if(b) b.onclick=go;
+  const i=$('#trin'); if(i) i.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); go(); } }; }
+function panelTools(){ const t=state.trip,p=t.practical||{},d=t.plan[state.day-1]||t.plan[0]||{};
+  return `<section class="panel ${state.tab==='tools'?'on':''}"><p class="eyebrow">כלים</p><h2>מזג אוויר וכסף</h2><p class="lead">מתעדכן אונליין.</p>
+   <div class="box"><h4>כמה זה בשקלים</h4><div class="conv">
+     <div class="field"><label>שקל</label><input id="cils" type="number" inputmode="decimal" placeholder="100"></div>
+     <button class="swap" id="cswap">⇄</button>
+     <div class="field"><label>${esc(p.currencyCode||'EUR')}</label><input id="cloc" type="number" inputmode="decimal" placeholder="0"></div></div>
+     <p class="hint" id="crate" style="margin-top:10px">טוען שער…</p>
+     <div class="chips" id="cquick">${[50,100,200,500].map(v=>`<span class="chip" data-v="${v}">${v} ₪</span>`).join('')}</div></div>
+   <div class="box"><h4>מזג אוויר ב${esc(d.base||t.dest)}</h4><div id="wbox">טוען…</div>
+     <div class="dayselect" style="margin-top:14px">${[...new Set(t.plan.map(x=>x.base).filter(Boolean))].map(b=>`<button class="dsbtn" data-city="${esc(b)}">${esc(b)}</button>`).join('')}</div></div></section>`; }
+async function wireTools(){
+  const t=state.trip,code=((t.practical||{}).currencyCode||'EUR').toUpperCase();
+  const ils=$('#cils'),loc=$('#cloc'),note=$('#crate'); let rate=null;
+  const r=await fetchRate('ILS',code);
+  if(r){ rate=r.rate; note.textContent=`1 ₪ = ${r.rate.toFixed(4)} ${code} · עודכן ${r.date}`; }
+  else { note.innerHTML=`לא נטען שער. הזינו ידנית: <input id="mrate" type="number" step="0.0001" style="width:110px;border:1.5px solid var(--line);border-radius:8px;padding:4px 8px"> ${code} לשקל`;
+    const mi=$('#mrate'); if(mi) mi.oninput=()=>{ rate=+mi.value||null; }; }
+  const calc=s=>{ if(!rate)return;
+    if(s==='ils') loc.value=ils.value?(+ils.value*rate).toFixed(2):'';
+    else ils.value=loc.value?(+loc.value/rate).toFixed(2):''; };
+  ils.oninput=()=>calc('ils'); loc.oninput=()=>calc('loc');
+  $('#cquick').onclick=e=>{ const v=e.target.dataset.v; if(!v)return; ils.value=v; calc('ils'); };
+  $('#cswap').onclick=()=>{ const a=ils.value; ils.value=loc.value; loc.value=a; calc('ils'); };
+  const paintW=async place=>{ const box=$('#wbox'); if(!box)return; box.textContent='טוען…';
+    try{ const {loc:L,w}=await fetchWeather(place); const c=w.current,ic=WMO[c.weather_code]||['🌡️',''];
+      box.innerHTML=`<div class="wnow"><div class="big">${Math.round(c.temperature_2m)}°</div>
+        <div><div style="font-size:26px">${ic[0]} ${ic[1]}</div>
+        <div class="hint">מרגיש כמו ${Math.round(c.apparent_temperature)}° · לחות ${c.relative_humidity_2m}% · רוח ${Math.round(c.wind_speed_10m)} קמ"ש · ${esc(L.name)}</div></div></div>
+        <div class="wgrid">${w.daily.time.map((dd,i)=>{ const k=WMO[w.daily.weather_code[i]]||['🌡️',''];
+          return `<div class="wday"><div class="d">${new Date(dd).toLocaleDateString('he-IL',{weekday:'short'})}</div>
+          <div class="i">${k[0]}</div><div class="t">${Math.round(w.daily.temperature_2m_max[i])}° / ${Math.round(w.daily.temperature_2m_min[i])}°</div>
+          <div class="d">${w.daily.precipitation_probability_max[i]??0}% גשם</div></div>`; }).join('')}</div>`;
+    }catch(e){ box.innerHTML='<div class="err-box">לא הצלחנו למשוך מזג אוויר כרגע.</div>'; } };
+  paintW((t.plan[state.day-1]||t.plan[0]||{}).base||t.dest);
+  $$('[data-city]').forEach(b=>b.onclick=()=>{ $$('[data-city]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); paintW(b.dataset.city); });
+}
+function panelCams(){ const t=state.trip,C=(t.extras||{}).cams||[];
+  return `<section class="panel ${state.tab==='cams'?'on':''}"><p class="eyebrow">שידור חי</p><h2>הצצה למקום עכשיו</h2>
+   <p class="lead">להציץ במקום לפני שיוצאים — מזג אוויר, עומס וצפיפות.</p>
+   <div class="box"><h4>חיפוש כללי</h4><div class="navlinks">
+     <a class="navlink" target="_blank" rel="noopener" href="https://www.windy.com/-Webcams/webcams?webcams">מפת מצלמות</a>
+     <a class="navlink" target="_blank" rel="noopener" href="https://www.skylinewebcams.com/">SkylineWebcams</a>
+     <a class="navlink" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${encodeURIComponent(t.dest+' live cam')}">לייב ביוטיוב</a></div></div>
+   <div class="cards">${C.map(c=>`<div class="box"><h4>${esc(c.place)}</h4><p style="margin:0 0 10px">${esc(c.note||'')}</p>
+     <div class="navlinks"><a class="navlink" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${encodeURIComponent(c.place+' live webcam')}">יוטיוב</a>
+     <a class="navlink" target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent(c.place+' live webcam')}">חיפוש</a></div></div>`).join('')}</div></section>`; }
+function panelPack(){ const g=state.trip.guide||{};
+  return `<section class="panel ${state.tab==='pack'?'on':''}"><p class="eyebrow">לפני היציאה</p><h2>מה לוקחים</h2>
+   <p class="lead">${SB.on?'משותף לכל המשפחה.':'נשמר במכשיר הזה.'}</p>
+   <div class="box" style="display:flex;justify-content:space-between;align-items:center"><b id="packstat">—</b></div>
+   <div class="cards">${(g.packing||[]).map((grp,gi)=>`<div class="box"><h4>${esc(grp.group)}</h4>
+     <div id="grp-${gi}">${(grp.items||[]).map((it,ii)=>`<label class="check"><input type="checkbox" data-p="${gi}:${ii}"><span>${esc(it)}</span></label>`).join('')}</div>
+     <div class="addrow"><input placeholder="פריט נוסף" data-add="${gi}"><button class="btn btn-ghost btn-sm" data-addbtn="${gi}">הוספה</button></div></div>`).join('')}</div></section>`; }
+async function wirePack(){
+  const t=state.trip,key='pack:'+t.id; const data=(await store.get(key))||{checked:{},extra:{}};
+  data.checked=data.checked||{}; data.extra=data.extra||{};
+  Object.keys(data.extra).forEach(gi=>{ const box=$('#grp-'+gi); if(!box)return;
+    (data.extra[gi]||[]).forEach((it,ei)=>box.insertAdjacentHTML('beforeend',
+      `<label class="check"><input type="checkbox" data-p="x${gi}:${ei}"><span>${esc(it)}</span></label>`)); });
+  const stat=()=>{ const all=$$('[data-p]'),on=$$('[data-p]:checked');
+    const s=$('#packstat'); if(s) s.textContent=`${on.length} מתוך ${all.length} ארוזים`; };
+  $$('[data-p]').forEach(cb=>{ cb.checked=!!data.checked[cb.dataset.p];
+    cb.closest('.check').classList.toggle('done',cb.checked);
+    cb.onchange=async()=>{ data.checked[cb.dataset.p]=cb.checked; cb.closest('.check').classList.toggle('done',cb.checked);
+      await store.set(key,data); stat(); }; });
+  $$('[data-addbtn]').forEach(b=>b.onclick=async()=>{ const gi=b.dataset.addbtn;
+    const inp=document.querySelector(`[data-add="${gi}"]`); const v=(inp.value||'').trim(); if(!v)return;
+    data.extra[gi]=(data.extra[gi]||[]).concat(v); await store.set(key,data); inp.value=''; renderSite(); });
+  stat();
+}
+function panelMoney(){ const g=state.trip.guide||{},p=state.trip.practical||{};
+  return `<section class="panel ${state.tab==='money'?'on':''}"><p class="eyebrow">כסף</p><h2>כמה יצא לנו</h2>
+   <p class="lead">${SB.on?'משותף — כל אחד מזין מהטלפון שלו.':'נשמר במכשיר הזה.'}</p>
+   ${(g.budgetPlan||[]).length?`<div class="box"><h4>התכנון</h4>${g.budgetPlan.map(b=>`<div class="kv"><b>${esc(b.cat)}</b>
+     <span>${esc(b.estimate)} <span style="color:var(--muted)">${esc(b.note||'')}</span></span></div>`).join('')}</div>`:''}
+   <div class="box"><h4>הוספת הוצאה</h4><div class="grid">
+     <div class="field"><label>קטגוריה</label><select id="ecat">${CATS.map(c=>`<option>${c}</option>`).join('')}</select></div>
+     <div class="field"><label>תיאור</label><input id="edesc" placeholder="ארוחת ערב"></div>
+     <div class="field"><label>סכום</label><input id="eamt" type="number" inputmode="decimal"></div>
+     <div class="field"><label>מטבע</label><select id="ecur"><option>ILS</option><option selected>${esc(p.currencyCode||'EUR')}</option></select></div>
+     <div class="field"><label>יום</label><select id="eday"><option value="">כללי</option>${state.trip.plan.map((d,i)=>`<option value="${i+1}">יום ${i+1}</option>`).join('')}</select></div>
+     <div class="field"><label>מי שילם</label><input id="ewho"></div></div>
+     <button class="btn btn-primary btn-sm" id="eadd" style="margin-top:12px">הוספה</button></div>
+   <div class="box"><h4>ההוצאות</h4><div id="etable">—</div><div id="ebars" style="margin-top:14px"></div></div></section>`; }
+async function wireMoney(){
+  const t=state.trip,key='budget:'+t.id,code=((t.practical||{}).currencyCode||'EUR').toUpperCase();
+  const saved=await store.get(key); let rows=Array.isArray(saved)?saved:((saved&&saved.rows)||[]);
+  let rate=null;
+  const toILS=x=>x.cur==='ILS'?x.amount:(rate?x.amount/rate:null);
+  const persist=()=>store.set(key,{rows});
+  $('#ewho').value=localGet('me:'+t.id)||'';
+  const paint=()=>{
+    const tot=rows.reduce((s,x)=>s+(toILS(x)||0),0);
+    $('#etable').innerHTML=rows.length?`<table><thead><tr><th>קטגוריה</th><th>תיאור</th><th>יום</th><th>מי</th><th>סכום</th><th></th></tr></thead>
+      <tbody>${rows.map((x,i)=>`<tr><td>${esc(x.cat)}</td><td>${esc(x.desc||'')}</td><td>${x.day?'יום '+x.day:'—'}</td>
+        <td>${esc(x.who||'')}</td><td>${x.amount} ${esc(x.cur)}</td><td><button class="btn btn-plain btn-sm" data-del="${i}">מחיקה</button></td></tr>`).join('')}</tbody>
+      <tfoot><tr><td colspan="4">סה"כ</td><td colspan="2">${tot?tot.toFixed(0)+' ₪':'—'}${rate&&tot?` · ${(tot*rate).toFixed(0)} ${code}`:''}</td></tr></tfoot></table>`
+      :'<p class="hint" style="margin:0">עוד לא הוזנו הוצאות.</p>';
+    const byCat={}; rows.forEach(x=>{ byCat[x.cat]=(byCat[x.cat]||0)+(toILS(x)||0); });
+    const max=Math.max(1,...Object.values(byCat));
+    $('#ebars').innerHTML=Object.entries(byCat).map(([c,v])=>`<div class="catbar">
+      <div class="lbl"><span>${esc(c)}</span><span>${v.toFixed(0)} ₪</span></div>
+      <div class="track"><i style="width:${Math.round(v/max*100)}%"></i></div></div>`).join('');
+    $$('[data-del]').forEach(b=>b.onclick=async()=>{ rows.splice(+b.dataset.del,1); await persist(); paint(); });
+  };
+  $('#eadd').onclick=async()=>{ const amt=+$('#eamt').value; if(!amt)return;
+    rows.push({cat:$('#ecat').value,desc:$('#edesc').value,amount:amt,cur:$('#ecur').value,day:$('#eday').value,who:$('#ewho').value,ts:Date.now()});
+    localSet('me:'+t.id,$('#ewho').value); await persist(); $('#eamt').value=''; $('#edesc').value=''; paint(); };
+  paint();
+  fetchRate('ILS',code).then(r=>{ if(r&&document.body.contains($('#etable')||document.body)){ rate=r.rate; paint(); } }).catch(()=>{});
+}
+function panelInfo(){ const t=state.trip,g=t.guide||{},p=t.practical||{};
+  return `<section class="panel ${state.tab==='info'?'on':''}"><p class="eyebrow">שווה לדעת</p><h2>מידע וטיפים</h2><p class="lead">מה שכדאי לדעת.</p>
+   <div class="box"><h4>מידע פרקטי</h4>${[['מטבע',(p.currency||'')+(p.currencyCode?' ('+p.currencyCode+')':'')],['שפה',p.language],['שקע חשמל',p.plug],['חירום',p.emergency],['תחבורה',p.transport],['מזג אוויר',p.weather]]
+     .filter(x=>x[1]).map(x=>`<div class="kv"><b>${x[0]}</b><span>${esc(x[1])}</span></div>`).join('')}</div>
+   <div class="cards">${(g.tips||[]).map(x=>`<div class="box"><h4>${esc(x.title)}</h4><p style="margin:0">${esc(x.text)}</p></div>`).join('')}</div></section>`; }
+
+/* ===================== מצב ילדים ===================== */
+const KID_FALLBACK=['מצאו משהו בצבע אדום','ספרו כמה כלבים ראיתם','מצאו דלת מצוירת יפה','צלמו את הדבר הכי גבוה שראיתם','מצאו חתול','ספרו כמה מדרגות עליתם'];
+function kidDay(d){
+  const k=d.kid||{};
+  return { emoji:k.emoji||'🌍',
+    simple:k.simple||('היום אנחנו הולכים ל'+(d.base||d.title||'טיול')+'!'),
+    fact:k.fact||'', missions:(k.missions&&k.missions.length?k.missions:KID_FALLBACK.slice(0,3)) };
+}
+async function renderKids(){
+  document.body.classList.add('kids');
+  const t=state.trip, ti=todayIndex(t), dt=daysTo(t);
+  const day=state.kidView==='today'?(ti||1):state.day;
+  const d=t.plan[day-1]||t.plan[0]||{}, k=kidDay(d);
+  const key='kids:'+t.id+':'+day;
+  const saved=(await store.get(key))||{done:{},stickers:0};
+  const name=localGet('kidname:'+t.id)||'';
+  let body='';
+  if(dt>0&&state.kidView==='today'){
+    body=`<div class="kidcard kidbig"><div class="emoji">🎉</div>
+      <h2>עוד ${dt} לילות</h2><p>ואנחנו טסים ל${esc(t.dest)}!</p>
+      <div class="kidcount">${dt}</div>
+      <button class="speak" data-say="עוד ${dt} לילות ואנחנו טסים ל${esc(t.dest)}">🔊 הקריאו לי</button></div>
+      <div class="kidcard"><div class="emoji">🎒</div><h2>מה לוקחים?</h2>
+      <p>בואו נעזור להורים לארוז את התיק</p>
+      <button class="speak" data-say="בואו נעזור להורים לארוז את התיק">🔊 הקריאו לי</button></div>`;
+  } else {
+    body=`<div class="kidcard kidteal"><div class="emoji">${esc(k.emoji)}</div>
+      <h2>${esc(d.title||('יום '+day))}</h2>
+      <p>${esc(k.simple)}</p>
+      <button class="speak" data-say="${esc(k.simple)}">🔊 הקריאו לי</button></div>
+    ${dt>0?`<div class="kidcard"><div class="emoji">📅</div><h2>זה יהיה בעוד ${dt} לילות</h2><p>אפשר כבר להתכונן!</p></div>`:''}
+    <div class="kidcard"><div class="emoji">🏞️</div><h2>ככה זה נראה</h2>
+      <img class="kidpic" alt="${esc(d.base||'')}" data-photo="${esc(((d.segments||[])[0]||{}).place||d.base||'')}" data-photo-ctx="${esc(t.dest)}"></div>
+    ${k.fact?`<div class="kidcard"><div class="emoji">💡</div><h2>ידעתם?</h2><p>${esc(k.fact)}</p>
+      <button class="speak" data-say="${esc(k.fact)}">🔊 הקריאו לי</button></div>`:''}
+    <div class="mission"><h3>🎯 המשימות של היום</h3>
+      ${k.missions.map((m,i)=>`<div class="task ${saved.done[i]?'done':''}" data-t="${i}">
+        <span class="bx">${saved.done[i]?'✓':''}</span><span>${esc(m)}</span></div>`).join('')}
+      <div class="stickers" id="stk">${Array.from({length:saved.stickers||0},(_,i)=>`<i>${STICKERS[i%STICKERS.length]}</i>`).join('')}</div>
+      <p class="hint center" style="margin:6px 0 0">כל משימה שמסיימים = מדבקה</p></div>
+    <div class="kidcard"><div class="emoji">📸</div><h2>התמונות שלנו</h2>
+      <div class="kidphoto" id="kidpics"></div>
+      <p class="hint" id="kidpicmsg" style="margin-top:10px">עוד אין תמונות מהיום הזה</p></div>`;
+  }
+  app.innerHTML=`<div class="kidwrap">
+    <div class="kidtop">
+      <div class="who">${name?'היי '+esc(name)+'! ':''}🧸</div>
+      <button class="iconbtn" id="kidout" title="חזרה למבוגרים">✕</button></div>
+    ${body}
+    <div class="kidnav">
+      <button class="${state.kidView==='today'?'on':''}" data-kv="today">היום</button>
+      ${t.plan.map((x,i)=>`<button class="${state.kidView==='day'&&state.day===i+1?'on':''}" data-kv="day" data-d="${i+1}">יום ${i+1}</button>`).join('')}
+    </div></div>`;
+  $('#kidout').onclick=()=>{ Speech.stop(); state.kidMode=false; document.body.classList.remove('kids'); renderSite(); };
+  $$('[data-say]').forEach(b=>b.onclick=()=>Speech.speak(b.dataset.say,b));
+  $$('[data-kv]').forEach(b=>b.onclick=()=>{ Speech.stop(); state.kidView=b.dataset.kv;
+    if(b.dataset.d) state.day=+b.dataset.d; renderKids(); });
+  $$('.task').forEach(el=>el.onclick=async()=>{
+    const i=el.dataset.t, was=!!saved.done[i];
+    saved.done[i]=!was;
+    saved.stickers=Object.values(saved.done).filter(Boolean).length;
+    el.classList.toggle('done',!was);
+    el.querySelector('.bx').textContent=!was?'✓':'';
+    $('#stk').innerHTML=Array.from({length:saved.stickers},(_,n)=>`<i>${STICKERS[n%STICKERS.length]}</i>`).join('');
+    if(!was) Speech.speak('כל הכבוד!');
+    await store.set(key,saved); });
+  const pics=$('#kidpics');
+  if(pics){ let list=[];
+    if(SB.on){ try{ list=await SB.photos(t.id,day); }catch(e){} }
+    else { const j=await store.get('journal:'+t.id+':'+day); list=(j&&j.photos)||[]; }
+    if(list.length){ pics.innerHTML=list.slice(0,6).map(p=>`<img src="${p.url||p.src}" alt="" loading="lazy">`).join('');
+      const m=$('#kidpicmsg'); if(m) m.textContent=''; }
+  }
+  Photos.hydrate();
+  window.scrollTo(0,0);
+}
+
+/* ===================== פרסום ===================== */
+const NF={
+  clientId: window.__NETLIFY_CLIENT_ID__||'',
+  token: localGet('nf:token')||'',
+  get on(){ return !!this.token; },
+  async api(path,opts={}){
+    const o=Object.assign({},opts);
+    o.headers=Object.assign({Authorization:'Bearer '+this.token},opts.headers||{});
+    const r=await fetch('https://api.netlify.com/api/v1/'+path,o);
+    if(r.status===401){ this.token=''; localDel('nf:token'); throw new Error('ההרשאה פגה. התחברו מחדש.'); }
+    if(!r.ok){ let m=''; try{ m=(await r.json()).message||''; }catch(e){}
+      throw new Error(m||('שגיאה '+r.status)); }
+    const t=await r.text(); return t?JSON.parse(t):null;
+  },
+  login(){
+    if(!this.clientId) throw new Error('התחברות מהירה לא הוגדרה. השתמשו במפתח אישי.');
+    const redirect=location.origin+location.pathname;
+    const url=`https://app.netlify.com/authorize?client_id=${encodeURIComponent(this.clientId)}&response_type=token&redirect_uri=${encodeURIComponent(redirect)}`;
+    const w=window.open(url,'netlify-auth','width=620,height=760');
+    return new Promise((res,rej)=>{
+      const onMsg=e=>{ if(e.origin!==location.origin||!e.data||!e.data.netlifyToken) return;
+        window.removeEventListener('message',onMsg); clearInterval(iv);
+        this.token=e.data.netlifyToken; localSet('nf:token',this.token); res(); };
+      window.addEventListener('message',onMsg);
+      const iv=setInterval(()=>{ if(w&&w.closed){ clearInterval(iv); window.removeEventListener('message',onMsg);
+        rej(new Error('החלון נסגר לפני האישור.')); } },700); });
+  },
+  async sites(){ return await this.api('sites?filter=all&per_page=60')||[]; },
+  async publish(html,{siteId,name},onStep=()=>{}){
+    let site;
+    if(siteId){ onStep('מאתר'); site=await this.api('sites/'+siteId); }
+    else { onStep('יוצר אתר'); site=await this.api('sites',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(name?{name}:{})}); }
+    const bytes=new TextEncoder().encode(html), digest=await sha1hex(bytes);
+    onStep('מכין');
+    const dep=await this.api(`sites/${site.id}/deploys`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({files:{'/index.html':digest},async:false})});
+    if((dep.required||[]).includes(digest)){ onStep('מעלה');
+      const up=await fetch(`https://api.netlify.com/api/v1/deploys/${dep.id}/files/index.html`,
+        {method:'PUT',headers:{Authorization:'Bearer '+this.token,'Content-Type':'application/octet-stream'},body:bytes});
+      if(!up.ok) throw new Error('העלאת הקובץ נכשלה'); }
+    onStep('מפרסם');
+    for(let i=0;i<20;i++){ const d=await this.api('deploys/'+dep.id);
+      if(d.state==='ready') return {site,url:site.ssl_url||site.url};
+      if(d.state==='error') throw new Error('הפריסה נכשלה.');
+      await wait(1500); }
+    return {site,url:site.ssl_url||site.url};
+  }
+};
+async function sha1hex(bytes){ const b=await crypto.subtle.digest('SHA-1',bytes);
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+function shareLink(t){
+  t=t||state.trip; if(!t) return '';
+  if(GUEST) return location.href.split('#')[0];
+  if(SB.on) return location.origin+location.pathname+'?trip='+encodeURIComponent(t.id);
+  return t.publicUrl||'';
+}
+function buildSiteHTML(){
+  const json=JSON.stringify(state.trip).replace(/</g,'\\u003c');
+  const cfg=[`window.__EMBEDDED_TRIP__ = ${json};`];
+  if(SB.on) cfg.push(`window.__SB__ = ${JSON.stringify({url:SB.url,key:SB.key})};`);
+  return SELF_HTML.replace('<title>',`<script>${cfg.join(' ')}<\/script>\n<title>`)
+    .replace('<title>מסלול · בונה אתרי טיול</title>',`<title>${esc(state.trip.title)}</title>`);
+}
+function exportSite(){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([buildSiteHTML()],{type:'text/html'}));
+  a.download=(state.trip.dest||'trip').replace(/\s+/g,'-')+'-site.html'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+}
+function panelPublish(){
+  const t=state.trip, slug=(t.dest||'trip').trim().replace(/\s+/g,'-').toLowerCase();
+  const instant=SB.on?shareLink():'';
+  return `<section class="panel ${state.tab==='publish'?'on':''}"><p class="eyebrow">שיתוף</p><h2>לשלוח לכל המשפחה</h2>
+   <p class="lead">כדי שהמשפחה תוכל להיכנס מכל טלפון.</p>
+
+   ${instant?`<div class="box" style="border-color:var(--sea);border-width:2px">
+     <h4>הקישור מוכן</h4>
+     <p style="margin-top:0">האתר כבר חי. שלחו את הקישור וזהו — אין מה לפרסם ואין מה להתקין.</p>
+     <div class="addrow"><input id="pubshow" dir="ltr" readonly value="${esc(instant)}">
+       <button class="btn btn-primary btn-sm" id="pubcopy">העתקה</button></div>
+     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+       <a class="btn btn-primary btn-sm" style="text-decoration:none" target="_blank" rel="noopener"
+          href="https://wa.me/?text=${encodeURIComponent(t.title+' — '+instant)}">שליחה בוואטסאפ</a>
+       <button class="btn btn-ghost btn-sm" id="pubshare">שיתוף</button>
+       <a class="btn btn-ghost btn-sm" style="text-decoration:none" target="_blank" rel="noopener" href="${esc(instant)}">פתיחה לבדיקה</a>
+       <span class="hint" id="pubmsg"></span></div>
+     <p class="hint" style="margin-top:12px">כל שינוי שתעשו במסלול או ביומן מתעדכן אצל כולם מיד, בלי לשלוח קישור חדש.</p></div>`
+   :`<div class="box" style="border-color:var(--amber);border-width:2px"><h4>קישור מיידי לא זמין</h4>
+     <p style="margin:0">האתר הזה לא מחובר לענן, ולכן אין דרך לתת קישור חי. אפשר עדיין לפרסם אתר עצמאי בעזרת האפשרויות למטה.</p></div>`}
+
+   ${t.publicUrl?`<div class="box"><h4>אתר עצמאי שפורסם</h4>
+     <div class="addrow"><input dir="ltr" readonly value="${esc(t.publicUrl)}" id="pubnf">
+       <a class="btn btn-ghost btn-sm" style="text-decoration:none" target="_blank" rel="noopener" href="${esc(t.publicUrl)}">פתיחה</a></div></div>`:''}
+
+   <details class="help"><summary>${t.publicUrl?'פרסום מחדש של אתר עצמאי':'רוצה אתר נפרד עם כתובת משלו'}</summary>
+     <p class="hint">שימושי אם אתם רוצים כתובת כמו <code dir="ltr">my-trip.netlify.app</code>, או עותק שימשיך לעבוד גם אם המחולל ייסגר.</p>
+     <div id="nfstate" style="margin-top:12px"></div>
+     <div style="border-top:1px solid var(--line);margin-top:16px;padding-top:14px">
+       <p class="hint" style="margin-top:0">או בלי חשבון בכלל: מורידים קובץ אחד וגוררים אותו ל-Netlify Drop.</p>
+       <div style="display:flex;gap:10px;flex-wrap:wrap">
+         <button class="btn btn-ghost btn-sm" id="pubdl">הורדת הקובץ</button>
+         <a class="btn btn-ghost btn-sm" style="text-decoration:none" target="_blank" rel="noopener" href="https://app.netlify.com/drop">פתיחת Netlify Drop</a></div></div>
+   </details>
+
+   <details class="help"><summary>גיבוי לקובץ</summary>
+     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+       <button class="btn btn-ghost btn-sm" id="bkdown">הורדת גיבוי</button>
+       <label class="btn btn-ghost btn-sm" style="cursor:pointer">טעינת גיבוי<input type="file" id="bkup" accept="application/json" hidden></label>
+       <span class="hint" id="bkmsg"></span></div></details>
+   <input type="hidden" id="pubslug" value="${esc(slug)}"></section>`;
+}
+async function wirePublish(){
+  const dl=$('#pubdl'); if(dl) dl.onclick=exportSite;
+  const pc=$('#pubcopy'); if(pc) pc.onclick=async()=>{
+    try{ await navigator.clipboard.writeText($('#pubshow').value); $('#pubmsg').textContent='הועתק ✓'; }
+    catch(e){ $('#pubshow').select(); $('#pubmsg').textContent='סמנו והעתיקו'; }
+    setTimeout(()=>{ const m=$('#pubmsg'); if(m)m.textContent=''; },2500); };
+  const ps=$('#pubshare'); if(ps) ps.onclick=async()=>{
+    const link=$('#pubshow').value;
+    if(navigator.share){ try{ await navigator.share({title:state.trip.title,url:link}); return; }catch(e){} }
+    if(pc) pc.click(); };
+  const bd=$('#bkdown');
+  if(bd) bd.onclick=async()=>{ const t=state.trip,out={trip:t,entries:{}};
+    const keys=['budget:'+t.id,'pack:'+t.id,'stay:'+t.id].concat(t.plan.map((d,i)=>'journal:'+t.id+':'+(i+1)));
+    for(const k of keys){ const v=await store.get(k); if(v) out.entries[k]=v; }
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([JSON.stringify(out)],{type:'application/json'}));
+    a.download=(t.dest||'trip').replace(/\s+/g,'-')+'-backup.json'; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),3000); };
+  const bu=$('#bkup'); if(bu) bu.onchange=e=>{ const f=e.target.files[0]; if(!f)return;
+    const r=new FileReader();
+    r.onload=async()=>{ try{ const o=JSON.parse(r.result);
+        if(!o.trip||!o.trip.id) throw new Error('קובץ לא מתאים');
+        await store.set('tripdata:'+o.trip.id,o.trip);
+        for(const k in (o.entries||{})) await store.set(k,o.entries[k]);
+        state.trip=o.trip; $('#bkmsg').textContent='נטען ✓'; setTimeout(renderSite,700);
+      }catch(err){ $('#bkmsg').textContent=err.message; } };
+    r.readAsText(f); e.target.value=''; };
+  const box=$('#nfstate'); if(!box)return;
+  const err=m=>box.insertAdjacentHTML('beforeend',`<div class="err-box">${esc(m)}</div>`);
+  const loggedOut=()=>{ box.innerHTML=`<p style="margin-top:0">מתחברים פעם אחת, ואז כל פרסום הוא לחיצה.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      ${NF.clientId?'<button class="btn btn-primary btn-sm" id="nflogin">התחברות לנטליפיי</button>':''}
+      <button class="btn btn-ghost btn-sm" id="nfmanual">חיבור עם מפתח אישי</button></div>
+    <div id="nfmanualbox" style="display:none;margin-top:14px">
+      <div class="field"><label>Personal access token</label><input id="nftok" dir="ltr" type="password" placeholder="nfp_..."></div>
+      <p class="hint" style="margin-top:8px">בנטליפיי: User settings ← Applications ← Personal access tokens.</p>
+      <button class="btn btn-primary btn-sm" id="nftoksave" style="margin-top:10px">חיבור</button></div>`;
+    const lg=$('#nflogin'); if(lg) lg.onclick=async()=>{ try{ await NF.login(); loggedIn(); }catch(e){ err(e.message); } };
+    $('#nfmanual').onclick=()=>{ const b=$('#nfmanualbox'); b.style.display=b.style.display==='none'?'block':'none'; };
+    $('#nftoksave').onclick=async()=>{ const t=$('#nftok').value.trim(); if(!t)return;
+      NF.token=t; try{ await NF.api('user'); localSet('nf:token',t); loggedIn(); }catch(e){ NF.token=''; err(e.message); } }; };
+  const loggedIn=async()=>{
+    box.innerHTML='<p class="hint">טוען…</p>';
+    let sites=[];
+    try{ sites=await NF.sites(); }catch(e){ box.innerHTML=''; err(e.message); if(!NF.token) return loggedOut(); }
+    box.innerHTML=`<div style="margin-bottom:14px"><span class="status ok"><i></i>מחובר</span></div>
+      <div class="grid"><div class="field"><label>לאן</label>
+        <select id="nftarget"><option value="">אתר חדש</option>${sites.map(s=>`<option value="${esc(s.id)}">${esc(s.name)}</option>`).join('')}</select></div>
+        <div class="field" id="nfnamewrap"><label>כתובת</label><input id="nfname" dir="ltr" value="${esc($('#pubslug').value)}">
+          <p class="hint"><span id="nfpreview" dir="ltr"></span></p></div></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+        <button class="btn btn-primary btn-sm" id="nfgo">פרסום</button>
+        <button class="btn btn-plain btn-sm" id="nfout">ניתוק</button><span class="hint" id="nfmsg"></span></div>
+      <div id="nfres"></div>`;
+    const prev=()=>{ $('#nfpreview').textContent=($('#nfname').value.trim()||'שם')+'.netlify.app'; };
+    prev(); $('#nfname').oninput=prev;
+    $('#nftarget').onchange=()=>{ $('#nfnamewrap').style.display=$('#nftarget').value?'none':'flex'; };
+    $('#nfout').onclick=()=>{ NF.token=''; localDel('nf:token'); loggedOut(); };
+    $('#nfgo').onclick=async()=>{ const btn=$('#nfgo'); btn.disabled=true; $('#nfres').innerHTML='';
+      try{ const r=await NF.publish(buildSiteHTML(),
+          {siteId:$('#nftarget').value||'',name:($('#nfname').value||'').trim().replace(/[^a-z0-9-]/gi,'-').toLowerCase()},
+          s=>{ $('#nfmsg').textContent=s+'…'; });
+        $('#nfmsg').textContent='';
+        state.trip.publicUrl=r.url;
+        await store.set('tripdata:'+state.trip.id,state.trip);
+        $('#nfres').innerHTML=`<div class="ok-box"><b>האתר פורסם.</b><br>
+            <a href="${esc(r.url)}" target="_blank" rel="noopener" dir="ltr">${esc(r.url)}</a></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+            <button class="btn btn-primary btn-sm" id="nfcopy">העתקת הקישור</button>
+            <a class="btn btn-ghost btn-sm" style="text-decoration:none" target="_blank" rel="noopener"
+               href="https://wa.me/?text=${encodeURIComponent(state.trip.title+' — '+r.url)}">שליחה בוואטסאפ</a>
+            <span class="hint" id="nfcopymsg"></span></div>`;
+        const cp=$('#nfcopy'); if(cp) cp.onclick=async()=>{
+          try{ await navigator.clipboard.writeText(r.url); $('#nfcopymsg').textContent='הועתק ✓'; }
+          catch(e){ prompt('העתיקו את הקישור:',r.url); } };
+      }catch(e){ $('#nfmsg').textContent='';
+        err(/taken|already/i.test(e.message)?'השם תפוס. נסו שם אחר.':e.message); }
+      btn.disabled=false; };
+  };
+  NF.on?loggedIn():loggedOut();
+}
+
+/* ===================== סקריפט הענן ===================== */
+const SQL_SCRIPT=`-- Trip Studio · מבנה נתונים משפחתי
+-- להריץ ב-Supabase → SQL Editor. בטוח להרצה חוזרת.
+create extension if not exists pgcrypto;
+
+-- ========== טבלאות ==========
+create table if not exists public.trip_shared_data (
+  trip_id text not null,
+  data_key text not null,
+  value jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now(),
+  primary key (trip_id, data_key)
+);
+
+create table if not exists public.trip_stories (
+  id uuid primary key default gen_random_uuid(),
+  trip_id text not null,
+  author text not null default '',
+  title text default '',
+  body text default '',
+  day_key text default '',
+  day_title text default '',
+  location_name text default '',
+  lat double precision,
+  lng double precision,
+  visit_date timestamptz not null default now(),
+  images jsonb not null default '[]'::jsonb,
+  image_paths jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists trip_stories_trip_idx on public.trip_stories (trip_id, day_key);
+
+create table if not exists public.family_live_locations (
+  trip_id text not null,
+  member_id text not null,
+  member_name text not null,
+  avatar text default '📍',
+  latitude double precision not null,
+  longitude double precision not null,
+  accuracy double precision,
+  sharing boolean not null default true,
+  updated_at timestamptz not null default now(),
+  primary key (trip_id, member_id)
+);
+
+insert into storage.buckets (id,name,public,file_size_limit,allowed_mime_types)
+values ('trip-story-images','trip-story-images',true,10485760,
+        array['image/jpeg','image/png','image/webp','image/heic','image/heif'])
+on conflict (id) do update set public=true, file_size_limit=10485760;
+
+-- ========== נעילה מלאה ==========
+-- אף אחד לא יכול לקרוא או לכתוב ישירות בטבלאות, גם עם המפתח הציבורי.
+-- הגישה היחידה היא דרך הפונקציות למטה, שדורשות מזהה טיול מדויק.
+alter table public.trip_shared_data      enable row level security;
+alter table public.trip_stories          enable row level security;
+alter table public.family_live_locations enable row level security;
+
+do $$ declare p record; begin
+  for p in select policyname, tablename from pg_policies
+           where schemaname='public'
+             and tablename in ('trip_shared_data','trip_stories','family_live_locations')
+  loop execute format('drop policy %I on public.%I', p.policyname, p.tablename); end loop;
+end $$;
+
+revoke all on public.trip_shared_data, public.trip_stories, public.family_live_locations from anon, authenticated;
+
+-- ========== גישה מבוקרת ==========
+create or replace function public.trip_get(p_trip text, p_key text)
+returns jsonb language sql security definer set search_path=public as $$
+  select value from public.trip_shared_data where trip_id=p_trip and data_key=p_key;
+$$;
+
+create or replace function public.trip_set(p_trip text, p_key text, p_value jsonb)
+returns void language sql security definer set search_path=public as $$
+  insert into public.trip_shared_data (trip_id,data_key,value,updated_at)
+  values (p_trip,p_key,p_value,now())
+  on conflict (trip_id,data_key) do update set value=excluded.value, updated_at=now();
+$$;
+
+create or replace function public.story_list(p_trip text, p_day text)
+returns setof public.trip_stories language sql security definer set search_path=public as $$
+  select * from public.trip_stories
+  where trip_id=p_trip and (p_day is null or p_day='' or day_key=p_day)
+  order by visit_date asc;
+$$;
+
+create or replace function public.story_add(
+  p_trip text, p_day text, p_day_title text, p_author text,
+  p_place text, p_images jsonb, p_paths jsonb)
+returns public.trip_stories language plpgsql security definer set search_path=public as $$
+declare r public.trip_stories;
+begin
+  if (select count(*) from public.trip_stories where trip_id=p_trip) > 400 then
+    raise exception 'too many stories for this trip';
+  end if;
+  insert into public.trip_stories (trip_id,day_key,day_title,author,location_name,images,image_paths,visit_date)
+  values (p_trip,p_day,coalesce(p_day_title,''),coalesce(p_author,''),coalesce(p_place,''),
+          coalesce(p_images,'[]'::jsonb),coalesce(p_paths,'[]'::jsonb),now())
+  returning * into r;
+  return r;
+end $$;
+
+create or replace function public.story_del(p_trip text, p_id uuid)
+returns void language sql security definer set search_path=public as $$
+  delete from public.trip_stories where id=p_id and trip_id=p_trip;
+$$;
+
+create or replace function public.photo_count(p_trip text)
+returns integer language sql security definer set search_path=public as $$
+  select coalesce(sum(jsonb_array_length(images)),0)::int
+  from public.trip_stories where trip_id=p_trip;
+$$;
+
+grant execute on function public.trip_get(text,text), public.trip_set(text,text,jsonb),
+  public.story_list(text,text), public.story_add(text,text,text,text,text,jsonb,jsonb),
+  public.story_del(text,uuid), public.photo_count(text) to anon, authenticated;
+
+-- ========== תמונות ==========
+drop policy if exists "story images read"   on storage.objects;
+drop policy if exists "story images write"  on storage.objects;
+drop policy if exists "story images delete" on storage.objects;
+create policy "story images read"   on storage.objects for select using (bucket_id='trip-story-images');
+create policy "story images write"  on storage.objects for insert with check (bucket_id='trip-story-images');
+create policy "story images delete" on storage.objects for delete using (bucket_id='trip-story-images');`;
+
+/* ===================== הפעלה ===================== */
+(async function init(){
+  if(location.hash.indexOf('access_token=')>-1){
+    const tok=new URLSearchParams(location.hash.slice(1)).get('access_token');
+    if(tok){
+      if(window.opener&&window.opener!==window){
+        try{ window.opener.postMessage({netlifyToken:tok},location.origin); }catch(e){}
+        window.close(); return; }
+      NF.token=tok; localSet('nf:token',tok);
+      history.replaceState(null,'',location.pathname+location.search); }
+  }
+  await loadSB();
+  if(TRIP_PARAM&&!EMBEDDED){
+    app.innerHTML=`<div class="wrap narrow"><div class="stage center">
+      <div class="bar" style="max-width:220px;margin:0 auto"><i style="width:55%"></i></div>
+      <p class="sub" style="margin-top:18px">טוען את הטיול…</p></div></div>`;
+    let t=null;
+    if(SB.on){ try{ t=await SB.getTrip(TRIP_PARAM); }catch(e){} }
+    if(t){ state.trip=t; state.day=todayIndex(t)||1; renderSite(); return; }
+    app.innerHTML=`<div class="wrap narrow"><div class="stage center">
+      <h2>הטיול לא נמצא</h2>
+      <p class="sub">ייתכן שהקישור שגוי, או שהטיול נמחק.</p>
+      <div><button class="btn btn-primary" id="tohome">בניית טיול חדש</button></div></div></div>`;
+    const b=$('#tohome'); if(b) b.onclick=()=>{ location.href=location.pathname; };
+    return;
+  }
+  if(EMBEDDED){
+    state.trip=window.__EMBEDDED_TRIP__;
+    if(SB.on){ try{ const fresh=await SB.getTrip(state.trip.id); if(fresh) state.trip=fresh; }catch(e){} }
+    state.day=todayIndex(state.trip)||1; renderSite(); return; }
+  renderHome();
+})();
+
+</script>
+</body>
+</html>
