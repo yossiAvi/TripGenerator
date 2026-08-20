@@ -827,7 +827,7 @@ function settingsHTML(){
     <details class="help"><summary>מפתח Gemini — חינם, שתי דקות</summary>
       <p class="hint">נכנסים ל־<a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com</a>, מתחברים עם חשבון גוגל ולוחצים Get API key. בלי כרטיס אשראי.</p>
       <div class="grid" style="margin-top:10px">
-        <div class="field"><label>מפתח</label><input id="gkey" dir="ltr" type="password" placeholder="AIza..." value="${esc(AI.gkey)}"></div>
+        <div class="field"><label>מפתח</label><input id="gkey" dir="ltr" type="password" placeholder="AIza... או AQ..." value="${esc(AI.gkey)}"></div>
         <div class="field"><label>שם הדגם</label><input id="gmodel" dir="ltr" value="${esc(AI.gmodel)}"></div></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
         <button class="btn btn-primary btn-sm" id="gtest">בדיקה</button>
@@ -1086,9 +1086,9 @@ function renderKeyGuide(err){
         <a class="btn btn-primary btn-sm" style="text-decoration:none;display:inline-block;margin-top:10px"
            target="_blank" rel="noopener" href="https://aistudio.google.com/apikey">פתיחת הדף של גוגל</a></div></div>
       <div class="step"><span class="num">2</span><div><b>מעתיקים את המפתח</b>
-        <p class="hint">מופיעה שורה ארוכה שמתחילה ב-<code>AIza</code>. לוחצים על סמל ההעתקה לידה.</p></div></div>
+        <p class="hint">מופיעה שורה ארוכה (מתחילה ב-<code>AIza</code> או <code>AQ.</code> לפי הגרסה). לוחצים על סמל ההעתקה לידה.</p></div></div>
       <div class="step"><span class="num">3</span><div><b>מדביקים כאן</b>
-        <div class="field" style="margin-top:8px"><input id="ck" dir="ltr" type="password" placeholder="AIza..."></div>
+        <div class="field" style="margin-top:8px"><input id="ck" dir="ltr" type="password" placeholder="AIza... או AQ..."></div>
         ${err?`<div class="err-box">${esc(err)}</div>`:''}
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
           <button class="btn btn-primary" id="ck-go">שמירה ובנייה</button>
