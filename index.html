@@ -588,7 +588,7 @@ const AI={
   provider: localGet('ai:provider')||'auto',
   key: localGet('ai:key')||'',
   gkey: localGet('ai:gkey')||'',
-  gmodel: localGet('ai:gmodel')||'gemini-2.5-flash',
+  gmodel: localGet('ai:gmodel')||'gemini-3.6-flash',
   get hasKey(){ return !!(this.proxy||this.gkey||this.key); },
   get slow(){ return this.modes()[0]==='gemini'; },
   modes(){
@@ -889,7 +889,7 @@ function wireSettings(){
   const on=(id,ev,fn)=>{ const el=$('#'+id); if(el) el[ev]=fn; };
   $('#aiprov').onchange=()=>{ AI.provider=$('#aiprov').value; localSet('ai:provider',AI.provider); };
   on('gtest','onclick',async()=>{ const k=$('#gkey').value.trim(); if(!k)return;
-    AI.gmodel=$('#gmodel').value.trim()||'gemini-2.5-flash'; localSet('ai:gmodel',AI.gmodel);
+    AI.gmodel=$('#gmodel').value.trim()||'gemini-3.6-flash'; localSet('ai:gmodel',AI.gmodel);
     $('#gmsg').textContent='בודק…'; const r=await AI.test('gemini',k); $('#gmsg').textContent='';
     $('#gres').innerHTML=`<div class="${r.ok?'ok-box':'err-box'}">${esc(r.msg)}</div>`;
     if(r.ok){ AI.gkey=k; localSet('ai:gkey',k); } });
