@@ -185,20 +185,25 @@ details.help[open] summary{margin-bottom:8px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ---------- כותרת אתר הטיול ---------- */
-.site-hero{background:var(--night);color:#fff;padding:64px 0 56px;position:relative;overflow:hidden}
+.site-hero{background:var(--night);color:#fff;padding:90px 0 72px;position:relative;overflow:hidden;min-height:380px;display:flex;align-items:center}
+.site-hero.has-cover{min-height:480px;padding:110px 0 90px}
 .hero-photo{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;
-  transition:opacity 1s;transform:scale(1.04)}
+  transition:opacity 1.2s;transform:scale(1.03)}
 .hero-photo.loaded{opacity:.5}
+.site-hero.has-cover .hero-photo.loaded{opacity:.65}
 .site-hero:before{content:"";position:absolute;inset:0;z-index:1;
-  background:linear-gradient(180deg,rgba(14,27,43,.72) 0%,rgba(14,27,43,.86) 60%,rgba(14,27,43,.96) 100%)}
-.site-hero .wrap{position:relative;z-index:2}
-.site-hero h1{font-size:clamp(34px,7vw,64px);color:#fff;max-width:16ch}
+  background:linear-gradient(160deg,rgba(14,27,43,.85) 0%,rgba(14,27,43,.6) 50%,rgba(14,27,43,.92) 100%)}
+.site-hero.has-cover:before{background:linear-gradient(160deg,rgba(14,27,43,.78) 0%,rgba(14,27,43,.45) 50%,rgba(14,27,43,.88) 100%)}
+.site-hero .wrap{position:relative;z-index:2;width:100%}
+.site-hero h1{font-size:clamp(38px,7.5vw,72px);color:#fff;max-width:18ch;line-height:1.05;
+  text-shadow:0 2px 20px rgba(0,0,0,.3)}
 .site-hero .eyebrow{color:#FFB394}
 .site-hero .eyebrow:before{background:var(--accent)}
-.tagline{font-size:clamp(17px,2.4vw,20px);color:rgba(255,255,255,.82);margin:16px 0 0;max-width:46ch;font-weight:300}
-.meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
-.pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:999px;
-  padding:8px 16px;font-size:13.5px;font-family:var(--util);font-weight:700;color:rgba(255,255,255,.92)}
+.tagline{font-size:clamp(17px,2.4vw,21px);color:rgba(255,255,255,.85);margin:18px 0 0;max-width:50ch;font-weight:300;line-height:1.55}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:30px}
+.pill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:999px;
+  padding:8px 18px;font-size:13.5px;font-family:var(--util);font-weight:700;color:rgba(255,255,255,.95);
+  backdrop-filter:blur(8px)}
 
 /* ---------- ניווט לשוניות ---------- */
 nav.tabs{position:sticky;top:0;z-index:40;background:rgba(246,244,241,.94);backdrop-filter:blur(14px);
@@ -240,9 +245,9 @@ nav.tabs .wrap::-webkit-scrollbar{display:none}
 
 /* ---------- כרטיסי ימים ---------- */
 .day-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh-1);
-  margin-bottom:14px;display:flex;width:100%;padding:0;text-align:start;font-family:inherit;overflow:hidden;
-  transition:.18s cubic-bezier(.2,.7,.3,1)}
-.day-card:hover{transform:translateY(-3px);box-shadow:var(--sh-2);border-color:#D6D0C7}
+  margin-bottom:16px;display:flex;width:100%;padding:0;text-align:start;font-family:inherit;overflow:hidden;
+  transition:.2s cubic-bezier(.2,.7,.3,1)}
+.day-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px -8px rgba(20,22,26,.18),var(--sh-1);border-color:#C8C2BA}
 .day-card.today{border-color:var(--accent);box-shadow:0 0 0 2px rgba(254,91,37,.2),var(--sh-1)}
 .thumb{flex:0 0 128px;background:var(--night-2) center/cover no-repeat;position:relative}
 .thumb:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,27,43,.25),transparent)}
@@ -773,7 +778,7 @@ const CATS=['תחבורה','לינה','אוכל','אטרקציות','קניות'
 const STICKERS=['⭐','🏆','🎈','🦋','🐬','🚀','🌈','🍦','🐻','🎪','🦁','🌻'];
 const app=$('#app');
 const state={
-  form:{dest:'',who:'משפחה עם ילדים',kids:'',days:5,start:'',pace:'מאוזן',budget:'בינוני',transport:'רכב שכור',interests:['אוכל ושווקים','היסטוריה ואתרים'],title:'',notes:''},
+  form:{dest:'',who:'משפחה עם ילדים',kids:'',days:5,start:'',pace:'מאוזן',budget:'בינוני',transport:'רכב שכור',interests:['אוכל ושווקים','היסטוריה ואתרים'],title:'',notes:'',route:'',coverPhoto:''},
   trip:null, tab:'now', day:1, step:0, kidMode:false, kidView:'today'
 };
 
@@ -966,11 +971,18 @@ const STEPS=[
       <div class="chips" style="justify-content:center" id="ints">
         ${INTERESTS.map(([k,i])=>`<span class="chip ${state.form.interests.includes(i)?'on':''}" data-i="${i}">
           <i class="ci">${ICON[k]||''}</i>${i}</span>`).join('')}</div>`},
+  {q:'יש ערים ספציפיות שרוצים לעבור?', sub:'לא חובה — ציינו מסלול ואנחנו נכבד אותו', render:()=>`
+      <div class="field" style="max-width:520px;margin:0 auto">
+        <textarea id="route" rows="3" placeholder="למשל: רומא 3 ימים, פירנצה 2 ימים, ונציה 1 יום">${esc(state.form.route)}</textarea>
+        <p class="hint" style="margin-top:10px">השאירו ריק ואנחנו נבנה מסלול הגיוני בעצמנו</p></div>`},
   {q:'עוד משהו שכדאי לדעת?', sub:'לא חובה — אבל זה מה שהופך מסלול לאישי', render:()=>`
       <div class="field" style="max-width:520px;margin:0 auto">
         <textarea id="notes" rows="3" placeholder="למשל: יש עגלה, שומרי כשרות, סבתא לא הולכת הרבה, רוצים יום אחד בים">${esc(state.form.notes)}</textarea></div>
-      <div class="field" style="max-width:520px;margin:18px auto 0"><label>שם האתר</label>
-        <input id="title" placeholder="הטיול שלנו ב${esc(state.form.dest)}" value="${esc(state.form.title)}"></div>`}
+      <div class="field" style="max-width:520px;margin:18px auto 0"><label>שם האתר (לא חובה)</label>
+        <input id="title" placeholder="הטיול שלנו ב${esc(state.form.dest)}" value="${esc(state.form.title)}"></div>
+      <div class="field" style="max-width:520px;margin:18px auto 0"><label>תמונת שער אישית (לא חובה)</label>
+        <input type="file" id="coverpic" accept="image/*" style="padding:8px;border:1.5px solid var(--line);border-radius:var(--r-s);background:var(--paper);width:100%">
+        <p class="hint" style="margin-top:6px">${state.form.coverPhoto?'✓ תמונה נבחרה — תופיע בראש האתר':'תמונת משפחה, יעד, או כל תמונה אישית שתרצו'}</p></div>`}
 ];
 function activeSteps(){ return STEPS.filter(s=>!s.when||s.when()); }
 function optGrid(key,opts){
@@ -1008,10 +1020,14 @@ function renderStep(){
     dv.textContent=state.form.days; });
   $('#back').onclick=()=>{ state.step--; state.step<1?renderHome():renderStep(); };
   $('#next').onclick=nextStep;
+  const cp=$('#coverpic');
+  if(cp) cp.onchange=()=>{ const f=cp.files[0]; if(!f)return;
+    const r=new FileReader(); r.onload=e=>{ state.form.coverPhoto=e.target.result; }; r.readAsDataURL(f); };
 }
 function nextStep(){
   const st=activeSteps()[state.step-1];
   if(st&&st.q.startsWith('כמה ימים')){ const s=$('#start'); if(s) state.form.start=s.value; }
+  if(st&&st.q.startsWith('יש ערים')){ const r=$('#route'); if(r) state.form.route=r.value.trim(); }
   if(st&&st.q.startsWith('עוד משהו')){ const n=$('#notes'),t=$('#title');
     if(n) state.form.notes=n.value; if(t) state.form.title=t.value; }
   state.step++; renderStep();
@@ -1118,12 +1134,12 @@ function dateISO(i){ if(!state.form.start)return''; const d=new Date(state.form.
 function dateFor(i){ if(!state.form.start)return''; const d=new Date(state.form.start); d.setDate(d.getDate()+i);
   return d.toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'long'}); }
 function ctx(){ const f=state.form;
-  return `יעד: ${f.dest}. הרכב: ${f.who}${f.kids?' (גילאי הילדים: '+f.kids+')':''}. ${f.days} ימים. קצב ${f.pace}. תקציב ${f.budget}. תחבורה: ${f.transport}. תחומי עניין: ${f.interests.join(', ')}.${f.notes?' הערות: '+f.notes:''} הקהל ישראלי, כתוב בעברית טבעית וחמה.`; }
+  return `יעד: ${f.dest}. הרכב: ${f.who}${f.kids?' (גילאי הילדים: '+f.kids+')':''}. ${f.days} ימים. קצב ${f.pace}. תקציב ${f.budget}. תחבורה: ${f.transport}. תחומי עניין: ${f.interests.join(', ')}.${f.route?' מסלול מבוקש: '+f.route+'.':''}${f.notes?' הערות: '+f.notes:''} הקהל ישראלי, כתוב בעברית טבעית וחמה.`; }
 const hasKids=()=>/ילדים|מורחבת/.test(state.form.who);
 
 const P={
   plan:()=>`אתה מתכנן טיולים מנוסה. ${ctx()}
-בנה שלד מסלול הגיוני גאוגרפית, בלי קפיצות מיותרות בין אזורים.
+${state.form.route?'חובה לכבד את המסלול המבוקש: '+state.form.route+'. ':''}בנה שלד מסלול הגיוני גאוגרפית, בלי קפיצות מיותרות בין אזורים.
 מבנה: {"tagline":"משפט קולע","summary":"2 משפטים","practical":{"currency":"","currencyCode":"קוד ISO כמו EUR","language":"","langCode":"קוד שפה כמו it","plug":"","emergency":"","transport":"","weather":""},"skeleton":[{"day":1,"title":"שם היום","base":"עיר הלינה","focus":"במשפט"}]}
 בדיוק ${state.form.days} ימים ב-skeleton.`,
   guide:sk=>`${ctx()} המסלול: ${sk.join(' · ')}.
@@ -1169,7 +1185,8 @@ async function build(){
     mark('plan','done'); tick();
     const trip={id:newTripId(),form:{...state.form},title:state.form.title,dest:state.form.dest,
       days:n,start:state.form.start,kidsMode:hasKids(),tagline:plan.tagline||'',summary:plan.summary||'',
-      practical:plan.practical||{},skeleton:plan.skeleton||[],guide:{},lang:{},extras:{},plan:[]};
+      practical:plan.practical||{},skeleton:plan.skeleton||[],guide:{},lang:{},extras:{},plan:[],
+      coverPhoto:state.form.coverPhoto||''};
 
     mark('guide','run');
     try{ trip.guide=await askJSON(P.guide(trip.skeleton.map(s=>s.title))); mark('guide','done'); }
@@ -1235,7 +1252,7 @@ function fullPrompt(){
 "extras":{"lodging":[{"base":"","area":"","why":"","tip":""}],"cams":[{"place":"","note":""}]},
 "days":[{"day":1,"title":"","base":"עיר הלינה","summary":"משפט","wake":"07:30","depart":"08:45","departNote":"עד 8 מילים","segments":[{"time":"09:15","title":"","place":"שם מדויק לניווט","desc":"עד 14 מילים","stay":"כמה זמן","travel":"זמן ואופן הנסיעה הלאה","tip":"עד 8 מילים"}],"food":[{"name":"","type":"","note":""}],"evening":"משפט","backAt":"20:30"${hasKids()?`,"kid":{"emoji":"","simple":"משפט לילד בן חמש","fact":"עובדה כיפית","missions":["משימה קצרה","משימה קצרה","משימה קצרה"]}`:''}}]}
 
-דרישות: בדיוק ${n} ימים במערך days, ממוספרים 1 עד ${n}, הגיוניים גאוגרפית בלי קפיצות מיותרות.
+דרישות: בדיוק ${n} ימים במערך days, ממוספרים 1 עד ${n}${state.form.route?', חייב לכבד את המסלול: '+state.form.route:''}.
 לכל יום 4 עד 5 סגמנטים בשעות אמיתיות ומקומות שקיימים באמת. 2 המלצות אוכל ליום.
 6 טיפים ליעד, 4 קבוצות ציוד עם 6 פריטים, 5 שורות תקציב, 5 קטגוריות מילון עם 5 מילים בכל אחת.
 אם אתה מתקרב למגבלת אורך — אל תקצר ימים, פשוט עצור באמצע ואני אבקש המשך.`;
@@ -1446,11 +1463,13 @@ function renderSite(){
   const t=state.trip,f=t.form||{},ti=todayIndex(t);
   const kidBtn=t.kidsMode?'<button class="iconbtn" id="kidon" title="מצב ילדים" aria-label="מצב ילדים">'+ICON.kid+'</button>':'';
   app.innerHTML=`${topbar(kidBtn+'<button class="iconbtn" id="share" title="שיתוף" aria-label="שיתוף">'+ICON.share+'</button>')}
-  <header class="site-hero">
-    <div class="hero-photo" data-photo="${esc((t.plan[0]||{}).base||t.dest)}" data-photo-ctx="${esc(t.dest)}"></div>
+  <header class="site-hero${t.coverPhoto?' has-cover':''}">
+    ${t.coverPhoto
+      ? `<div class="hero-photo loaded" style="background-image:url('${t.coverPhoto}');opacity:.65"></div>`
+      : `<div class="hero-photo" data-photo="${esc((t.plan[0]||{}).base||t.dest)}" data-photo-ctx="${esc(t.dest)}"></div>`}
     <div class="wrap">
     <p class="eyebrow" style="color:#EBD9B4">${esc(t.dest)}${t.start?' · '+new Date(t.start).toLocaleDateString('he-IL'):''}</p>
-    <h1>${esc(t.title)}</h1><p class="tagline">${esc(t.tagline||t.summary)}</p>
+    <h1>${esc(t.title||('הטיול שלנו ב'+t.dest))}</h1><p class="tagline">${esc(t.tagline||t.summary)}</p>
     <div class="meta-row"><span class="pill">${t.days} ימים</span><span class="pill">${esc(f.who||'')}</span>
       <span class="pill">קצב ${esc(f.pace||'')}</span><span class="pill">${esc(f.transport||'')}</span>
       ${ti?`<span class="pill" style="background:var(--amber);border-color:var(--amber);color:#fff">היום: יום ${ti}</span>`:''}
