@@ -101,6 +101,13 @@ code{background:var(--wash);border:1px solid var(--line);border-radius:6px;paddi
 .iconbtn{border:1.5px solid var(--line);background:var(--paper);border-radius:12px;width:42px;height:42px;
   font-size:17px;display:grid;place-items:center;transition:.15s}
 .iconbtn:hover{border-color:var(--ink);transform:translateY(-1px)}
+.iconbtn svg{width:19px;height:19px;display:block}
+.pill-ico{display:inline-flex;align-items:center;gap:7px}
+.pill-ico svg{width:15px;height:15px;stroke-width:1.8}
+.ico-inline{width:46px;height:46px;border-radius:14px;background:var(--wash);color:var(--ink-2);
+  display:grid;place-items:center;float:inline-start;margin-inline-end:16px}
+.ico-inline svg{width:24px;height:24px}
+.opt:hover .ico-inline{background:var(--accent-soft);color:var(--accent-ink)}
 
 /* ---------- אשף ---------- */
 .stage{min-height:70vh;display:flex;flex-direction:column;justify-content:center;padding:36px 0 70px;
@@ -112,12 +119,22 @@ code{background:var(--wash);border:1px solid var(--line);border-radius:6px;paddi
 .dots{display:flex;gap:6px;justify-content:center;margin-bottom:28px}
 .dots i{width:6px;height:6px;border-radius:99px;background:var(--line);transition:.3s}
 .dots i.on{background:var(--accent);width:26px}
-.opts{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(158px,1fr))}
-.opt{border:1.5px solid var(--line);background:var(--paper);border-radius:var(--r);padding:22px 16px;
-  text-align:center;transition:.16s;font-family:inherit;box-shadow:var(--sh-1)}
+.opts{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));align-items:stretch}
+.opt{border:1.5px solid var(--line);background:var(--paper);border-radius:var(--r);padding:24px 16px 22px;
+  text-align:center;transition:.16s cubic-bezier(.2,.7,.3,1);font-family:inherit;box-shadow:var(--sh-1);
+  display:flex;flex-direction:column;justify-content:flex-start}
 .opt:hover{border-color:var(--ink);transform:translateY(-3px);box-shadow:var(--sh-2)}
 .opt.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px rgba(254,91,37,.18)}
-.opt .ico{font-size:32px;line-height:1;display:block;margin-bottom:10px}
+.opt .ico{display:grid;place-items:center;width:52px;height:52px;margin:0 auto 14px;border-radius:15px;
+  background:var(--wash);color:var(--ink-2);transition:.18s}
+.opt .ico svg{width:28px;height:28px;display:block}
+.opt:hover .ico{background:var(--ink);color:#fff}
+.opt.on .ico{background:var(--accent);color:#fff;box-shadow:0 8px 18px -8px rgba(254,91,37,.85)}
+.chip .ci{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;
+  margin-inline-end:8px;vertical-align:-4px;color:var(--muted);transition:color .15s}
+.chip .ci svg{width:19px;height:19px;stroke-width:1.7}
+.chip:hover .ci{color:var(--ink)}
+.chip.on .ci{color:#fff}
 .opt b{display:block;font-family:var(--util);font-size:16px;font-weight:700}
 .opt small{color:var(--muted);font-size:13px;display:block;margin-top:3px}
 .bigin{width:100%;border:0;border-bottom:2.5px solid var(--line);background:transparent;font-family:var(--display);
@@ -406,7 +423,7 @@ body.kids{background:#FFF6EF;background-image:radial-gradient(circle at 12% 8%,r
 <body>
 <div id="app"></div>
 <div class="sheet" id="sheet"><div class="scrim" data-close></div>
-  <div class="panel-in"><header><h3>הגדרות</h3><button class="iconbtn" data-close>✕</button></header>
+  <div class="panel-in"><header><h3>הגדרות</h3><button class="iconbtn" data-close aria-label="סגירה">${ICON.close}</button></header>
   <div class="body" id="sheetbody"></div></div></div>
 <script>
 /* ===================== יסודות ===================== */
@@ -664,9 +681,94 @@ async function probeProxy(){
 }
 async function hostWorks(){ try{ const r=await AI.call('host','Reply with {"ok":true}'); return !!r.ok; }catch(e){ return false; } }
 
+/* ===================== סט אייקונים ===================== */
+/* מונו־ליין, גריד 24, עובי קו אחיד. יורשים את צבע הטקסט. */
+const I=(p,extra)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"${extra||''}>${p}</svg>`;
+const ICON={
+  /* הרכב נוסעים — קומפוזיציה של דמויות בגדלים שונים */
+  familyKids:I('<circle cx="7" cy="7" r="2.6"/><circle cx="16.5" cy="7.5" r="2.3"/><circle cx="11.8" cy="14.2" r="1.8"/>'+
+    '<path d="M3 19c0-2.4 1.8-4 4-4s4 1.6 4 4"/><path d="M13.2 19c0-1.9 1.4-3 2.9-3s3 1.1 3 3"/>'+
+    '<path d="M9.4 21c0-1.4 1.1-2.4 2.4-2.4s2.4 1 2.4 2.4"/>'),
+  couple:I('<circle cx="8" cy="7.5" r="3"/><circle cx="16" cy="7.5" r="3"/>'+
+    '<path d="M3.5 19.5c0-2.6 2-4.4 4.5-4.4"/><path d="M20.5 19.5c0-2.6-2-4.4-4.5-4.4"/>'+
+    '<path d="M9.6 14.6c1.6-1 3.2-1 4.8 0"/>'),
+  friends:I('<circle cx="6" cy="8" r="2.4"/><circle cx="12" cy="6.6" r="2.6"/><circle cx="18" cy="8" r="2.4"/>'+
+    '<path d="M2.6 18.5c0-2 1.5-3.4 3.4-3.4"/><path d="M21.4 18.5c0-2-1.5-3.4-3.4-3.4"/>'+
+    '<path d="M7.6 19.6c0-2.4 2-4.2 4.4-4.2s4.4 1.8 4.4 4.2"/>'),
+  solo:I('<circle cx="12" cy="7" r="3.2"/><path d="M6.5 20c0-3.2 2.5-5.6 5.5-5.6s5.5 2.4 5.5 5.6"/>'+
+    '<path d="M17.6 9.5l2.6 1.4"/>'),
+  extended:I('<circle cx="5" cy="8.4" r="2"/><circle cx="10.6" cy="6.6" r="2.4"/><circle cx="16.4" cy="8" r="2.2"/><circle cx="20.6" cy="10" r="1.6"/>'+
+    '<path d="M2 18.6c0-1.7 1.3-2.9 3-2.9"/><path d="M6.6 19.8c0-2.2 1.8-3.9 4-3.9s4 1.7 4 3.9"/>'+
+    '<path d="M15.4 18.6c0-1.7 1.3-2.9 3-2.9s3 1.2 3 2.9"/>'),
+  /* קצב — מרווח בין עצירות */
+  paceSlow:I('<path d="M3 12h18"/><circle cx="6" cy="12" r="1.9" fill="currentColor" stroke="none"/>'+
+    '<circle cx="18" cy="12" r="1.9" fill="currentColor" stroke="none"/><path d="M8.6 8.5v7M15.4 8.5v7" opacity=".28"/>'),
+  paceMid:I('<path d="M3 12h18"/><circle cx="5" cy="12" r="1.7" fill="currentColor" stroke="none"/>'+
+    '<circle cx="11" cy="12" r="1.7" fill="currentColor" stroke="none"/><circle cx="17" cy="12" r="1.7" fill="currentColor" stroke="none"/>'+
+    '<path d="M8 9.5v5M14 9.5v5" opacity=".28"/>'),
+  paceFast:I('<path d="M3 12h18"/><circle cx="4.5" cy="12" r="1.5" fill="currentColor" stroke="none"/>'+
+    '<circle cx="9" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="13.5" cy="12" r="1.5" fill="currentColor" stroke="none"/>'+
+    '<circle cx="18" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M19.5 8.6L22 12l-2.5 3.4"/>'),
+  /* תחבורה */
+  car:I('<path d="M4 16.5h16"/><path d="M5.4 16.5v1.8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-4.4l2.1-4.6A2 2 0 0 1 6.9 8h10.2a2 2 0 0 1 1.8 1.3l2.1 4.6v4.4a1 1 0 0 1-1 1h-.4a1 1 0 0 1-1-1v-1.8"/>'+
+    '<path d="M4.4 13.4h15.2"/><circle cx="7.5" cy="15" r="0"/>'),
+  train:I('<rect x="5" y="3.5" width="14" height="13" rx="3.2"/><path d="M5 10.5h14"/>'+
+    '<circle cx="9" cy="13.5" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="13.5" r="1" fill="currentColor" stroke="none"/>'+
+    '<path d="M8 16.5l-2.5 4M16 16.5l2.5 4M4 20.5h16"/>'),
+  bus:I('<rect x="3.5" y="4" width="17" height="12.5" rx="2.6"/><path d="M3.5 10.5h17"/>'+
+    '<path d="M7 16.5v2.2M17 16.5v2.2"/><circle cx="7.6" cy="13.5" r="1" fill="currentColor" stroke="none"/>'+
+    '<circle cx="16.4" cy="13.5" r="1" fill="currentColor" stroke="none"/>'),
+  mix:I('<path d="M3 8h9.5a4 4 0 0 1 4 4v0a4 4 0 0 0 4 4H21"/><path d="M18.4 5.4L21 8l-2.6 2.6"/>'+
+    '<path d="M5.6 13.4L3 16l2.6 2.6"/>'),
+  /* תקציב — גובה מחסניות */
+  budget1:I('<path d="M4 20h16"/><rect x="9.5" y="13" width="5" height="7" rx="1.4"/>'),
+  budget2:I('<path d="M4 20h16"/><rect x="5.5" y="13" width="5" height="7" rx="1.4"/><rect x="13.5" y="9" width="5" height="11" rx="1.4"/>'),
+  budget3:I('<path d="M4 20h16"/><rect x="3.5" y="13.5" width="4.6" height="6.5" rx="1.3"/>'+
+    '<rect x="9.7" y="9.5" width="4.6" height="10.5" rx="1.3"/><rect x="15.9" y="5.5" width="4.6" height="14.5" rx="1.3"/>'),
+  /* תחומי עניין */
+  food:I('<path d="M6 3v7a2 2 0 0 0 2 2v9"/><path d="M4 3v4.5M8 3v4.5"/>'+
+    '<path d="M17.5 3c-1.7 1.3-2.5 3.2-2.5 5.4 0 1.9.9 3.1 2.5 3.6V21"/>'),
+  history:I('<path d="M4 20h16"/><path d="M6 20V9M10 20V9M14 20V9M18 20V9"/>'+
+    '<path d="M3.6 9h16.8L12 3.6 3.6 9z"/>'),
+  nature:I('<path d="M2.5 19h19"/><path d="M2.5 19l6.2-9 3.4 4.6"/><path d="M9.6 19l5.2-7.8L21.5 19"/>'+
+    '<circle cx="17.5" cy="5.6" r="2"/>'),
+  kidsFun:I('<circle cx="12" cy="11" r="7.5"/><path d="M12 3.5v15M4.5 11h15"/>'+
+    '<path d="M6.7 5.7l10.6 10.6M17.3 5.7L6.7 16.3"/><path d="M8 21h8"/>'),
+  beach:I('<circle cx="7.5" cy="7" r="3"/><path d="M2.5 17c2.2-1.6 4-1.6 6.2 0 2.2 1.6 4 1.6 6.2 0 2.2-1.6 4-1.6 6.2 0"/>'+
+    '<path d="M2.5 20.6c2.2-1.6 4-1.6 6.2 0 2.2 1.6 4 1.6 6.2 0 2.2-1.6 4-1.6 6.2 0"/>'+
+    '<path d="M14.5 13.5l6-6M17 5.5l3 .4.4 3"/>'),
+  art:I('<rect x="3.5" y="4" width="17" height="13" rx="2"/><path d="M6.5 14l3.6-4.4 2.6 3.2 2-2.2 2.8 3.4"/>'+
+    '<path d="M12 17v4M9 21h6"/>'),
+  shopping:I('<path d="M5.5 8h13l1 12.2H4.5L5.5 8z"/><path d="M8.8 8V6.2a3.2 3.2 0 0 1 6.4 0V8"/>'),
+  night:I('<path d="M19.5 14.6A8 8 0 0 1 9.4 4.5a8 8 0 1 0 10.1 10.1z"/><path d="M16.6 3.2l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9z"/>'),
+  sport:I('<circle cx="6" cy="17.5" r="3.2"/><circle cx="18" cy="17.5" r="3.2"/>'+
+    '<path d="M6 17.5l3.6-6.2h5.2L18 17.5"/><path d="M9.6 11.3L8 8h4.4"/><circle cx="15.6" cy="5.6" r="1.4"/>'),
+  rest:I('<path d="M4.5 10.5h13a3.2 3.2 0 0 1 0 6.4H4.5V10.5z"/><path d="M3 20.5h16"/>'+
+    '<path d="M8 7.4c0-1 .8-1.4.8-2.4M11.5 7.4c0-1 .8-1.4.8-2.4"/>'),
+  /* ממשק */
+  settings:I('<circle cx="12" cy="12" r="3"/><path d="M12 2.6v2.2M12 19.2v2.2M21.4 12h-2.2M4.8 12H2.6"/>'+
+    '<path d="M18.6 5.4l-1.6 1.6M7 17l-1.6 1.6M18.6 18.6L17 17M7 7L5.4 5.4"/>'),
+  close:I('<path d="M6 6l12 12M18 6L6 18"/>'),
+  share:I('<circle cx="18" cy="5.6" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="18.4" r="2.6"/>'+
+    '<path d="M8.3 10.8l7.4-3.8M8.3 13.2l7.4 3.8"/>'),
+  kid:I('<circle cx="12" cy="9" r="4.2"/><path d="M8.4 6.2C7 5.4 6.2 4.2 6.6 3c1.3-.2 2.5.4 3.2 1.6"/>'+
+    '<path d="M15.6 6.2c1.4-.8 2.2-2 1.8-3.2-1.3-.2-2.5.4-3.2 1.6"/>'+
+    '<path d="M5.5 21c0-3 2.9-5.4 6.5-5.4S18.5 18 18.5 21"/>'),
+  cloudOn:I('<path d="M7 18.5A4 4 0 0 1 7.3 10.6a5.2 5.2 0 0 1 10 1.1 3.6 3.6 0 0 1-.6 6.8H7z"/>'+
+    '<path d="M9.8 14.4l1.8 1.8 3.2-3.4"/>'),
+  cloudOff:I('<rect x="7.5" y="2.8" width="9" height="18.4" rx="2.4"/><path d="M10.6 5.4h2.8"/>'+
+    '<circle cx="12" cy="18" r=".9" fill="currentColor" stroke="none"/>'),
+  auto:I('<path d="M12 3.2l1.9 4.6 4.9.4-3.7 3.2 1.1 4.8-4.2-2.5-4.2 2.5 1.1-4.8L5.2 8.2l4.9-.4L12 3.2z"/>'+
+    '<path d="M18.6 16.4l.6 1.5 1.5.6-1.5.6-.6 1.5-.6-1.5-1.5-.6 1.5-.6.6-1.5z"/>'),
+  chat:I('<path d="M20.5 12.4c0 4-3.8 7.2-8.5 7.2-1 0-2-.15-2.9-.42L4 21l1.5-3.6A6.9 6.9 0 0 1 3.5 12.4C3.5 8.4 7.3 5.2 12 5.2s8.5 3.2 8.5 7.2z"/>'+
+    '<path d="M8.6 12h.01M12 12h.01M15.4 12h.01"/>'),
+  check:I('<path d="M4.5 12.5l5 5 10-11"/>'),
+};
+
 /* ===================== מצב ===================== */
-const INTERESTS=[['🍝','אוכל ושווקים'],['🏛️','היסטוריה ואתרים'],['🥾','טבע וטיולים'],['🎠','אטרקציות לילדים'],
-  ['🏖️','חופים'],['🎨','מוזיאונים ואמנות'],['🛍️','קניות'],['🌃','חיי לילה'],['🚵','ספורט אתגרי'],['☕','מנוחה ונופש']];
+const INTERESTS=[['food','אוכל ושווקים'],['history','היסטוריה ואתרים'],['nature','טבע וטיולים'],['kidsFun','אטרקציות לילדים'],
+  ['beach','חופים'],['art','מוזיאונים ואמנות'],['shopping','קניות'],['night','חיי לילה'],['sport','ספורט אתגרי'],['rest','מנוחה ונופש']];
 const CATS=['תחבורה','לינה','אוכל','אטרקציות','קניות','אחר'];
 const STICKERS=['⭐','🏆','🎈','🦋','🐬','🚀','🌈','🍦','🐻','🎪','🦁','🌻'];
 const app=$('#app');
@@ -698,7 +800,7 @@ function topbar(extra){
   return `<div class="topbar"><div class="wrap">
     <div class="brand"><span>מ</span>מסלול</div>
     <div style="display:flex;gap:8px;align-items:center">${extra||''}
-      ${GUEST?'':'<button class="iconbtn" id="gear" title="הגדרות" aria-label="הגדרות">⚙</button>'}</div>
+      ${GUEST?'':'<button class="iconbtn" id="gear" title="הגדרות" aria-label="הגדרות">'+ICON.settings+'</button>'}</div>
   </div></div>`;
 }
 function wireTop(){
@@ -843,8 +945,8 @@ async function renderHome(){
 /* ===================== שלבי האשף ===================== */
 const STEPS=[
   {q:'מי נוסע?', sub:'זה משנה את כל אופי המסלול', render:()=>optGrid('who',[
-      ['👨‍👩‍👧‍👦','משפחה עם ילדים','מסלול עם קצב נוח'],['💑','זוגי','יותר אוכל, פחות ריצה'],
-      ['👯','חבורת חברים','אנרגיה גבוהה'],['🎒','לבד','גמישות מלאה'],['👵','משפחה מורחבת','נגישות וקצב רגוע']])},
+      ['familyKids','משפחה עם ילדים','קצב נוח, עצירות קצרות'],['couple','זוגי','יותר אוכל, פחות ריצה'],
+      ['friends','חבורת חברים','אנרגיה גבוהה'],['solo','לבד','גמישות מלאה'],['extended','משפחה מורחבת','נגישות וקצב רגוע']])},
   {q:'בני כמה הילדים?', sub:'כדי להתאים אטרקציות ומרחקי הליכה', when:()=>state.form.who==='משפחה עם ילדים'||state.form.who==='משפחה מורחבת',
     render:()=>`<div class="chips" style="justify-content:center" id="kidchips">
       ${['0-2','3-5','6-9','10-13','14+'].map(a=>`<span class="chip ${(state.form.kids||'').includes(a)?'on':''}" data-a="${a}">${a}</span>`).join('')}</div>
@@ -854,15 +956,16 @@ const STEPS=[
       <div class="field" style="max-width:280px;margin:26px auto 0"><label>תאריך יציאה (לא חובה)</label>
         <input type="date" id="start" value="${esc(state.form.start)}">
         <p class="hint">מפעיל את מסך "עכשיו" ואת הספירה לאחור</p></div>`},
-  {q:'איזה קצב מתאים לכם?', sub:'', render:()=>optGrid('pace',[
-      ['🐢','רגוע','2-3 עצירות ביום'],['⚖️','מאוזן','4 עצירות, זמן לנשום'],['⚡','אינטנסיבי','לראות כמה שיותר']])},
-  {q:'איך מסתובבים?', sub:'', render:()=>optGrid('transport',[
-      ['🚗','רכב שכור',''],['🚆','תחבורה ציבורית',''],['🚌','טיול מאורגן',''],['🔀','שילוב','']])},
-  {q:'מה התקציב?', sub:'משפיע על המלצות אוכל ולינה', render:()=>optGrid('budget',[
-      ['💰','חסכוני',''],['💳','בינוני',''],['💎','מפנק','']])},
+  {q:'איזה קצב מתאים לכם?', sub:'כמה עצירות ביום, וכמה זמן בכל אחת', render:()=>optGrid('pace',[
+      ['paceSlow','רגוע','2-3 עצירות ביום'],['paceMid','מאוזן','4 עצירות, זמן לנשום'],['paceFast','אינטנסיבי','לראות כמה שיותר']])},
+  {q:'איך מסתובבים?', sub:'זה קובע את המרחקים בין העצירות', render:()=>optGrid('transport',[
+      ['car','רכב שכור',''],['train','תחבורה ציבורית',''],['bus','טיול מאורגן',''],['mix','שילוב','']])},
+  {q:'מה התקציב?', sub:'משפיע על המלצות האוכל והלינה', render:()=>optGrid('budget',[
+      ['budget1','חסכוני',''],['budget2','בינוני',''],['budget3','מפנק','']])},
   {q:'מה אתם אוהבים?', sub:'בחרו כמה שבא לכם', render:()=>`
       <div class="chips" style="justify-content:center" id="ints">
-        ${INTERESTS.map(([e,i])=>`<span class="chip ${state.form.interests.includes(i)?'on':''}" data-i="${i}">${e} ${i}</span>`).join('')}</div>`},
+        ${INTERESTS.map(([k,i])=>`<span class="chip ${state.form.interests.includes(i)?'on':''}" data-i="${i}">
+          <i class="ci">${ICON[k]||''}</i>${i}</span>`).join('')}</div>`},
   {q:'עוד משהו שכדאי לדעת?', sub:'לא חובה — אבל זה מה שהופך מסלול לאישי', render:()=>`
       <div class="field" style="max-width:520px;margin:0 auto">
         <textarea id="notes" rows="3" placeholder="למשל: יש עגלה, שומרי כשרות, סבתא לא הולכת הרבה, רוצים יום אחד בים">${esc(state.form.notes)}</textarea></div>
@@ -871,9 +974,9 @@ const STEPS=[
 ];
 function activeSteps(){ return STEPS.filter(s=>!s.when||s.when()); }
 function optGrid(key,opts){
-  return `<div class="opts" data-opt="${key}">${opts.map(([e,label,sub])=>`
+  return `<div class="opts" data-opt="${key}">${opts.map(([ic,label,sub])=>`
     <button class="opt ${state.form[key]===label?'on':''}" data-v="${esc(label)}">
-      <span class="ico">${e}</span><b>${esc(label)}</b>${sub?`<small>${esc(sub)}</small>`:''}</button>`).join('')}</div>`;
+      <span class="ico">${ICON[ic]||''}</span><b>${esc(label)}</b>${sub?`<small>${esc(sub)}</small>`:''}</button>`).join('')}</div>`;
 }
 function renderStep(){
   const list=activeSteps(), i=state.step-1;
@@ -952,13 +1055,13 @@ function renderChooser(){
     <p class="sub center">שתי דרכים, שתיהן בחינם. בוחרים פעם אחת וזוכרים את הבחירה.</p>
 
     <button class="opt" id="ch-auto" style="text-align:start;padding:22px;margin-bottom:14px;width:100%">
-      <span class="ico" style="float:inline-start;margin-inline-end:14px">✨</span>
+      <span class="ico ico-inline">${ICON.auto}</span>
       <b style="font-size:18px">אוטומטי — הכול קורה לבד</b>
       <small style="display:block;margin-top:6px;line-height:1.5">צריך מפתח חינמי מגוגל. פעם אחת, שתי דקות, בלי כרטיס אשראי.
         אחר כך כל טיול נבנה בלחיצה אחת.</small></button>
 
     <button class="opt" id="ch-manual" style="text-align:start;padding:22px;width:100%">
-      <span class="ico" style="float:inline-start;margin-inline-end:14px">💬</span>
+      <span class="ico ico-inline">${ICON.chat}</span>
       <b style="font-size:18px">דרך ChatGPT שלי</b>
       <small style="display:block;margin-top:6px;line-height:1.5">בלי להירשם לשום דבר. נכין לכם שאלה מוכנה, תדביקו את התשובה חזרה.
         לוקח כמה דקות יותר.</small></button>
@@ -1341,8 +1444,8 @@ function renderSite(){
   if(!TABS.some(x=>x.k===state.tab)) state.tab='now';
   document.body.classList.remove('kids');
   const t=state.trip,f=t.form||{},ti=todayIndex(t);
-  const kidBtn=t.kidsMode?'<button class="iconbtn" id="kidon" title="מצב ילדים">🧸</button>':'';
-  app.innerHTML=`${topbar(kidBtn+'<button class="iconbtn" id="share" title="שיתוף">↗</button>')}
+  const kidBtn=t.kidsMode?'<button class="iconbtn" id="kidon" title="מצב ילדים" aria-label="מצב ילדים">'+ICON.kid+'</button>':'';
+  app.innerHTML=`${topbar(kidBtn+'<button class="iconbtn" id="share" title="שיתוף" aria-label="שיתוף">'+ICON.share+'</button>')}
   <header class="site-hero">
     <div class="hero-photo" data-photo="${esc((t.plan[0]||{}).base||t.dest)}" data-photo-ctx="${esc(t.dest)}"></div>
     <div class="wrap">
@@ -1351,7 +1454,7 @@ function renderSite(){
     <div class="meta-row"><span class="pill">${t.days} ימים</span><span class="pill">${esc(f.who||'')}</span>
       <span class="pill">קצב ${esc(f.pace||'')}</span><span class="pill">${esc(f.transport||'')}</span>
       ${ti?`<span class="pill" style="background:var(--amber);border-color:var(--amber);color:#fff">היום: יום ${ti}</span>`:''}
-      <span class="pill">${SB.on?'☁️ מסונכרן':'📱 במכשיר'}</span>
+      <span class="pill pill-ico">${SB.on?ICON.cloudOn+' מסונכרן':ICON.cloudOff+' במכשיר'}</span>
       ${!GUEST&&!shareLink()?'<span class="pill" style="background:rgba(217,138,31,.35);border-color:transparent">עוד לא פורסם</span>':''}</div>
   </div></header>
   <nav class="tabs"><div class="wrap">${TABS.map(x=>`<button class="tab ${state.tab===x.k?'on':''}" data-tab="${x.k}">${x.t}</button>`).join('')}</div></nav>
@@ -1823,7 +1926,7 @@ async function renderKids(){
   app.innerHTML=`<div class="kidwrap">
     <div class="kidtop">
       <div class="who">${name?'היי '+esc(name)+'! ':''}🧸</div>
-      <button class="iconbtn" id="kidout" title="חזרה למבוגרים">✕</button></div>
+      <button class="iconbtn" id="kidout" title="חזרה למבוגרים" aria-label="יציאה ממצב ילדים">${ICON.close}</button></div>
     ${body}
     <div class="kidnav">
       <button class="${state.kidView==='today'?'on':''}" data-kv="today">היום</button>
