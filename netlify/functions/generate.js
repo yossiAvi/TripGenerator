@@ -48,6 +48,7 @@ export default async (req) => {
 
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
   const geminiKey = process.env.GEMINI_API_KEY;
+  console.log('keys present:', { anthropic: !!anthropicKey, gemini: !!geminiKey });
 
   try {
     if (anthropicKey) {
@@ -76,7 +77,10 @@ export default async (req) => {
         })
       });
       const data = await r.json();
-      if (!r.ok) return new Response(JSON.stringify({ error: (data.error && data.error.message) || 'שגיאה מהמודל' }), { status: r.status, headers: cors });
+      if (!r.ok) {
+        console.error('Gemini error', r.status, JSON.stringify(data));
+        return new Response(JSON.stringify({ error: (data.error && data.error.message) || 'שגיאה מהמודל' }), { status: r.status, headers: cors });
+      }
       const parts = (((data.candidates || [])[0] || {}).content || {}).parts || [];
       const text = parts.map(p => p.text || '').join('');
       // מוחזר במבנה של אנתרופיק כדי שהדפדפן לא יצטרך לדעת מי הספק
