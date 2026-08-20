@@ -49,6 +49,7 @@ export default async (req) => {
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
   const geminiKey = process.env.GEMINI_API_KEY;
   console.log('keys present:', { anthropic: !!anthropicKey, gemini: !!geminiKey });
+  console.log('key prefixes:', { anthropic: anthropicKey ? anthropicKey.slice(0,6) : 'none', gemini: geminiKey ? geminiKey.slice(0,6) : 'none' });
 
   try {
     if (anthropicKey) {
