@@ -46,10 +46,10 @@ export default async (req) => {
   const prompt = messages.map(m => m.content).join('\n').slice(0, 12000);
   if (!prompt) return new Response(JSON.stringify({ error: 'חסרה הנחיה' }), { status: 400, headers: cors });
 
-  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  const rawAnthropicKey = process.env.ANTHROPIC_API_KEY;
+  // Netlify injects a JWT as ANTHROPIC_API_KEY for their own integration — ignore it
+  const anthropicKey = rawAnthropicKey && rawAnthropicKey.startsWith('sk-ant-') ? rawAnthropicKey : null;
   const geminiKey = process.env.GEMINI_API_KEY;
-  console.log('keys present:', { anthropic: !!anthropicKey, gemini: !!geminiKey });
-  console.log('key prefixes:', { anthropic: anthropicKey ? anthropicKey.slice(0,6) : 'none', gemini: geminiKey ? geminiKey.slice(0,6) : 'none' });
 
   try {
     if (anthropicKey) {
