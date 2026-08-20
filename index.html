@@ -11,11 +11,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@300;400;600;700&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* לוח צבעים: דיו כמעט־שחור, משטחים לבנים, כתום חי אחד, וכחול־לילה לכותרת */
-  --ink:#14161A; --ink-2:#3D444E; --muted:#6E7683;
-  --paper:#FFFFFF; --wash:#F6F4F1; --line:#E6E2DC;
-  --accent:#FE5B25; --accent-ink:#C63C0C; --accent-soft:#FFEDE5;
-  --night:#0E1B2B; --night-2:#16304A;
+  /* לוח צבעים: חם ואישי — בז' עמוק, כתום חי, כחול-לילה */
+  --ink:#1A2030; --ink-2:#3D444E; --muted:#7A7060;
+  --paper:#FDFAF5; --wash:#F2E8D5; --line:#DDD0B8;
+  --accent:#E8773A; --accent-ink:#B85520; --accent-soft:#FAEADE;
+  --night:#1A2F3A; --night-2:#1E3A4A;
   --ok:#1F7A4C; --warn:#B4530C;
   --sh-1:0 1px 2px rgba(20,22,26,.05), 0 8px 24px -12px rgba(20,22,26,.12);
   --sh-2:0 2px 4px rgba(20,22,26,.06), 0 24px 48px -20px rgba(20,22,26,.22);
@@ -270,15 +270,19 @@ nav.tabs .wrap::-webkit-scrollbar{display:none}
 .dsbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 
 /* ---------- ציר הזמן — האלמנט המרכזי ---------- */
-.timeline{border-inline-start:2px solid var(--line);margin-inline-start:52px;padding-inline-start:30px;margin-top:8px}
-.slot{position:relative;padding-bottom:34px}
-.slot:before{content:"";position:absolute;inset-inline-start:-39px;top:7px;width:14px;height:14px;border-radius:50%;
-  background:var(--accent);border:3px solid var(--wash);box-shadow:0 0 0 2px var(--accent)}
-.slot.depart:before{background:var(--paper);box-shadow:0 0 0 2px var(--line)}
-.slot .time{position:absolute;inset-inline-start:-134px;top:0;width:82px;text-align:end;
-  font-family:var(--util);font-weight:900;font-size:19px;letter-spacing:-.02em;line-height:1.3}
+.timeline{margin-top:12px;display:flex;flex-direction:column;gap:16px}
+.slot{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;
+  position:relative;box-shadow:var(--sh-1)}
+.slot:not(.depart){border-inline-start:4px solid var(--accent)}
+.slot.depart{border-inline-start:4px solid var(--line);opacity:.85}
+.slot-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.slot-num{font-family:var(--util);font-weight:900;font-size:13px;letter-spacing:.08em;
+  background:var(--accent);color:#fff;border-radius:999px;padding:4px 11px;white-space:nowrap;flex-shrink:0}
+.slot.depart .slot-num{background:var(--line);color:var(--ink-2)}
+.slot .time{font-family:var(--util);font-weight:900;font-size:20px;letter-spacing:-.02em;color:var(--accent)}
+.slot.depart .time{color:var(--muted)}
 .slot .time small{display:block;font-size:11.5px;font-weight:700;color:var(--muted);letter-spacing:0}
-.slot h4{font-size:21px;margin:0 0 6px}
+.slot h4{font-size:20px;margin:0 0 6px}
 .slot p{margin:0 0 10px;color:var(--ink-2)}
 .slot .tip{background:var(--accent-soft);border-radius:var(--r-s);padding:11px 15px;font-size:15px;color:var(--accent-ink)}
 .travel{font-size:13.5px;color:var(--muted);font-family:var(--util);font-weight:700;margin-top:12px;
@@ -289,10 +293,10 @@ nav.tabs .wrap::-webkit-scrollbar{display:none}
 .navlink:hover{border-color:var(--accent);color:var(--accent-ink)}
 
 /* ---------- גלריה ---------- */
-.gal{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(232px,1fr))}
-.galcard{position:relative;border:0;padding:0;border-radius:var(--r);overflow:hidden;aspect-ratio:4/3;
-  background:var(--night-2);box-shadow:var(--sh-1);font-family:inherit;transition:.2s}
-.galcard:hover{transform:translateY(-4px);box-shadow:var(--sh-2)}
+.gal{display:grid;gap:18px;grid-template-columns:repeat(2,1fr)}
+.galcard{position:relative;border:0;padding:0;border-radius:20px;overflow:hidden;aspect-ratio:16/10;
+  background:var(--night-2);box-shadow:var(--sh-1);font-family:inherit;transition:.22s}
+.galcard:hover{transform:translateY(-5px);box-shadow:0 16px 40px -10px rgba(20,22,26,.25)}
 .galcard img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s,transform .5s}
 .galcard img.loaded{opacity:1}
 .galcard:hover img{transform:scale(1.06)}
@@ -401,10 +405,9 @@ body.kids{background:#FFF6EF;background-image:radial-gradient(circle at 12% 8%,r
 .kidpic.loaded{opacity:1}
 
 @media (max-width:720px){
-  .timeline{margin-inline-start:0;padding-inline-start:26px}
-  .slot .time{position:static;width:auto;text-align:start;margin-bottom:4px;font-size:17px}
-  .slot .time small{display:inline;margin-inline-start:8px}
-  .slot:before{inset-inline-start:-34px}
+  .slot .time{font-size:17px}
+  .slot-head{flex-wrap:wrap}
+  .gal{grid-template-columns:1fr}
   .thumb{flex-basis:96px}
 }
 @media (max-width:640px){
@@ -1648,15 +1651,22 @@ function panelDaily(){ const t=state.trip,d=t.plan[state.day-1]||t.plan[0];
    <p class="lead">${d.base?'לינה ב'+esc(d.base)+' · ':''}${esc(d.summary||'')}</p>
    ${d.failed?'<div class="err-box">היום הזה לא נוצר במלואו.</div>':''}
    <div class="timeline">
-     ${(d.wake||d.depart)?`<div class="slot depart"><div class="time">${esc(d.depart||d.wake||'')}<small>יציאה מהחדר</small></div>
+     ${(d.wake||d.depart)?`<div class="slot depart">
+       <div class="slot-head"><div class="time">${esc(d.depart||d.wake||'')}<small>יציאה מהחדר</small></div>
+       <span class="slot-num">יציאה</span></div>
        <h4>יוצאים לדרך</h4><p>${esc(d.departNote||'')}</p></div>`:''}
-     ${(d.segments||[]).map(s=>`<div class="slot"><div class="time">${esc(s.time||'')}${s.stay?`<small>${esc(s.stay)}</small>`:''}</div>
-       <h4>${esc(s.title||'')}</h4><p>${esc(s.desc||'')}</p>${s.tip?`<div class="tip">${esc(s.tip)}</div>`:''}
-       ${s.place?`<div class="navlinks"><a class="navlink" target="_blank" rel="noopener" href="${mapsUrl(s.place,t.dest)}">מפות</a>
-         <a class="navlink" target="_blank" rel="noopener" href="${wazeUrl(s.place,t.dest)}">Waze</a>
-         <span class="navlink" style="border-style:dashed">${esc(s.place)}</span></div>`:''}
+     ${(d.segments||[]).map((s,si)=>`<div class="slot">
+       <div class="slot-head">
+         <div><div class="time">${esc(s.time||'')}${s.stay?`<small>${esc(s.stay)}</small>`:''}</div></div>
+         <span class="slot-num">${String(si+1).padStart(2,'0')}</span></div>
+       <h4>${esc(s.title||'')}</h4><p>${esc(s.desc||'')}</p>
+       ${s.tip?`<div class="tip">💡 ${esc(s.tip)}</div>`:''}
+       ${s.place?`<div class="navlinks"><a class="navlink" target="_blank" rel="noopener" href="${mapsUrl(s.place,t.dest)}">Google Maps ←</a>
+         <a class="navlink" target="_blank" rel="noopener" href="${wazeUrl(s.place,t.dest)}">Waze</a></div>`:''}
        ${s.travel?`<div class="travel">→ ${esc(s.travel)}</div>`:''}</div>`).join('')}
-     ${d.backAt?`<div class="slot depart"><div class="time">${esc(d.backAt)}<small>סוף היום</small></div>
+     ${d.backAt?`<div class="slot depart">
+       <div class="slot-head"><div class="time">${esc(d.backAt)}<small>סוף היום</small></div>
+       <span class="slot-num">סיום</span></div>
        <h4>חוזרים ללינה</h4><p>${esc(d.evening||'')}</p></div>`:''}</div>
    ${(d.food||[]).length?`<div class="box"><h4>איפה אוכלים</h4>${d.food.map(x=>`<div class="kv"><b>${esc(x.name)}</b>
      <span>${esc(x.type||'')} · ${esc(x.note||'')} <a class="navlink" target="_blank" rel="noopener" href="${mapsUrl(x.name,d.base||t.dest)}">מפה</a></span></div>`).join('')}</div>`:''}</section>`; }
