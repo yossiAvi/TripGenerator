@@ -148,6 +148,23 @@ code{background:var(--wash);border:1px solid var(--line);border-radius:6px;paddi
 .stepper button:hover{border-color:var(--accent);color:var(--accent)}
 .stepper .val{font-family:var(--util);font-weight:900;font-size:52px;min-width:88px;text-align:center;letter-spacing:-.03em}
 
+/* ---------- חיפוש טיסות ---------- */
+.flight-cards{display:flex;flex-direction:column;gap:14px;max-width:560px;margin:0 auto;width:100%}
+.flight-card{background:var(--paper);border:1.5px solid var(--line);border-radius:var(--r);padding:18px 20px}
+.flight-card .eyebrow{margin-bottom:12px}
+.flight-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.flight-row .field{flex:1;min-width:90px}
+.flight-row .field label{font-family:var(--util);font-weight:700;font-size:12px;color:var(--ink-2);display:block;margin-bottom:5px}
+.flight-row input{border:1.5px solid var(--line);background:var(--wash);border-radius:var(--r-s);
+  padding:10px 12px;width:100%;font-size:15px;transition:.15s;font-family:var(--body)}
+.flight-row input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.flight-result{margin-top:12px;font-size:14.5px}
+.flight-found{background:var(--wash);border:1px solid var(--line);border-radius:var(--r-s);padding:12px 16px;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.flight-found .route{font-family:var(--util);font-weight:900;font-size:15px;letter-spacing:.02em}
+.flight-found .times{color:var(--muted);font-size:13.5px}
+.flight-found .fl-ok{font-size:18px}
+
 /* ---------- לוח שנה יומי ---------- */
 .day-sched{display:flex;flex-direction:column;gap:9px;max-width:560px;margin:0 auto;width:100%}
 .ds-row{display:flex;align-items:center;gap:10px;background:var(--paper);border:1.5px solid var(--line);
@@ -850,7 +867,7 @@ const CATS=['תחבורה','לינה','אוכל','אטרקציות','קניות'
 const STICKERS=['⭐','🏆','🎈','🦋','🐬','🚀','🌈','🍦','🐻','🎪','🦁','🌻'];
 const app=$('#app');
 const state={
-  form:{dest:'',who:'משפחה עם ילדים',kids:'',days:5,start:'',pace:'מאוזן',budget:'בינוני',transport:'רכב שכור',interests:['אוכל ושווקים','היסטוריה ואתרים'],dietary:[],daySchedule:[],title:'',notes:'',route:'',coverPhoto:''},
+  form:{dest:'',who:'משפחה עם ילדים',kids:'',days:5,start:'',pace:'מאוזן',budget:'בינוני',transport:'רכב שכור',interests:['אוכל ושווקים','היסטוריה ואתרים'],dietary:[],daySchedule:[],flightOut:null,flightRet:null,title:'',notes:'',route:'',coverPhoto:''},
   trip:null, tab:'now', day:1, step:0, kidMode:false, kidView:'today'
 };
 
@@ -1053,6 +1070,32 @@ const STEPS=[
       <div class="field" style="max-width:520px;margin:0 auto">
         <textarea id="route" rows="3" placeholder="למשל: רומא 3 ימים, פירנצה 2 ימים, ונציה 1 יום">${esc(state.form.route)}</textarea>
         <p class="hint" style="margin-top:10px">השאירו ריק ואנחנו נבנה מסלול הגיוני בעצמנו</p></div>`},
+  {q:'פרטי טיסות?', sub:'לא חובה — ממלא אוטומטית את ימי הטיסה', render:()=>`
+      <div class="flight-cards">
+        <div class="flight-card">
+          <p class="eyebrow">טיסה הלוך</p>
+          <div class="flight-row">
+            <div class="field"><label>מספר טיסה</label>
+              <input id="fl-out" placeholder="LY321" value="${esc((state.form.flightOut||{}).num||'')}"></div>
+            <div class="field" style="flex:.9"><label>תאריך (לא חובה)</label>
+              <input type="date" id="fl-out-date" value="${esc((state.form.flightOut||{}).date||state.form.start||'')}"></div>
+            <button class="btn btn-ghost btn-sm" id="fl-out-search" style="flex-shrink:0;align-self:flex-end">חפש</button>
+          </div>
+          <div class="flight-result" id="fl-out-result"></div>
+        </div>
+        <div class="flight-card">
+          <p class="eyebrow">טיסה חזור</p>
+          <div class="flight-row">
+            <div class="field"><label>מספר טיסה</label>
+              <input id="fl-ret" placeholder="LY322" value="${esc((state.form.flightRet||{}).num||'')}"></div>
+            <div class="field" style="flex:.9"><label>תאריך (לא חובה)</label>
+              <input type="date" id="fl-ret-date" value="${esc((state.form.flightRet||{}).date||'')}"></div>
+            <button class="btn btn-ghost btn-sm" id="fl-ret-search" style="flex-shrink:0;align-self:flex-end">חפש</button>
+          </div>
+          <div class="flight-result" id="fl-ret-result"></div>
+        </div>
+        <p class="hint center">השאירו ריק — המסלול ייבנה ללא הגבלות טיסה</p>
+      </div>`},
   {q:'מפרט יומי?', sub:'ציינו לאיזה עיר מגיעים ובאיזה שעה — שדות ריקים מתמלאים אוטומטית', render:()=>{
       const n=state.form.days;
       if(!state.form.daySchedule||state.form.daySchedule.length!==n)
@@ -1110,6 +1153,7 @@ function renderStep(){
   const dc=$('#dietchips');
   if(dc) dc.onclick=e=>{ const c=e.target.closest('.chip'); if(!c)return; c.classList.toggle('on');
     state.form.dietary=$$('#dietchips .chip.on').map(x=>x.dataset.d); };
+  if($('#fl-out-search')) wireFlightStep();
   const dv=$('#dval');
   if(dv) $$('.stepper button').forEach(b=>b.onclick=()=>{
     state.form.days=Math.max(1,Math.min(21,state.form.days+(+b.dataset.n)));
@@ -1124,11 +1168,19 @@ function nextStep(){
   const st=activeSteps()[state.step-1];
   if(st&&st.q.startsWith('כמה ימים')){ const s=$('#start'); if(s) state.form.start=s.value; }
   if(st&&st.q.startsWith('יש ערים')){ const r=$('#route'); if(r) state.form.route=r.value.trim(); }
+  if(st&&st.q.startsWith('פרטי טיסות')){
+    const on=$('#fl-out'),od=$('#fl-out-date'),rn=$('#fl-ret'),rd=$('#fl-ret-date');
+    if(on&&on.value){ if(!state.form.flightOut) state.form.flightOut={}; state.form.flightOut.num=on.value; }
+    if(od&&od.value){ if(!state.form.flightOut) state.form.flightOut={}; state.form.flightOut.date=od.value; }
+    if(rn&&rn.value){ if(!state.form.flightRet) state.form.flightRet={}; state.form.flightRet.num=rn.value; }
+    if(rd&&rd.value){ if(!state.form.flightRet) state.form.flightRet={}; state.form.flightRet.date=rd.value; }
+  }
   if(st&&st.q.startsWith('מפרט יומי')){
     $$('.ds-row').forEach(row=>{
       const i=+row.querySelector('[data-di]').dataset.di;
       if(!state.form.daySchedule) state.form.daySchedule=[];
       state.form.daySchedule[i]={
+        ...(state.form.daySchedule[i]||{}),
         city:(row.querySelector('.ds-city')||{}).value||'',
         arrival:(row.querySelector('.ds-time')||{}).value||''
       };
@@ -1244,7 +1296,15 @@ function ctx(){ const f=state.form;
   return `יעד: ${f.dest}. הרכב: ${f.who}${f.kids?' (גילאי הילדים: '+f.kids+')':''}. ${f.days} ימים. קצב ${f.pace}. תקציב ${f.budget}. תחבורה: ${f.transport}. תחומי עניין: ${f.interests.join(', ')}.${diet.length?' העדפות מזון: '+diet.join(', ')+'.':''}${f.route?' מסלול מבוקש: '+f.route+'.':''}${f.notes?' הערות: '+f.notes:''} הקהל ישראלי, כתוב בעברית טבעית וחמה.`; }
 const hasKids=()=>/ילדים|מורחבת/.test(state.form.who);
 
-function daySchLines(){ return (state.form.daySchedule||[]).map((d,i)=>d&&(d.city||d.arrival)?`יום ${i+1}: ${d.city||'?'}${d.arrival?' הגעה '+d.arrival:''}`:null).filter(Boolean); }
+function daySchLines(){ return (state.form.daySchedule||[]).map((d,i)=>{
+  if(!d||((!d.city)&&(!d.arrival)&&(!d.departure))) return null;
+  let s=`יום ${i+1}:`;
+  if(d.city) s+=` ${d.city}`;
+  if(d.arrival) s+=` הגעה ${d.arrival}`;
+  if(d.departure) s+=` טיסה חזור יוצאת ${d.departure} — לתכנן בהתאם, צריך להיות בשדה תעופה 3 שעות לפני`;
+  if(d.flightNote) s+=` (${d.flightNote})`;
+  return s;
+}).filter(Boolean); }
 const P={
   plan:()=>`אתה מתכנן טיולים מנוסה. ${ctx()}
 ${state.form.route?'חובה לכבד את המסלול המבוקש: '+state.form.route+'. ':''}${daySchLines().length?'ימים קבועים מראש — חובה לכבד: '+daySchLines().join(', ')+'. ':''}בנה שלד מסלול הגיוני גאוגרפית, בלי קפיצות מיותרות בין אזורים.
@@ -1260,7 +1320,12 @@ ${state.form.route?'חובה לכבד את המסלול המבוקש: '+state.fo
 מבנה: {"lodging":[{"base":"","area":"אזור מומלץ ללינה","why":"עד 12 מילים","tip":"עד 10 מילים"}],"cams":[{"place":"אתר מפורסם","note":"עד 8 מילים"}]}
 שורה לכל בסיס, ו-5 מקומות מוכרים שסביר שיש להם מצלמת לייב.`,
   day:(i,n,sk,prev)=>`${ctx()}
-${(()=>{const ds=(state.form.daySchedule||[])[i];return ds&&(ds.city||ds.arrival)?`⚠ יום ${i+1} קבוע מראש: הגעה ל${ds.city||sk.base}${ds.arrival?' בשעה '+ds.arrival:''}. זאת חובה ולא הצעה. `:''})()}תכנן את יום ${i+1} מתוך ${n}. נושא: "${sk.title}". בסיס לינה: ${sk.base}. אתמול: ${prev}. ${dateFor(i)?'תאריך: '+dateFor(i)+'.':''}
+${(()=>{const ds=(state.form.daySchedule||[])[i]; if(!ds) return '';
+  const parts=[];
+  if(ds.city||ds.arrival) parts.push(`הגעה ל${ds.city||sk.base}${ds.arrival?' בשעה '+ds.arrival+' (UTC)':''}`);
+  if(ds.departure) parts.push(`טיסת חזור יוצאת בשעה ${ds.departure} UTC — תכנן שיסיימו ויהיו בשדה תעופה לפחות 3 שעות לפני`);
+  if(ds.flightNote) parts.push(ds.flightNote);
+  return parts.length?`⚠ יום ${i+1} קבוע מראש: ${parts.join('. ')}. זאת חובה ולא הצעה.\n`:''})()}תכנן את יום ${i+1} מתוך ${n}. נושא: "${sk.title}". בסיס לינה: ${sk.base}. אתמול: ${prev}. ${dateFor(i)?'תאריך: '+dateFor(i)+'.':''}
 מבנה: {"title":"","base":"","summary":"משפט","wake":"07:30","depart":"08:45","departNote":"עד 10 מילים","segments":[{"time":"09:15","title":"","place":"שם מדויק לניווט","desc":"עד 16 מילים","stay":"כמה זמן","travel":"זמן ואופן הנסיעה ליעד הבא","tip":"עד 10 מילים","cost":"מחיר כניסה למבוגר, למשל €12, או חינם","website":"אתר רשמי אם ידוע, אחרת ריק"}],"food":[{"name":"","type":"סוג מסעדה","note":"עד 8 מילים","price":"€/€€/€€€","dietary":["כשר","טבעוני","בשרי","צמחוני","ללא גלוטן" — רק תגים שרלוונטיים, מערך ריק אם לא ידוע],"website":"אתר המסעדה אם ידוע, אחרת ריק"}],"evening":"משפט","backAt":"20:30"${hasKids()?`,"kid":{"emoji":"אימוג׳י אחד שמייצג את היום","simple":"משפט אחד לילד בן חמש","fact":"עובדה כיפית לילד עד 12 מילים","missions":["משימה כיפית עד 7 מילים"]}`:''}}
 4 עד 5 סגמנטים. 2 מסעדות/מזנונים קרוב למסלול${(()=>{const d=(state.form.dietary||[]).filter(x=>x!=='הכל');return d.length?' מתאימות להעדפה: '+d.join(', '):''})()} עם price ו-dietary ו-website (אם ידוע). לאתרים ידועים ציינו cost ו-website מדויקים.${hasKids()?' ב-missions שלוש משימות לילד.':''}`
 };
@@ -1812,6 +1877,66 @@ function panelDaily(){ const t=state.trip,d=t.plan[state.day-1]||t.plan[0];
      </div>
      <p class="hint" style="margin:10px 0 0;font-size:12.5px">* מחירים ואתרים הם הערכות — מומלץ לאמת לפני הנסיעה</p>
    </div>`:''}</section>`; }
+function wireFlightStep(){
+  const flightResultHtml=(data,direction)=>{
+    const arrow='✈';
+    const note=direction==='out'
+      ?`יום 1 עודכן אוטומטית (הגעה לשדה ${data.to.iata})`
+      :`יום ${state.form.days} עודכן אוטומטית (יציאה משדה ${data.from.iata})`;
+    return `<div class="flight-found">
+      <span class="fl-ok">✅</span>
+      <span class="route">${esc(data.from.iata)} ${arrow} ${esc(data.to.iata)}</span>
+      <span class="times">יציאה ${esc(data.from.timeLocal||data.from.timeUtc)} · הגעה ${esc(data.to.timeLocal||data.to.timeUtc)} (UTC)</span>
+      <span class="hint" style="width:100%;margin:0">${esc(note)}</span>
+    </div>`;
+  };
+  const ensureDS=()=>{
+    if(!state.form.daySchedule) state.form.daySchedule=[];
+    while(state.form.daySchedule.length<state.form.days)
+      state.form.daySchedule.push({city:'',arrival:'',departure:'',flightNote:''});
+  };
+  const searchFlight=async(numId,dateId,resultId,direction)=>{
+    const num=($(numId)||{}).value?.trim(); if(!num) return;
+    const date=($(dateId)||{}).value||'';
+    const res=$(resultId); if(!res) return;
+    res.innerHTML='<span class="hint">מחפש...</span>';
+    try{
+      const r=await fetch('/api/flight',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({flight:num,date})});
+      const data=await r.json();
+      if(!r.ok||data.error){
+        if(data.error==='no_key') res.innerHTML=`<div class="err-box">מפתח <b>AVIATION_API_KEY</b> לא מוגדר בנטליפיי.<br>
+          הרשמה חינמית ב-aviationstack.com ← Site settings → Environment variables.<br>
+          <span class="hint">לחלופין, הזינו שעות ידנית בשלב "מפרט יומי"</span></div>`;
+        else res.innerHTML=`<div class="err-box">${esc(data.error||'שגיאה')}</div>`;
+        return;
+      }
+      ensureDS();
+      if(direction==='out'){
+        state.form.flightOut={...data,num};
+        state.form.daySchedule[0]={...(state.form.daySchedule[0]||{}),
+          city:data.to.iata, arrival:data.to.timeLocal||data.to.timeUtc,
+          flightNote:`טיסה ${data.flight}: ${data.from.iata}→${data.to.iata}, הגעה ${data.to.timeLocal||data.to.timeUtc} UTC`};
+      } else {
+        state.form.flightRet={...data,num};
+        const last=state.form.days-1;
+        state.form.daySchedule[last]={...(state.form.daySchedule[last]||{}),
+          city:data.from.iata,
+          departure:data.from.timeLocal||data.from.timeUtc,
+          flightNote:`טיסה ${data.flight}: ${data.from.iata}→${data.to.iata}, יציאה ${data.from.timeLocal||data.from.timeUtc} UTC`};
+      }
+      res.innerHTML=flightResultHtml(data,direction);
+    }catch(e){ res.innerHTML='<div class="err-box">לא הצלחנו להגיע לשרת</div>'; }
+  };
+  // Restore previous results if already searched
+  if(state.form.flightOut?.from) setTimeout(()=>{ const r=$('#fl-out-result'); if(r) r.innerHTML=flightResultHtml(state.form.flightOut,'out'); },0);
+  if(state.form.flightRet?.from) setTimeout(()=>{ const r=$('#fl-ret-result'); if(r) r.innerHTML=flightResultHtml(state.form.flightRet,'ret'); },0);
+  const os=$('#fl-out-search'); if(os) os.onclick=()=>searchFlight('#fl-out','#fl-out-date','#fl-out-result','out');
+  const rs=$('#fl-ret-search'); if(rs) rs.onclick=()=>searchFlight('#fl-ret','#fl-ret-date','#fl-ret-result','ret');
+  // Allow Enter in number fields to trigger search
+  const fo=$('#fl-out'); if(fo) fo.onkeydown=e=>{ if(e.key==='Enter') os?.click(); };
+  const fr=$('#fl-ret'); if(fr) fr.onkeydown=e=>{ if(e.key==='Enter') rs?.click(); };
+}
 function wireDaily(){
   // food filter chips
   const ff=$('#food-filter');
