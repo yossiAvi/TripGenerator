@@ -148,6 +148,21 @@ code{background:var(--wash);border:1px solid var(--line);border-radius:6px;paddi
 .stepper button:hover{border-color:var(--accent);color:var(--accent)}
 .stepper .val{font-family:var(--util);font-weight:900;font-size:52px;min-width:88px;text-align:center;letter-spacing:-.03em}
 
+/* ---------- לוח שנה יומי ---------- */
+.day-sched{display:flex;flex-direction:column;gap:9px;max-width:560px;margin:0 auto;width:100%}
+.ds-row{display:flex;align-items:center;gap:10px;background:var(--paper);border:1.5px solid var(--line);
+  border-radius:var(--r-s);padding:10px 14px;transition:.15s}
+.ds-row:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.ds-num{font-family:var(--util);font-weight:900;font-size:13px;color:#fff;background:var(--accent);
+  border-radius:50%;width:28px;height:28px;display:grid;place-items:center;flex-shrink:0}
+.ds-city{border:0;background:transparent;flex:1;font-size:15px;font-family:var(--body);min-width:0;color:var(--ink)}
+.ds-city:focus{outline:none}
+.ds-city::placeholder{color:var(--muted)}
+.ds-sep{color:var(--line);font-size:18px;flex-shrink:0;user-select:none}
+.ds-time{border:0;background:transparent;width:92px;font-size:14px;font-family:var(--util);color:var(--ink-2);
+  text-align:end;flex-shrink:0}
+.ds-time:focus{outline:none}
+
 /* ---------- מגירה ---------- */
 .sheet{position:fixed;inset:0;z-index:100;display:none}
 .sheet.on{display:block}
@@ -835,7 +850,7 @@ const CATS=['תחבורה','לינה','אוכל','אטרקציות','קניות'
 const STICKERS=['⭐','🏆','🎈','🦋','🐬','🚀','🌈','🍦','🐻','🎪','🦁','🌻'];
 const app=$('#app');
 const state={
-  form:{dest:'',who:'משפחה עם ילדים',kids:'',days:5,start:'',pace:'מאוזן',budget:'בינוני',transport:'רכב שכור',interests:['אוכל ושווקים','היסטוריה ואתרים'],dietary:[],title:'',notes:'',route:'',coverPhoto:''},
+  form:{dest:'',who:'משפחה עם ילדים',kids:'',days:5,start:'',pace:'מאוזן',budget:'בינוני',transport:'רכב שכור',interests:['אוכל ושווקים','היסטוריה ואתרים'],dietary:[],daySchedule:[],title:'',notes:'',route:'',coverPhoto:''},
   trip:null, tab:'now', day:1, step:0, kidMode:false, kidView:'today'
 };
 
@@ -1038,6 +1053,21 @@ const STEPS=[
       <div class="field" style="max-width:520px;margin:0 auto">
         <textarea id="route" rows="3" placeholder="למשל: רומא 3 ימים, פירנצה 2 ימים, ונציה 1 יום">${esc(state.form.route)}</textarea>
         <p class="hint" style="margin-top:10px">השאירו ריק ואנחנו נבנה מסלול הגיוני בעצמנו</p></div>`},
+  {q:'מפרט יומי?', sub:'ציינו לאיזה עיר מגיעים ובאיזה שעה — שדות ריקים מתמלאים אוטומטית', render:()=>{
+      const n=state.form.days;
+      if(!state.form.daySchedule||state.form.daySchedule.length!==n)
+        state.form.daySchedule=[...Array(n)].map((_,i)=>(state.form.daySchedule||[])[i]||{city:'',arrival:''});
+      return `<div class="day-sched">
+        ${[...Array(n)].map((_,i)=>{
+          const ds=state.form.daySchedule[i]||{city:'',arrival:''};
+          return `<div class="ds-row"><div class="ds-num">${i+1}</div>
+            <input class="ds-city" data-di="${i}" placeholder="עיר / יעד (לא חובה)" value="${esc(ds.city||'')}">
+            <span class="ds-sep">|</span>
+            <input type="time" class="ds-time" data-di="${i}" value="${esc(ds.arrival||'')}"></div>`;
+        }).join('')}
+        <p class="hint" style="margin-top:8px">שדות ריקים — המערכת תחליט בעצמה</p>
+      </div>`;
+    }},
   {q:'עוד משהו שכדאי לדעת?', sub:'לא חובה — אבל זה מה שהופך מסלול לאישי', render:()=>`
       <div class="field" style="max-width:520px;margin:0 auto">
         <textarea id="notes" rows="3" placeholder="למשל: יש עגלה, שומרי כשרות, סבתא לא הולכת הרבה, רוצים יום אחד בים">${esc(state.form.notes)}</textarea></div>
@@ -1094,6 +1124,16 @@ function nextStep(){
   const st=activeSteps()[state.step-1];
   if(st&&st.q.startsWith('כמה ימים')){ const s=$('#start'); if(s) state.form.start=s.value; }
   if(st&&st.q.startsWith('יש ערים')){ const r=$('#route'); if(r) state.form.route=r.value.trim(); }
+  if(st&&st.q.startsWith('מפרט יומי')){
+    $$('.ds-row').forEach(row=>{
+      const i=+row.querySelector('[data-di]').dataset.di;
+      if(!state.form.daySchedule) state.form.daySchedule=[];
+      state.form.daySchedule[i]={
+        city:(row.querySelector('.ds-city')||{}).value||'',
+        arrival:(row.querySelector('.ds-time')||{}).value||''
+      };
+    });
+  }
   if(st&&st.q.startsWith('עוד משהו')){ const n=$('#notes'),t=$('#title');
     if(n) state.form.notes=n.value; if(t) state.form.title=t.value; }
   state.step++; renderStep();
@@ -1204,9 +1244,10 @@ function ctx(){ const f=state.form;
   return `יעד: ${f.dest}. הרכב: ${f.who}${f.kids?' (גילאי הילדים: '+f.kids+')':''}. ${f.days} ימים. קצב ${f.pace}. תקציב ${f.budget}. תחבורה: ${f.transport}. תחומי עניין: ${f.interests.join(', ')}.${diet.length?' העדפות מזון: '+diet.join(', ')+'.':''}${f.route?' מסלול מבוקש: '+f.route+'.':''}${f.notes?' הערות: '+f.notes:''} הקהל ישראלי, כתוב בעברית טבעית וחמה.`; }
 const hasKids=()=>/ילדים|מורחבת/.test(state.form.who);
 
+function daySchLines(){ return (state.form.daySchedule||[]).map((d,i)=>d&&(d.city||d.arrival)?`יום ${i+1}: ${d.city||'?'}${d.arrival?' הגעה '+d.arrival:''}`:null).filter(Boolean); }
 const P={
   plan:()=>`אתה מתכנן טיולים מנוסה. ${ctx()}
-${state.form.route?'חובה לכבד את המסלול המבוקש: '+state.form.route+'. ':''}בנה שלד מסלול הגיוני גאוגרפית, בלי קפיצות מיותרות בין אזורים.
+${state.form.route?'חובה לכבד את המסלול המבוקש: '+state.form.route+'. ':''}${daySchLines().length?'ימים קבועים מראש — חובה לכבד: '+daySchLines().join(', ')+'. ':''}בנה שלד מסלול הגיוני גאוגרפית, בלי קפיצות מיותרות בין אזורים.
 מבנה: {"tagline":"משפט קולע","summary":"2 משפטים","practical":{"currency":"","currencyCode":"קוד ISO כמו EUR","language":"","langCode":"קוד שפה כמו it","plug":"","emergency":"","transport":"","weather":""},"skeleton":[{"day":1,"title":"שם היום","base":"עיר הלינה","focus":"במשפט"}]}
 בדיוק ${state.form.days} ימים ב-skeleton.`,
   guide:sk=>`${ctx()} המסלול: ${sk.join(' · ')}.
@@ -1219,7 +1260,7 @@ ${state.form.route?'חובה לכבד את המסלול המבוקש: '+state.fo
 מבנה: {"lodging":[{"base":"","area":"אזור מומלץ ללינה","why":"עד 12 מילים","tip":"עד 10 מילים"}],"cams":[{"place":"אתר מפורסם","note":"עד 8 מילים"}]}
 שורה לכל בסיס, ו-5 מקומות מוכרים שסביר שיש להם מצלמת לייב.`,
   day:(i,n,sk,prev)=>`${ctx()}
-תכנן את יום ${i+1} מתוך ${n}. נושא: "${sk.title}". בסיס לינה: ${sk.base}. אתמול: ${prev}. ${dateFor(i)?'תאריך: '+dateFor(i)+'.':''}
+${(()=>{const ds=(state.form.daySchedule||[])[i];return ds&&(ds.city||ds.arrival)?`⚠ יום ${i+1} קבוע מראש: הגעה ל${ds.city||sk.base}${ds.arrival?' בשעה '+ds.arrival:''}. זאת חובה ולא הצעה. `:''})()}תכנן את יום ${i+1} מתוך ${n}. נושא: "${sk.title}". בסיס לינה: ${sk.base}. אתמול: ${prev}. ${dateFor(i)?'תאריך: '+dateFor(i)+'.':''}
 מבנה: {"title":"","base":"","summary":"משפט","wake":"07:30","depart":"08:45","departNote":"עד 10 מילים","segments":[{"time":"09:15","title":"","place":"שם מדויק לניווט","desc":"עד 16 מילים","stay":"כמה זמן","travel":"זמן ואופן הנסיעה ליעד הבא","tip":"עד 10 מילים","cost":"מחיר כניסה למבוגר, למשל €12, או חינם","website":"אתר רשמי אם ידוע, אחרת ריק"}],"food":[{"name":"","type":"סוג מסעדה","note":"עד 8 מילים","price":"€/€€/€€€","dietary":["כשר","טבעוני","בשרי","צמחוני","ללא גלוטן" — רק תגים שרלוונטיים, מערך ריק אם לא ידוע],"website":"אתר המסעדה אם ידוע, אחרת ריק"}],"evening":"משפט","backAt":"20:30"${hasKids()?`,"kid":{"emoji":"אימוג׳י אחד שמייצג את היום","simple":"משפט אחד לילד בן חמש","fact":"עובדה כיפית לילד עד 12 מילים","missions":["משימה כיפית עד 7 מילים"]}`:''}}
 4 עד 5 סגמנטים. 2 מסעדות/מזנונים קרוב למסלול${(()=>{const d=(state.form.dietary||[]).filter(x=>x!=='הכל');return d.length?' מתאימות להעדפה: '+d.join(', '):''})()} עם price ו-dietary ו-website (אם ידוע). לאתרים ידועים ציינו cost ו-website מדויקים.${hasKids()?' ב-missions שלוש משימות לילד.':''}`
 };
@@ -1325,7 +1366,7 @@ function fullPrompt(){
 "extras":{"lodging":[{"base":"","area":"","why":"","tip":""}],"cams":[{"place":"","note":""}]},
 "days":[{"day":1,"title":"","base":"עיר הלינה","summary":"משפט","wake":"07:30","depart":"08:45","departNote":"עד 8 מילים","segments":[{"time":"09:15","title":"","place":"שם מדויק לניווט","desc":"עד 14 מילים","stay":"כמה זמן","travel":"זמן ואופן הנסיעה הלאה","tip":"עד 8 מילים","cost":"מחיר כניסה או חינם","website":"אתר רשמי אם ידוע"}],"food":[{"name":"","type":"","note":"","price":"€/€€/€€€","dietary":[],"website":""}],"evening":"משפט","backAt":"20:30"${hasKids()?`,"kid":{"emoji":"","simple":"משפט לילד בן חמש","fact":"עובדה כיפית","missions":["משימה קצרה","משימה קצרה","משימה קצרה"]}`:''}}]}
 
-דרישות: בדיוק ${n} ימים במערך days, ממוספרים 1 עד ${n}${state.form.route?', חייב לכבד את המסלול: '+state.form.route:''}.
+דרישות: בדיוק ${n} ימים במערך days, ממוספרים 1 עד ${n}${state.form.route?', חייב לכבד את המסלול: '+state.form.route:''}${daySchLines().length?'. ימים קבועים שחובה לכבד: '+daySchLines().join(', '):''}.
 לכל יום 4 עד 5 סגמנטים בשעות אמיתיות ומקומות שקיימים באמת. 2 המלצות אוכל ליום עם price, dietary ו-website.
 6 טיפים ליעד, 4 קבוצות ציוד עם 6 פריטים, 5 שורות תקציב, 5 קטגוריות מילון עם 5 מילים בכל אחת.
 אם אתה מתקרב למגבלת אורך — אל תקצר ימים, פשוט עצור באמצע ואני אבקש המשך.`;
