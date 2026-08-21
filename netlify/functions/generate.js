@@ -58,7 +58,7 @@ export default async (req) => {
         headers: { 'Content-Type': 'application/json', 'x-api-key': anthropicKey, 'anthropic-version': '2023-06-01' },
         body: JSON.stringify({
           model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6',
-          max_tokens: Math.min(body.max_tokens || 1200, 2000),
+          max_tokens: Math.min(body.max_tokens || 3000, 8000),
           messages: [{ role: 'user', content: prompt }]
         })
       });

@@ -650,7 +650,7 @@ const AI={
       const parts=(((d.candidates||[])[0]||{}).content||{}).parts||[];
       return {ok:true,status:200,text:parts.map(p=>p.text||'').join('')};
     }
-    const body=JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1200,messages:[{role:"user",content:prompt}]});
+    const body=JSON.stringify({model:"claude-sonnet-4-6",max_tokens:3000,messages:[{role:"user",content:prompt}]});
     let r;
     if(mode==='proxy') r=await fetch(this.proxy,{method:'POST',headers:{'Content-Type':'application/json'},body});
     else if(mode==='anthropic') r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
@@ -1233,7 +1233,13 @@ async function build(){
 
     const makeDay=async i=>{
       const sk=trip.skeleton[i]||{title:'יום '+(i+1),base:state.form.dest};
-      const d=await askJSON(P.day(i,n,sk,i>0?(trip.skeleton[i-1].base||''):'הנחיתה'));
+      const prompt=P.day(i,n,sk,i>0?(trip.skeleton[i-1].base||''):'הנחיתה');
+      let d;
+      for(let attempt=0;attempt<2;attempt++){
+        try{ d=await askJSON(prompt); if(d&&d.segments&&d.segments.length) break; }
+        catch(e){ if(attempt===1) throw e; await wait(2000); }
+      }
+      if(!d||!d.segments) throw new Error('יום ריק');
       d.day=i+1; d.date=dateFor(i); d.iso=dateISO(i); return d; };
     const BATCH=AI.slow?2:3;
     for(let i=0;i<n;i+=BATCH){ const batch=[];
