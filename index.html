@@ -352,6 +352,30 @@ nav.tabs .wrap::-webkit-scrollbar{display:none}
 .sl-lightbox img{max-width:100%;max-height:90vh;border-radius:var(--r-s);object-fit:contain;box-shadow:var(--sh-2)}
 .sl-lightbox-close{position:fixed;top:20px;inset-inline-end:24px;border:0;background:rgba(255,255,255,.15);
   color:#fff;border-radius:50%;width:42px;height:42px;font-size:22px;cursor:pointer;backdrop-filter:blur(6px)}
+/* ---------- אוכל ואטרקציות ---------- */
+.attr-meta{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:8px 0 4px}
+.cost-badge{font-family:var(--util);font-size:12px;font-weight:700;background:var(--ink);color:#fff;
+  border-radius:999px;padding:4px 12px;display:inline-flex;align-items:center;gap:5px}
+.food-box h4{margin:0}
+.food-header{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  flex-wrap:wrap;margin-bottom:16px}
+.food-filter{display:flex;gap:6px;flex-wrap:wrap}
+.food-filter .chip{padding:6px 14px;font-size:13px}
+.food-list{display:flex;flex-direction:column}
+.food-item{padding:14px 0;border-bottom:1px solid var(--line)}
+.food-item:last-child{border:0;padding-bottom:4px}
+.food-item-head{margin-bottom:5px}
+.food-name-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.food-name-row h5{font-size:16px;margin:0;font-family:var(--display)}
+.price-badge{font-family:var(--util);font-size:12.5px;font-weight:900;color:var(--accent-ink);
+  background:var(--accent-soft);border-radius:999px;padding:3px 11px;white-space:nowrap}
+.food-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.food-type{font-size:13px;color:var(--muted);font-family:var(--util)}
+.diet-tag{font-family:var(--util);font-size:11.5px;font-weight:700;border-radius:999px;
+  padding:3px 9px;background:var(--wash);border:1px solid var(--line);color:var(--ink-2);white-space:nowrap}
+.food-note{margin:6px 0 0;font-size:14.5px;color:var(--ink-2);line-height:1.55}
+.food-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
 .saved{font-size:13px;color:var(--ok);font-family:var(--util);font-weight:700;opacity:0;transition:.3s}
 .saved.on{opacity:1}
 .moods{display:flex;gap:9px;flex-wrap:wrap;margin:10px 0}
@@ -811,7 +835,7 @@ const CATS=['תחבורה','לינה','אוכל','אטרקציות','קניות'
 const STICKERS=['⭐','🏆','🎈','🦋','🐬','🚀','🌈','🍦','🐻','🎪','🦁','🌻'];
 const app=$('#app');
 const state={
-  form:{dest:'',who:'משפחה עם ילדים',kids:'',days:5,start:'',pace:'מאוזן',budget:'בינוני',transport:'רכב שכור',interests:['אוכל ושווקים','היסטוריה ואתרים'],title:'',notes:'',route:'',coverPhoto:''},
+  form:{dest:'',who:'משפחה עם ילדים',kids:'',days:5,start:'',pace:'מאוזן',budget:'בינוני',transport:'רכב שכור',interests:['אוכל ושווקים','היסטוריה ואתרים'],dietary:[],title:'',notes:'',route:'',coverPhoto:''},
   trip:null, tab:'now', day:1, step:0, kidMode:false, kidView:'today'
 };
 
@@ -1004,6 +1028,12 @@ const STEPS=[
       <div class="chips" style="justify-content:center" id="ints">
         ${INTERESTS.map(([k,i])=>`<span class="chip ${state.form.interests.includes(i)?'on':''}" data-i="${i}">
           <i class="ci">${ICON[k]||''}</i>${i}</span>`).join('')}</div>`},
+  {q:'העדפות מזון?', sub:'נתאים את ההמלצות בהתאם — אפשר לדלג', render:()=>`
+      <div class="chips" style="justify-content:center" id="dietchips">
+        ${[['הכל','🍽'],['כשר','✡'],['טבעוני','🌱'],['צמחוני','🥗'],['בשרי','🥩'],['ללא גלוטן','🌾']].map(([d,e])=>
+          `<span class="chip ${(state.form.dietary||[]).includes(d)?'on':''}" data-d="${esc(d)}">${e} ${d}</span>`).join('')}
+      </div>
+      <p class="hint center" style="margin-top:12px">אם לא תבחרו — נציג הכל</p>`},
   {q:'יש ערים ספציפיות שרוצים לעבור?', sub:'לא חובה — ציינו מסלול ואנחנו נכבד אותו', render:()=>`
       <div class="field" style="max-width:520px;margin:0 auto">
         <textarea id="route" rows="3" placeholder="למשל: רומא 3 ימים, פירנצה 2 ימים, ונציה 1 יום">${esc(state.form.route)}</textarea>
@@ -1047,6 +1077,9 @@ function renderStep(){
   const ints=$('#ints');
   if(ints) ints.onclick=e=>{ const c=e.target.closest('.chip'); if(!c)return; c.classList.toggle('on');
     state.form.interests=$$('#ints .chip.on').map(x=>x.dataset.i); };
+  const dc=$('#dietchips');
+  if(dc) dc.onclick=e=>{ const c=e.target.closest('.chip'); if(!c)return; c.classList.toggle('on');
+    state.form.dietary=$$('#dietchips .chip.on').map(x=>x.dataset.d); };
   const dv=$('#dval');
   if(dv) $$('.stepper button').forEach(b=>b.onclick=()=>{
     state.form.days=Math.max(1,Math.min(21,state.form.days+(+b.dataset.n)));
@@ -1167,7 +1200,8 @@ function dateISO(i){ if(!state.form.start)return''; const d=new Date(state.form.
 function dateFor(i){ if(!state.form.start)return''; const d=new Date(state.form.start); d.setDate(d.getDate()+i);
   return d.toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'long'}); }
 function ctx(){ const f=state.form;
-  return `יעד: ${f.dest}. הרכב: ${f.who}${f.kids?' (גילאי הילדים: '+f.kids+')':''}. ${f.days} ימים. קצב ${f.pace}. תקציב ${f.budget}. תחבורה: ${f.transport}. תחומי עניין: ${f.interests.join(', ')}.${f.route?' מסלול מבוקש: '+f.route+'.':''}${f.notes?' הערות: '+f.notes:''} הקהל ישראלי, כתוב בעברית טבעית וחמה.`; }
+  const diet=(f.dietary||[]).filter(d=>d!=='הכל');
+  return `יעד: ${f.dest}. הרכב: ${f.who}${f.kids?' (גילאי הילדים: '+f.kids+')':''}. ${f.days} ימים. קצב ${f.pace}. תקציב ${f.budget}. תחבורה: ${f.transport}. תחומי עניין: ${f.interests.join(', ')}.${diet.length?' העדפות מזון: '+diet.join(', ')+'.':''}${f.route?' מסלול מבוקש: '+f.route+'.':''}${f.notes?' הערות: '+f.notes:''} הקהל ישראלי, כתוב בעברית טבעית וחמה.`; }
 const hasKids=()=>/ילדים|מורחבת/.test(state.form.who);
 
 const P={
@@ -1186,8 +1220,8 @@ ${state.form.route?'חובה לכבד את המסלול המבוקש: '+state.fo
 שורה לכל בסיס, ו-5 מקומות מוכרים שסביר שיש להם מצלמת לייב.`,
   day:(i,n,sk,prev)=>`${ctx()}
 תכנן את יום ${i+1} מתוך ${n}. נושא: "${sk.title}". בסיס לינה: ${sk.base}. אתמול: ${prev}. ${dateFor(i)?'תאריך: '+dateFor(i)+'.':''}
-מבנה: {"title":"","base":"","summary":"משפט","wake":"07:30","depart":"08:45","departNote":"עד 10 מילים","segments":[{"time":"09:15","title":"","place":"שם מדויק לניווט","desc":"עד 16 מילים","stay":"כמה זמן להישאר","travel":"זמן ואופן הנסיעה ליעד הבא","tip":"עד 10 מילים"}],"food":[{"name":"","type":"","note":""}],"evening":"משפט","backAt":"20:30"${hasKids()?`,"kid":{"emoji":"אימוג׳י אחד שמייצג את היום","simple":"משפט אחד לילד בן חמש, מילים קצרות ופשוטות","fact":"עובדה מפתיעה וכיפית לילד, עד 12 מילים","missions":["משימה כיפית לילד באותו יום, עד 7 מילים"]}`:''}}
-4 עד 5 סגמנטים בשעות אמיתיות, מקומות שקיימים באמת ב${sk.base}. 2 המלצות אוכל.${hasKids()?' ב-missions שלוש משימות חיפוש כיפיות שילד יכול לעשות באותם מקומות.':''}`
+מבנה: {"title":"","base":"","summary":"משפט","wake":"07:30","depart":"08:45","departNote":"עד 10 מילים","segments":[{"time":"09:15","title":"","place":"שם מדויק לניווט","desc":"עד 16 מילים","stay":"כמה זמן","travel":"זמן ואופן הנסיעה ליעד הבא","tip":"עד 10 מילים","cost":"מחיר כניסה למבוגר, למשל €12, או חינם","website":"אתר רשמי אם ידוע, אחרת ריק"}],"food":[{"name":"","type":"סוג מסעדה","note":"עד 8 מילים","price":"€/€€/€€€","dietary":["כשר","טבעוני","בשרי","צמחוני","ללא גלוטן" — רק תגים שרלוונטיים, מערך ריק אם לא ידוע],"website":"אתר המסעדה אם ידוע, אחרת ריק"}],"evening":"משפט","backAt":"20:30"${hasKids()?`,"kid":{"emoji":"אימוג׳י אחד שמייצג את היום","simple":"משפט אחד לילד בן חמש","fact":"עובדה כיפית לילד עד 12 מילים","missions":["משימה כיפית עד 7 מילים"]}`:''}}
+4 עד 5 סגמנטים. 2 מסעדות/מזנונים קרוב למסלול${(()=>{const d=(state.form.dietary||[]).filter(x=>x!=='הכל');return d.length?' מתאימות להעדפה: '+d.join(', '):''})()} עם price ו-dietary ו-website (אם ידוע). לאתרים ידועים ציינו cost ו-website מדויקים.${hasKids()?' ב-missions שלוש משימות לילד.':''}`
 };
 
 async function build(){
@@ -1289,17 +1323,17 @@ function fullPrompt(){
 "guide":{"tips":[{"title":"","text":""}],"packing":[{"group":"","items":[""]}],"budgetPlan":[{"cat":"","estimate":"","note":""}]},
 "lang":{"categories":[{"name":"","words":[{"he":"","local":"","translit":"תעתיק עברי"}]}]},
 "extras":{"lodging":[{"base":"","area":"","why":"","tip":""}],"cams":[{"place":"","note":""}]},
-"days":[{"day":1,"title":"","base":"עיר הלינה","summary":"משפט","wake":"07:30","depart":"08:45","departNote":"עד 8 מילים","segments":[{"time":"09:15","title":"","place":"שם מדויק לניווט","desc":"עד 14 מילים","stay":"כמה זמן","travel":"זמן ואופן הנסיעה הלאה","tip":"עד 8 מילים"}],"food":[{"name":"","type":"","note":""}],"evening":"משפט","backAt":"20:30"${hasKids()?`,"kid":{"emoji":"","simple":"משפט לילד בן חמש","fact":"עובדה כיפית","missions":["משימה קצרה","משימה קצרה","משימה קצרה"]}`:''}}]}
+"days":[{"day":1,"title":"","base":"עיר הלינה","summary":"משפט","wake":"07:30","depart":"08:45","departNote":"עד 8 מילים","segments":[{"time":"09:15","title":"","place":"שם מדויק לניווט","desc":"עד 14 מילים","stay":"כמה זמן","travel":"זמן ואופן הנסיעה הלאה","tip":"עד 8 מילים","cost":"מחיר כניסה או חינם","website":"אתר רשמי אם ידוע"}],"food":[{"name":"","type":"","note":"","price":"€/€€/€€€","dietary":[],"website":""}],"evening":"משפט","backAt":"20:30"${hasKids()?`,"kid":{"emoji":"","simple":"משפט לילד בן חמש","fact":"עובדה כיפית","missions":["משימה קצרה","משימה קצרה","משימה קצרה"]}`:''}}]}
 
 דרישות: בדיוק ${n} ימים במערך days, ממוספרים 1 עד ${n}${state.form.route?', חייב לכבד את המסלול: '+state.form.route:''}.
-לכל יום 4 עד 5 סגמנטים בשעות אמיתיות ומקומות שקיימים באמת. 2 המלצות אוכל ליום.
+לכל יום 4 עד 5 סגמנטים בשעות אמיתיות ומקומות שקיימים באמת. 2 המלצות אוכל ליום עם price, dietary ו-website.
 6 טיפים ליעד, 4 קבוצות ציוד עם 6 פריטים, 5 שורות תקציב, 5 קטגוריות מילון עם 5 מילים בכל אחת.
 אם אתה מתקרב למגבלת אורך — אל תקצר ימים, פשוט עצור באמצע ואני אבקש המשך.`;
 }
 function contPrompt(missing){
   const from=missing[0], to=missing[missing.length-1];
   return `המשך את התשובה הקודמת. החזר JSON תקין בלבד עם המפתח days בלבד, לימים ${from} עד ${to}, באותו מבנה מדויק:
-{"days":[{"day":${from},"title":"","base":"","summary":"","wake":"","depart":"","departNote":"","segments":[{"time":"","title":"","place":"","desc":"","stay":"","travel":"","tip":""}],"food":[{"name":"","type":"","note":""}],"evening":"","backAt":""${hasKids()?',"kid":{"emoji":"","simple":"","fact":"","missions":[""]}':''}}]}
+{"days":[{"day":${from},"title":"","base":"","summary":"","wake":"","depart":"","departNote":"","segments":[{"time":"","title":"","place":"","desc":"","stay":"","travel":"","tip":"","cost":"","website":""}],"food":[{"name":"","type":"","note":"","price":"€/€€/€€€","dietary":[],"website":""}],"evening":"","backAt":""${hasKids()?',"kid":{"emoji":"","simple":"","fact":"","missions":[""]}':''}}]}
 בלי טקסט נוסף ובלי סימני קוד.`;
 }
 function mergeAnswer(j,t){
@@ -1540,7 +1574,7 @@ function renderSite(){
     if(navigator.share){ try{ await navigator.share(d); return; }catch(e){} }
     try{ await navigator.clipboard.writeText(link); alert('הקישור הועתק:\n'+link); }
     catch(e){ prompt('העתיקו את הקישור:',link); } };
-  ({now:wireNow,journal:wireJournal,lang:wireLang,tools:wireTools,pack:wirePack,money:wireMoney,stay:wireStay,publish:wirePublish,places:wirePlaces,family:wireFamily}[state.tab]||function(){})();
+  ({now:wireNow,daily:wireDaily,journal:wireJournal,lang:wireLang,tools:wireTools,pack:wirePack,money:wireMoney,stay:wireStay,publish:wirePublish,places:wirePlaces,family:wireFamily}[state.tab]||function(){})();
   Photos.hydrate();
   window.scrollTo(0,0);
 }
@@ -1696,6 +1730,10 @@ function panelDaily(){ const t=state.trip,d=t.plan[state.day-1]||t.plan[0];
          <div><div class="time">${esc(s.time||'')}${s.stay?`<small>${esc(s.stay)}</small>`:''}</div></div>
          <span class="slot-num">${String(si+1).padStart(2,'0')}</span></div>
        <h4>${esc(s.title||'')}</h4><p>${esc(s.desc||'')}</p>
+       ${s.cost||s.website?`<div class="attr-meta">
+         ${s.cost?`<span class="cost-badge">🎟 ${esc(s.cost)}</span>`:''}
+         ${s.website?`<a class="navlink" target="_blank" rel="noopener" href="${esc(s.website)}">🌐 אתר רשמי</a>`:''}
+       </div>`:''}
        ${s.tip?`<div class="tip">💡 ${esc(s.tip)}</div>`:''}
        ${s.place?`<div class="navlinks"><a class="navlink" target="_blank" rel="noopener" href="${mapsUrl(s.place,t.dest)}">Google Maps ←</a>
          <a class="navlink" target="_blank" rel="noopener" href="${wazeUrl(s.place,t.dest)}">Waze</a></div>`:''}
@@ -1704,8 +1742,52 @@ function panelDaily(){ const t=state.trip,d=t.plan[state.day-1]||t.plan[0];
        <div class="slot-head"><div class="time">${esc(d.backAt)}<small>סוף היום</small></div>
        <span class="slot-num">סיום</span></div>
        <h4>חוזרים ללינה</h4><p>${esc(d.evening||'')}</p></div>`:''}</div>
-   ${(d.food||[]).length?`<div class="box"><h4>איפה אוכלים</h4>${d.food.map(x=>`<div class="kv"><b>${esc(x.name)}</b>
-     <span>${esc(x.type||'')} · ${esc(x.note||'')} <a class="navlink" target="_blank" rel="noopener" href="${mapsUrl(x.name,d.base||t.dest)}">מפה</a></span></div>`).join('')}</div>`:''}</section>`; }
+   ${(d.food||[]).length?`<div class="box food-box">
+     <div class="food-header">
+       <h4>🍽 איפה אוכלים</h4>
+       <div class="food-filter" id="food-filter">
+         <span class="chip on" data-df="">הכל</span>
+         ${[...new Set((d.food||[]).flatMap(x=>x.dietary||[]))].map(tag=>`<span class="chip" data-df="${esc(tag)}">${tag}</span>`).join('')}
+       </div>
+     </div>
+     <div class="food-list" id="food-list">
+     ${d.food.map((x,fi)=>`<div class="food-item" data-fi="${fi}" data-dietary="${esc((x.dietary||[]).join(','))}">
+       <div class="food-item-head">
+         <div class="food-name-row">
+           <h5>${esc(x.name)}</h5>
+           ${x.price?`<span class="price-badge">${esc(x.price)}</span>`:''}
+         </div>
+         <div class="food-meta">
+           ${x.type?`<span class="food-type">${esc(x.type)}</span>`:''}
+           ${(x.dietary||[]).map(tag=>`<span class="diet-tag">${esc(tag)}</span>`).join('')}
+         </div>
+       </div>
+       ${x.note?`<p class="food-note">${esc(x.note)}</p>`:''}
+       <div class="food-links">
+         <a class="navlink" target="_blank" rel="noopener" href="${mapsUrl(x.name,d.base||t.dest)}">📍 מפה</a>
+         ${x.website?`<a class="navlink" target="_blank" rel="noopener" href="${esc(x.website)}">🌐 אתר</a>`:''}
+       </div>
+     </div>`).join('')}
+     </div>
+     <p class="hint" style="margin:10px 0 0;font-size:12.5px">* מחירים ואתרים הם הערכות — מומלץ לאמת לפני הנסיעה</p>
+   </div>`:''}</section>`; }
+function wireDaily(){
+  // food filter chips
+  const ff=$('#food-filter');
+  if(!ff) return;
+  ff.onclick=e=>{
+    const chip=e.target.closest('.chip'); if(!chip) return;
+    $$('.chip',ff).forEach(c=>c.classList.remove('on')); chip.classList.add('on');
+    const tag=chip.dataset.df;
+    $$('.food-item','#food-list').forEach(item=>{
+      if(!tag) item.style.display=''; // הכל
+      else{
+        const tags=(item.dataset.dietary||'').split(',');
+        item.style.display=tags.includes(tag)?'':'none';
+      }
+    });
+  };
+}
 function panelJournal(){ const t=state.trip;
   const allPlaces=t.plan.flatMap(d=>(d.segments||[]).map(s=>s.place||s.title)).filter((v,i,a)=>v&&a.indexOf(v)===i);
   return `<section class="panel ${state.tab==='journal'?'on':''} journal">
