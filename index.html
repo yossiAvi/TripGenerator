@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#FE5B25">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>מסלול · בונה אתרי טיול</title>
+<title>מסלול · הטיול החלומי שלכם</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@300;400;600;700&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
@@ -407,6 +407,11 @@ nav.tabs .wrap::-webkit-scrollbar{display:none}
   padding:3px 9px;background:var(--wash);border:1px solid var(--line);color:var(--ink-2);white-space:nowrap}
 .food-note{margin:6px 0 0;font-size:14.5px;color:var(--ink-2);line-height:1.55}
 .food-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.day-stats{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 8px}
+.day-stat{background:var(--wash);border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-size:13px;font-weight:600;color:var(--ink)}
+.day-map{height:260px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);margin-bottom:20px;background:var(--wash);position:relative}
+.day-map-msg{display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:14px}
+.map-pin{width:28px;height:28px;border-radius:50%;background:#2563eb;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);font-family:var(--util)}
 
 .saved{font-size:13px;color:var(--ok);font-family:var(--util);font-weight:700;opacity:0;transition:.3s}
 .saved.on{opacity:1}
@@ -421,9 +426,10 @@ nav.tabs .wrap::-webkit-scrollbar{display:none}
 .check:last-child{border:0}
 .check input{width:21px;height:21px;accent-color:var(--accent);margin-top:2px;flex:0 0 auto}
 .check.done span{text-decoration:line-through;color:var(--muted)}
-.addrow{display:flex;gap:9px;margin-top:14px}
-.addrow input{flex:1;border:1.5px solid var(--line);border-radius:var(--r-s);padding:11px 14px;background:var(--paper)}
+.addrow{display:flex;gap:9px;margin-top:14px;align-items:center;flex-wrap:wrap}
+.addrow input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:var(--r-s);padding:11px 14px;background:var(--paper)}
 .addrow input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.addrow .btn{flex-shrink:0}
 table{width:100%;border-collapse:collapse;font-size:15px}
 th,td{text-align:start;padding:11px 8px;border-bottom:1px solid var(--line)}
 th{font-family:var(--util);font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
@@ -1012,13 +1018,14 @@ async function renderHome(){
   app.innerHTML=`${topbar()}
   <div class="wrap narrow">
     <div class="stage center">
-      <p class="eyebrow">בונה אתרי טיול</p>
+      <p class="eyebrow">הטיול החלומי שלכם</p>
       <h2>לאן נוסעים?</h2>
       <p class="sub">תגידו לנו לאן, ונבנה לכם אתר טיול שלם — מסלול לפי שעות, ניווט, יומן תמונות, תרגום, תקציב ומצב מיוחד לילדים.</p>
       <input class="bigin" id="dest" placeholder="איטליה, יוון, תאילנד…" value="${esc(state.form.dest)}" autocomplete="off">
-      <div class="chips" style="justify-content:center;margin-top:20px" id="destchips">
+      <div id="dest-err" style="color:#8E2F0E;font-size:14.5px;margin-top:8px;min-height:20px"></div>
+      <div class="chips" style="justify-content:center;margin-top:14px" id="destchips">
         ${['איטליה','יוון','ספרד','תאילנד','יפן','גאורגיה','קפריסין','דובאי'].map(d=>`<span class="chip" data-d="${d}">${d}</span>`).join('')}</div>
-      <div style="margin-top:30px"><button class="btn btn-primary btn-lg" id="go">בואו נתחיל</button></div>
+      <div style="margin-top:26px"><button class="btn btn-primary btn-lg" id="go">בואו נתחיל</button></div>
     </div>
     ${saved.length?`<div style="padding-bottom:60px"><p class="eyebrow" style="margin-bottom:12px">הטיולים שלכם</p>
       ${saved.map(t=>`<div class="saved-trip"><span><b>${esc(t.title)}</b><br><span class="hint">${esc(t.dest)} · ${t.days} ימים</span></span>
@@ -1026,8 +1033,20 @@ async function renderHome(){
     <footer>הכול נשמר אצלכם. אפשר לפרסם את האתר בלחיצה כשמסיימים.</footer>
   </div>`;
   wireTop();
-  const go=()=>{ const v=$('#dest').value.trim(); if(!v){ $('#dest').focus(); return; }
-    state.form.dest=v; state.step=1; renderStep(); };
+  const go=async()=>{
+    const v=$('#dest').value.trim(); if(!v){ $('#dest').focus(); return; }
+    const btn=$('#go'),err=$('#dest-err');
+    btn.disabled=true; btn.textContent='בודק…'; if(err) err.textContent='';
+    try{
+      const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?count=3&language=he&name='+encodeURIComponent(v)).then(r=>r.json());
+      if(!(r.results||[]).length){
+        if(err) err.textContent='לא הצלחנו לזהות את "'+v+'" כיעד מוכר. נסו שם ידוע יותר או בדקו את האיות.';
+        btn.disabled=false; btn.textContent='בואו נתחיל'; return;
+      }
+    }catch(e){ /* network error — proceed anyway */ }
+    btn.disabled=false; btn.textContent='בואו נתחיל';
+    state.form.dest=v; state.step=1; renderStep();
+  };
   $('#go').onclick=go;
   $('#dest').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); go(); } };
   $('#destchips').onclick=e=>{ const d=e.target.dataset.d; if(!d)return; $('#dest').value=d; go(); };
@@ -1326,8 +1345,8 @@ ${(()=>{const ds=(state.form.daySchedule||[])[i]; if(!ds) return '';
   if(ds.departure) parts.push(`טיסת חזור יוצאת בשעה ${ds.departure} UTC — תכנן שיסיימו ויהיו בשדה תעופה לפחות 3 שעות לפני`);
   if(ds.flightNote) parts.push(ds.flightNote);
   return parts.length?`⚠ יום ${i+1} קבוע מראש: ${parts.join('. ')}. זאת חובה ולא הצעה.\n`:''})()}תכנן את יום ${i+1} מתוך ${n}. נושא: "${sk.title}". בסיס לינה: ${sk.base}. אתמול: ${prev}. ${dateFor(i)?'תאריך: '+dateFor(i)+'.':''}
-מבנה: {"title":"","base":"","summary":"משפט","wake":"07:30","depart":"08:45","departNote":"עד 10 מילים","segments":[{"time":"09:15","title":"","place":"שם מדויק לניווט","desc":"עד 16 מילים","stay":"כמה זמן","travel":"זמן ואופן הנסיעה ליעד הבא","tip":"עד 10 מילים","cost":"מחיר כניסה למבוגר, למשל €12, או חינם","website":"אתר רשמי אם ידוע, אחרת ריק"}],"food":[{"name":"","type":"סוג מסעדה","note":"עד 8 מילים","price":"€/€€/€€€","dietary":["כשר","טבעוני","בשרי","צמחוני","ללא גלוטן" — רק תגים שרלוונטיים, מערך ריק אם לא ידוע],"website":"אתר המסעדה אם ידוע, אחרת ריק"}],"evening":"משפט","backAt":"20:30"${hasKids()?`,"kid":{"emoji":"אימוג׳י אחד שמייצג את היום","simple":"משפט אחד לילד בן חמש","fact":"עובדה כיפית לילד עד 12 מילים","missions":["משימה כיפית עד 7 מילים"]}`:''}}
-4 עד 5 סגמנטים. 2 מסעדות/מזנונים קרוב למסלול${(()=>{const d=(state.form.dietary||[]).filter(x=>x!=='הכל');return d.length?' מתאימות להעדפה: '+d.join(', '):''})()} עם price ו-dietary ו-website (אם ידוע). לאתרים ידועים ציינו cost ו-website מדויקים.${hasKids()?' ב-missions שלוש משימות לילד.':''}`
+מבנה (JSON תקין בלבד): {"title":"","base":"","summary":"משפט","wake":"07:30","depart":"08:45","departNote":"עד 10 מילים","segments":[{"time":"09:15","title":"","place":"שם מדויק לניווט","desc":"עד 16 מילים","stay":"כמה זמן","travel":"זמן ואופן הנסיעה","tip":"עד 10 מילים","cost":"מחיר כניסה או חינם","website":""}],"food":[{"name":"","type":"","note":"עד 8 מילים","price":"€€","dietary":[],"website":""}],"evening":"משפט","backAt":"20:30"${hasKids()?`,"kid":{"emoji":"","simple":"משפט לילד בן חמש","fact":"עובדה כיפית","missions":[""]}`:''}}}
+כללים: 4 עד 5 סגמנטים בשעות אמיתיות. 2 מסעדות קרוב למסלול${(()=>{const d=(state.form.dietary||[]).filter(x=>x!=='הכל');return d.length?' (העדפה: '+d.join(', ')+')':''})()} . ב-price: €, €€, או €€€. ב-dietary: מערך של תגים רלוונטיים מתוך [כשר,טבעוני,בשרי,צמחוני,ללא גלוטן], ריק אם לא ידוע. ב-website: כתובת אם ידועה, אחרת "". ב-cost: מחיר כניסה מקורב, אחרת "חינם".${hasKids()?' ב-missions שלוש משימות לילד.':''}`
 };
 
 async function build(){
@@ -1565,8 +1584,17 @@ const WMO={0:['☀️','בהיר'],1:['🌤️','בהיר בעיקר'],2:['⛅',
  51:['🌦️','טפטוף'],53:['🌦️','טפטוף'],55:['🌦️','טפטוף חזק'],61:['🌧️','גשם קל'],63:['🌧️','גשם'],65:['🌧️','גשם חזק'],
  71:['🌨️','שלג קל'],73:['🌨️','שלג'],75:['❄️','שלג כבד'],80:['🌦️','ממטרים'],81:['🌧️','ממטרים'],82:['⛈️','ממטרים עזים'],95:['⛈️','רעמים'],96:['⛈️','רעמים'],99:['⛈️','רעמים']};
 async function fetchWeather(place){
-  const g=await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=he&name='+encodeURIComponent(place)).then(r=>r.json());
-  const loc=(g.results||[])[0]; if(!loc) throw new Error('לא נמצא מיקום');
+  // Try Hebrew name, then strip Hebrew diacritics/punctuation and try again, then fall back to English-style
+  const tries=[place, place.replace(/[^\u05D0-\u05EAa-zA-Z0-9\s,]/g,'').trim()];
+  let loc;
+  for(const q of tries){
+    if(!q) continue;
+    try{
+      const g=await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=he&name='+encodeURIComponent(q)).then(r=>r.json());
+      loc=(g.results||[])[0]; if(loc) break;
+    }catch(e){}
+  }
+  if(!loc) throw new Error('לא נמצא מיקום "'+place+'"');
   const w=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m,apparent_temperature&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=7`).then(r=>r.json());
   return {loc,w};
 }
@@ -1848,6 +1876,8 @@ function panelDaily(){ const t=state.trip,d=t.plan[state.day-1]||t.plan[0];
        <div class="slot-head"><div class="time">${esc(d.backAt)}<small>סוף היום</small></div>
        <span class="slot-num">סיום</span></div>
        <h4>חוזרים ללינה</h4><p>${esc(d.evening||'')}</p></div>`:''}</div>
+   <div id="day-stats" class="day-stats"></div>
+   <div id="day-map" class="day-map"><div class="day-map-msg">טוען מפה...</div></div>
    ${(d.food||[]).length?`<div class="box food-box">
      <div class="food-header">
        <h4>🍽 איפה אוכלים</h4>
@@ -1937,6 +1967,66 @@ function wireFlightStep(){
   const fo=$('#fl-out'); if(fo) fo.onkeydown=e=>{ if(e.key==='Enter') os?.click(); };
   const fr=$('#fl-ret'); if(fr) fr.onkeydown=e=>{ if(e.key==='Enter') rs?.click(); };
 }
+const geoCache=new Map();
+async function geocodePlace(name,country){
+  const key=name+'|'+(country||'');
+  if(geoCache.has(key)) return geoCache.get(key);
+  try{
+    const q=encodeURIComponent((name+' '+(country||'')).trim());
+    const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=he&name='+q);
+    const d=await r.json();
+    const loc=(d.results||[])[0]||null;
+    geoCache.set(key,loc); return loc;
+  }catch(e){ geoCache.set(key,null); return null; }
+}
+function haversineKm(lat1,lng1,lat2,lng2){
+  const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function loadLeaflet(){
+  if(window.L) return Promise.resolve();
+  return new Promise((res,rej)=>{
+    const lnk=document.createElement('link');
+    lnk.rel='stylesheet'; lnk.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.appendChild(lnk);
+    const sc=document.createElement('script');
+    sc.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    sc.onload=res; sc.onerror=rej; document.head.appendChild(sc);
+  });
+}
+async function loadDayMap(){
+  const mapEl=$('#day-map'),statsEl=$('#day-stats');
+  if(!mapEl||!statsEl) return;
+  const t=state.trip,d=t.plan[state.day-1];
+  if(!d){ mapEl.innerHTML=''; return; }
+  const segs=(d.segments||[]).filter(s=>s.place||s.title);
+  if(segs.length<2){ mapEl.innerHTML=''; statsEl.innerHTML=''; return; }
+  mapEl.innerHTML='<div class="day-map-msg">טוען מפה...</div>';
+  try{
+    await loadLeaflet();
+    const locs=await Promise.all(segs.map(s=>geocodePlace(s.place||s.title,d.base||t.dest)));
+    const valid=segs.map((s,i)=>locs[i]?{s,loc:locs[i]}:null).filter(Boolean);
+    if(valid.length<2){ mapEl.innerHTML=''; statsEl.innerHTML=''; return; }
+    let totalKm=0;
+    for(let i=1;i<valid.length;i++)
+      totalKm+=haversineKm(valid[i-1].loc.latitude,valid[i-1].loc.longitude,valid[i].loc.latitude,valid[i].loc.longitude);
+    statsEl.innerHTML=`<span class="day-stat">📍 ${valid.length} עצירות</span><span class="day-stat">📏 ${totalKm.toFixed(1)} ק"מ (קו ישר)</span>`;
+    mapEl.innerHTML='';
+    // destroy previous Leaflet instance on same element
+    if(window._dayMap){ try{ window._dayMap.remove(); }catch(e){} window._dayMap=null; }
+    const map=window._dayMap=L.map(mapEl,{zoomControl:true,scrollWheelZoom:false,attributionControl:false});
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+    const latlngs=valid.map(v=>[v.loc.latitude,v.loc.longitude]);
+    L.polyline(latlngs,{color:'#2563eb',weight:3,opacity:.75,dashArray:'6 4'}).addTo(map);
+    valid.forEach((v,i)=>{
+      const icon=L.divIcon({html:`<div class="map-pin">${i+1}</div>`,className:'',iconSize:[28,28],iconAnchor:[14,14]});
+      L.marker([v.loc.latitude,v.loc.longitude],{icon}).addTo(map)
+        .bindPopup(`<b>${esc(v.s.title||v.s.place||'')}</b>${v.s.time?'<br>'+esc(v.s.time):''}`,{maxWidth:200});
+    });
+    map.fitBounds(latlngs,{padding:[28,28]});
+  }catch(e){ mapEl.innerHTML=''; statsEl.innerHTML=''; }
+}
 function wireDaily(){
   // food filter chips
   const ff=$('#food-filter');
@@ -1953,6 +2043,7 @@ function wireDaily(){
       }
     });
   };
+  loadDayMap();
 }
 function panelJournal(){ const t=state.trip;
   const allPlaces=t.plan.flatMap(d=>(d.segments||[]).map(s=>s.place||s.title)).filter((v,i,a)=>v&&a.indexOf(v)===i);
@@ -2222,7 +2313,9 @@ async function wireTools(){
           return `<div class="wday"><div class="d">${new Date(dd).toLocaleDateString('he-IL',{weekday:'short'})}</div>
           <div class="i">${k[0]}</div><div class="t">${Math.round(w.daily.temperature_2m_max[i])}° / ${Math.round(w.daily.temperature_2m_min[i])}°</div>
           <div class="d">${w.daily.precipitation_probability_max[i]??0}% גשם</div></div>`; }).join('')}</div>`;
-    }catch(e){ box.innerHTML='<div class="err-box">לא הצלחנו למשוך מזג אוויר כרגע.</div>'; } };
+    }catch(e){ box.innerHTML=`<div class="err-box">לא הצלחנו למצוא מזג אוויר עבור "${esc(place)}".
+      <a class="btn btn-ghost btn-sm" style="margin-top:8px;display:inline-flex" target="_blank" rel="noopener"
+         href="https://www.google.com/search?q=מזג+אוויר+${encodeURIComponent(place)}">חפש ב-Google</a></div>`; } };
   paintW((t.plan[state.day-1]||t.plan[0]||{}).base||t.dest);
   $$('[data-city]').forEach(b=>b.onclick=()=>{ $$('[data-city]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); paintW(b.dataset.city); });
 }
@@ -2445,7 +2538,7 @@ function buildSiteHTML(){
   const cfg=[`window.__EMBEDDED_TRIP__ = ${json};`];
   if(SB.on) cfg.push(`window.__SB__ = ${JSON.stringify({url:SB.url,key:SB.key})};`);
   return SELF_HTML.replace('<title>',`<script>${cfg.join(' ')}<\/script>\n<title>`)
-    .replace('<title>מסלול · בונה אתרי טיול</title>',`<title>${esc(state.trip.title)}</title>`);
+    .replace('<title>מסלול · הטיול החלומי שלכם</title>',`<title>${esc(state.trip.title)}</title>`);
 }
 function exportSite(){
   const a=document.createElement('a');
