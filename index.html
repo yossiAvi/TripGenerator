@@ -1494,6 +1494,12 @@ function contPrompt(missing){
 {"days":[{"day":${from},"title":"","base":"","summary":"","wake":"","depart":"","departNote":"","segments":[{"time":"","title":"","place":"","desc":"","stay":"","travel":"","tip":"","cost":"","website":""}],"food":[{"name":"","type":"","note":"","price":"€/€€/€€€","dietary":[],"website":""}],"evening":"","backAt":""${hasKids()?',"kid":{"emoji":"","simple":"","fact":"","missions":[""]}':''}}]}
 בלי טקסט נוסף ובלי סימני קוד.`;
 }
+// Strip markdown link artifacts that ChatGPT's interface adds when copying rendered output.
+// e.g. "title":"Park](https://url)" → "Park", "website":"[https://url" → ""
+function cleanVal(s){
+  if(typeof s!=='string') return s;
+  return s.replace(/\]\(https?:\/\/[^)]*\)/g,'').replace(/^\[/,'').trim();
+}
 function mergeAnswer(j,t){
   if(!j||typeof j!=='object') return;
   if(j.tagline) t.tagline=j.tagline;
@@ -1507,6 +1513,8 @@ function mergeAnswer(j,t){
     const idx=(+d.day||0)-1;
     if(idx<0||idx>=t.days) return;
     if(!d.segments||!d.segments.length) return;      // יום חלקי מהקטיעה — מתעלמים
+    (d.segments||[]).forEach(s=>{ s.title=cleanVal(s.title); s.place=cleanVal(s.place); });
+    (d.food||[]).forEach(f=>{ f.name=cleanVal(f.name); });
     d.date=dateFor(idx); d.iso=dateISO(idx); d.day=idx+1;
     t.plan[idx]=d;
   });
@@ -2001,16 +2009,25 @@ function wireFlightStep(){
   const fr=$('#fl-ret'); if(fr) fr.onkeydown=e=>{ if(e.key==='Enter') rs?.click(); };
 }
 const geoCache=new Map();
+let _geoQ=Promise.resolve();
 async function geocodePlace(name,country){
   const key=name+'|'+(country||'');
   if(geoCache.has(key)) return geoCache.get(key);
-  try{
-    const q=encodeURIComponent((name+' '+(country||'')).trim());
-    const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=he&name='+q);
-    const d=await r.json();
-    const loc=(d.results||[])[0]||null;
-    geoCache.set(key,loc); return loc;
-  }catch(e){ geoCache.set(key,null); return null; }
+  // Serialize requests: Nominatim requires max 1 req/sec
+  return (_geoQ=_geoQ.then(async ()=>{
+    if(geoCache.has(key)) return geoCache.get(key);
+    try{
+      const q=encodeURIComponent((name+(country?', '+country:'')).trim());
+      const r=await fetch('https://nominatim.openstreetmap.org/search?q='+q+'&format=json&limit=1',
+        {headers:{'User-Agent':'TripGenerator/1.0'}});
+      const d=await r.json();
+      const item=(d||[])[0];
+      const loc=item?{latitude:+item.lat,longitude:+item.lon}:null;
+      geoCache.set(key,loc);
+      await wait(400); // stay within Nominatim 1 req/sec
+      return loc;
+    }catch(e){ geoCache.set(key,null); return null; }
+  }));
 }
 function haversineKm(lat1,lng1,lat2,lng2){
   const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
