@@ -309,26 +309,56 @@ nav.tabs .wrap::-webkit-scrollbar{display:none}
 .modal img{width:100%;max-height:62vh;object-fit:cover;display:block;background:var(--wash)}
 .modal .cap{padding:22px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
 
-/* ---------- יומן ---------- */
-.journal textarea{width:100%;min-height:132px;border:1.5px solid var(--line);border-radius:var(--r-s);padding:16px;
-  resize:vertical;background:var(--paper);line-height:1.75}
-.journal textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
-.moods{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}
+/* ---------- Story Line / יומן ---------- */
+.sl-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.sl-sync{font-family:var(--util);font-size:12.5px;font-weight:700;padding:7px 14px;border-radius:999px;
+  border:1.5px solid var(--line);background:var(--paper);display:inline-flex;align-items:center;gap:7px;white-space:nowrap;margin-top:4px}
+.sl-sync.cloud{border-color:#B9E0CA;background:#EEF8F2;color:var(--ok)}
+.sl-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.sl-tabs{display:flex;background:var(--wash);border-radius:999px;padding:4px;gap:0;border:1px solid var(--line)}
+.sl-tab{border:0;background:transparent;border-radius:999px;padding:9px 20px;font-family:var(--util);font-size:14px;
+  font-weight:700;color:var(--muted);cursor:pointer;transition:.2s;white-space:nowrap}
+.sl-tab.on{background:var(--paper);color:var(--ink);box-shadow:var(--sh-1)}
+.sl-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.sl-search{border:1.5px solid var(--line);border-radius:999px;padding:9px 18px;background:var(--paper);
+  font-size:14px;font-family:var(--body);width:150px;transition:.15s}
+.sl-search:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.sl-addrow{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:18px 22px;
+  margin-bottom:20px;display:none;gap:12px;flex-wrap:wrap;align-items:flex-end;box-shadow:var(--sh-1)}
+.sl-addrow.open{display:flex}
+.sl-content{display:flex;flex-direction:column;gap:20px}
+.sl-group{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh-1)}
+.sl-group-head{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--line);background:var(--wash)}
+.sl-group-head h3{font-size:17px;margin:0 0 2px}
+.sl-group-meta{font-size:12.5px;color:var(--muted);font-family:var(--util)}
+.sl-loc-icon{width:38px;height:38px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;
+  font-size:18px;flex-shrink:0;border:2px solid var(--line)}
+.sl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:3px;background:var(--line)}
+.sl-photo{position:relative;overflow:hidden;aspect-ratio:1;background:var(--wash);cursor:pointer}
+.sl-photo img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s}
+.sl-photo:hover img{transform:scale(1.06)}
+.sl-photo .rm{position:absolute;top:7px;inset-inline-end:7px;border:0;background:rgba(14,27,43,.72);color:#fff;
+  border-radius:50%;width:26px;height:26px;backdrop-filter:blur(4px);font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s}
+.sl-photo:hover .rm{opacity:1}
+.sl-entry-meta{display:flex;align-items:center;gap:8px;padding:12px 18px;flex-wrap:wrap}
+.sl-badge{font-family:var(--util);font-size:12px;font-weight:700;background:var(--accent);color:#fff;
+  border-radius:999px;padding:3px 12px}
+.sl-entry-date{font-size:12.5px;color:var(--muted);font-family:var(--util);margin-inline-start:auto}
+.sl-empty{text-align:center;padding:56px 20px;color:var(--muted)}
+.sl-empty .sl-empty-icon{font-size:56px;line-height:1;margin-bottom:16px}
+.sl-empty h3{font-size:19px;margin:0 0 8px;font-family:var(--display);color:var(--ink-2)}
+.sl-lightbox{position:fixed;inset:0;z-index:200;background:rgba(14,27,43,.93);display:grid;place-items:center;padding:24px}
+.sl-lightbox img{max-width:100%;max-height:90vh;border-radius:var(--r-s);object-fit:contain;box-shadow:var(--sh-2)}
+.sl-lightbox-close{position:fixed;top:20px;inset-inline-end:24px;border:0;background:rgba(255,255,255,.15);
+  color:#fff;border-radius:50%;width:42px;height:42px;font-size:22px;cursor:pointer;backdrop-filter:blur(6px)}
+.saved{font-size:13px;color:var(--ok);font-family:var(--util);font-weight:700;opacity:0;transition:.3s}
+.saved.on{opacity:1}
+.moods{display:flex;gap:9px;flex-wrap:wrap;margin:10px 0}
 .mood{border:1.5px solid var(--line);background:var(--paper);border-radius:var(--r-s);padding:9px 15px;font-size:21px;
   line-height:1;transition:.15s}
 .mood:hover{transform:translateY(-2px);border-color:var(--ink)}
 .mood.on{border-color:var(--accent);background:var(--accent-soft);transform:scale(1.06)}
-.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:14px;margin-top:18px}
-.photo{position:relative;border-radius:var(--r-s);overflow:hidden;border:1px solid var(--line);background:var(--paper);
-  box-shadow:var(--sh-1)}
-.photo img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
-.photo .cap{padding:10px 12px;font-size:13px}
-.photo .cap b{display:block;font-family:var(--util);font-size:13px}
-.photo .cap span{color:var(--muted);font-size:12.5px}
-.photo button.rm{position:absolute;top:8px;inset-inline-end:8px;border:0;background:rgba(14,27,43,.72);color:#fff;
-  border-radius:50%;width:28px;height:28px;backdrop-filter:blur(4px)}
-.saved{font-size:13px;color:var(--ok);font-family:var(--util);font-weight:700;opacity:0;transition:.3s}
-.saved.on{opacity:1}
 
 /* ---------- רשימות וטבלאות ---------- */
 .check{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
@@ -1671,87 +1701,202 @@ function panelDaily(){ const t=state.trip,d=t.plan[state.day-1]||t.plan[0];
    ${(d.food||[]).length?`<div class="box"><h4>איפה אוכלים</h4>${d.food.map(x=>`<div class="kv"><b>${esc(x.name)}</b>
      <span>${esc(x.type||'')} · ${esc(x.note||'')} <a class="navlink" target="_blank" rel="noopener" href="${mapsUrl(x.name,d.base||t.dest)}">מפה</a></span></div>`).join('')}</div>`:''}</section>`; }
 function panelJournal(){ const t=state.trip;
-  return `<section class="panel ${state.tab==='journal'?'on':''} journal"><p class="eyebrow">יומן</p><h2>מה היה לנו היום</h2>
-   <p class="lead">${SB.on?'נשמר בענן — כל המשפחה רואה את אותו יומן.':'נשמר במכשיר הזה. אפשר לחבר ענן בהגדרות.'}</p>
-   <div class="dayselect">${t.plan.map((x,i)=>`<button class="dsbtn ${state.day===i+1?'on':''}" data-day="${i+1}">יום ${i+1}</button>`).join('')}</div>
-   <div class="box"><h4>יום ${state.day} · ${esc((t.plan[state.day-1]||{}).title||'')}</h4>
-     <div class="moods" id="moods">${['🤩','😍','😄','😌','😅','🥵','🌧️'].map(m=>`<button class="mood" data-m="${m}">${m}</button>`).join('')}</div>
-     <textarea id="jtext" placeholder="מה היה היום, מה צחקנו, מה נזכור..."></textarea>
-     <div class="grid" style="margin-top:14px">
-       <div class="field"><label>מי מעלה</label><input id="jby" placeholder="השם שלך"></div>
-       <div class="field"><label>מאיפה התמונה</label>
-         <select id="jplace"><option value="">בחרו מקום</option>
-           ${((t.plan[state.day-1]||{}).segments||[]).map(s=>`<option>${esc(s.place||s.title)}</option>`).join('')}
-           <option value="__other">מקום אחר…</option></select>
-         <input id="jplace2" placeholder="שם המקום" style="display:none"></div></div>
-     <div style="display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap">
-       <label class="btn btn-ghost btn-sm" style="cursor:pointer">מהגלריה<input type="file" id="jgal" accept="image/*" multiple hidden></label>
-       <label class="btn btn-ghost btn-sm" style="cursor:pointer">מהמצלמה<input type="file" id="jcam" accept="image/*" capture="environment" hidden></label>
-       <span class="saved" id="jsaved">נשמר ✓</span><span class="hint" id="jup"></span></div>
-     <div id="jquota" class="hint" style="margin-top:10px"></div>
-     <div class="photos" id="jphotos"></div></div></section>`; }
+  const allPlaces=t.plan.flatMap(d=>(d.segments||[]).map(s=>s.place||s.title)).filter((v,i,a)=>v&&a.indexOf(v)===i);
+  return `<section class="panel ${state.tab==='journal'?'on':''} journal">
+    <div class="sl-header">
+      <div><p class="eyebrow">אלבום</p><h2>Story Line של הטיול</h2></div>
+      <span class="sl-sync ${SB.on?'cloud':''}">${SB.on?'☁ מסונכרן עם הענן':'💾 שמור במכשיר'}</span>
+    </div>
+    <div class="sl-bar">
+      <div class="sl-tabs">
+        <button class="sl-tab on" data-slview="place">לפי מקום</button>
+        <button class="sl-tab" data-slview="time">ציר זמן</button>
+      </div>
+      <div class="sl-actions">
+        <input class="sl-search" id="slsearch" placeholder="חיפוש...">
+        <label class="btn btn-primary btn-sm" id="sl-add-btn" style="cursor:pointer">+ הוסף תמונות</label>
+        <label class="btn btn-ghost btn-sm" id="sl-cam-btn" style="cursor:pointer">📷<input type="file" id="jcam" accept="image/*" capture="environment" hidden></label>
+      </div>
+    </div>
+    <div class="sl-addrow" id="sl-addrow">
+      <div class="field" style="flex:1;min-width:130px"><label>מי מעלה</label><input id="jby" placeholder="השם שלך"></div>
+      <div class="field" style="flex:1;min-width:130px"><label>יום</label>
+        <select id="jday">${t.plan.map((x,i)=>`<option value="${i+1}">יום ${i+1}${x.title?' · '+esc(x.title):''}</option>`).join('')}</select></div>
+      <div class="field" style="flex:1.4;min-width:150px"><label>מקום</label>
+        <select id="jplace"><option value="">בחרו מקום</option>
+          ${allPlaces.map(p=>`<option>${esc(p)}</option>`).join('')}
+          <option value="__other">מקום אחר…</option></select>
+        <input id="jplace2" placeholder="שם המקום" style="display:none;margin-top:6px"></div>
+      <label class="btn btn-ghost btn-sm" style="cursor:pointer;align-self:flex-end">בחר תמונות<input type="file" id="jgal" accept="image/*" multiple hidden></label>
+    </div>
+    <div id="sl-content" class="sl-content"></div>
+    <div id="jquota" class="hint" style="margin-top:10px"></div>
+    <div style="margin-top:6px;display:flex;gap:10px;align-items:center"><span class="saved" id="jsaved">נשמר ✓</span><span class="hint" id="jup"></span></div>
+  </section>`; }
 async function wireJournal(){
-  const t=state.trip,key='journal:'+t.id+':'+state.day;
-  let data=(await store.get(key))||{text:'',mood:''};
-  if(!data.photos) data.photos=[];
-  const ta=$('#jtext'),ph=$('#jphotos'),sv=$('#jsaved'),by=$('#jby'),pl=$('#jplace'),pl2=$('#jplace2'),up=$('#jup');
-  if(!ta) return;
-  ta.value=data.text||''; by.value=localGet('me:'+t.id)||'';
-  let cloud=[];
-  if(SB.on){ try{ cloud=await SB.photos(t.id,state.day); }catch(e){ up.textContent='לא הצלחנו לטעון תמונות מהענן'; } }
-  const list=()=>SB.on?cloud:data.photos;
-  const paint=()=>{ $$('.mood').forEach(b=>b.classList.toggle('on',b.dataset.m===data.mood));
-    ph.innerHTML=list().map((p,i)=>`<div class="photo"><img src="${p.url||p.src}" alt="" loading="lazy">
-      <button class="rm" data-rm="${i}">×</button>
-      <div class="cap"><b>${esc(p.place||'')}</b><span>${esc(p.uploaded_by||p.by||'')}</span></div></div>`).join('');
-    $$('[data-rm]',ph).forEach(b=>b.onclick=async()=>{ const i=+b.dataset.rm;
-      if(SB.on){ try{ await SB.delPhoto(cloud[i]); cloud.splice(i,1); used=Math.max(0,used-1); refreshQuota(); }
-        catch(e){ up.textContent='המחיקה נכשלה'; } }
-      else { data.photos.splice(i,1); save(); } paint(); }); };
-  let tm; const save=async()=>{ await store.set(key,data); sv.classList.add('on'); clearTimeout(tm); tm=setTimeout(()=>sv.classList.remove('on'),1500); };
-  window._flush=async()=>{ if(!document.body.contains(ta))return; data.text=ta.value; await store.set(key,data); };
-  ta.oninput=()=>{ data.text=ta.value; clearTimeout(ta._t); ta._t=setTimeout(save,700); };
-  by.onchange=()=>localSet('me:'+t.id,by.value);
-  pl.onchange=()=>{ pl2.style.display=pl.value==='__other'?'block':'none'; };
-  $('#moods').onclick=e=>{ const m=e.target.dataset.m; if(!m)return; data.mood=data.mood===m?'':m; paint(); save(); };
-  // מכסת תמונות — חלה רק בענן המשותף
+  const t=state.trip;
+  window._flush=null;
+  let slView='place', slSearch='';
+  let allCloud=[]; // flat list of all photos (cloud mode)
+  let allLocal={}; // {day: {photos:[...]}} (local mode)
+  const sv=$('#jsaved'),up=$('#jup'),content=$('#sl-content'),quota=$('#jquota');
+  const addRow=$('#sl-addrow'),by=$('#jby'),pl=$('#jplace'),pl2=$('#jplace2'),dayPick=$('#jday');
+  if(!content) return;
+  by.value=localGet('me:'+t.id)||'';
   const limited=SB.on&&SB.shared;
   let used=0;
-  const quota=$('#jquota'), gal=$('#jgal'), cam=$('#jcam');
-  const setBusy=b=>{ gal.disabled=b; cam.disabled=b;
-    gal.closest('label').style.opacity=b?.5:1; cam.closest('label').style.opacity=b?.5:1; };
+
+  // --- Load all days ---
+  if(SB.on){
+    try{
+      for(let d=1;d<=t.plan.length;d++){
+        const rows=await SB.photos(t.id,d);
+        allCloud=allCloud.concat(rows.map(r=>({...r,_day:d})));
+      }
+    }catch(e){ up.textContent='לא הצלחנו לטעון תמונות'; }
+  } else {
+    for(let d=1;d<=t.plan.length;d++){
+      const key='journal:'+t.id+':'+d;
+      const data=await store.get(key)||{};
+      if(data.photos&&data.photos.length) allLocal[d]=data;
+    }
+  }
+
+  const getAll=()=>{
+    if(SB.on) return allCloud;
+    return Object.entries(allLocal).flatMap(([d,data])=>(data.photos||[]).map(p=>({...p,_day:+d})));
+  };
+
+  const removeCloudPhoto=async(photo)=>{
+    try{ await SB.delPhoto(photo); allCloud=allCloud.filter(p=>p!==photo); used=Math.max(0,used-1); }
+    catch(e){ up.textContent='המחיקה נכשלה'; }
+  };
+  const removeLocalPhoto=async(photo)=>{
+    const d=photo._day||1, key='journal:'+t.id+':'+d;
+    const data=allLocal[d]||{photos:[]};
+    data.photos=data.photos.filter(p=>p!==photo);
+    allLocal[d]=data;
+    await store.set(key,data);
+  };
+
+  const openLightbox=src=>{
+    const lb=document.createElement('div'); lb.className='sl-lightbox';
+    lb.innerHTML=`<button class="sl-lightbox-close">✕</button><img src="${src}">`;
+    lb.onclick=e=>{ if(e.target===lb||e.target.classList.contains('sl-lightbox-close')) lb.remove(); };
+    document.body.appendChild(lb);
+  };
+
+  const paint=()=>{
+    let photos=getAll();
+    if(slSearch){ const q=slSearch.toLowerCase();
+      photos=photos.filter(p=>(p.place||'').toLowerCase().includes(q)||(p.uploaded_by||p.by||'').toLowerCase().includes(q)); }
+    if(!photos.length){
+      content.innerHTML=`<div class="sl-empty"><div class="sl-empty-icon">📷</div>
+        <h3>אין תמונות עדיין</h3>
+        <p class="hint">לחצו "הוסף תמונות" כדי להתחיל את ה-Story Line</p></div>`;
+      return;
+    }
+    const groupFn=slView==='place'
+      ?p=>(p.place||'ללא מקום')
+      :p=>'יום '+(p._day||p.day||'?');
+    const groups=new Map();
+    photos.forEach(p=>{ const k=groupFn(p); if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(p); });
+    content.innerHTML=[...groups.entries()].map(([label,plist])=>{
+      const byUsers=[...new Set(plist.map(p=>p.uploaded_by||p.by||''))].filter(Boolean);
+      const days=[...new Set(plist.map(p=>p._day||p.day).filter(Boolean))].sort((a,b)=>a-b);
+      const meta=slView==='place'?days.map(d=>'יום '+d).join(', ')+' · '+plist.length+' תמונות'
+        :plist.length+' תמונות';
+      const icon=slView==='place'?'📍':String(days[0]||'').padStart(2,'0');
+      const iconStyle=slView==='time'?'background:var(--night);color:#fff;font-size:13px;font-weight:900;font-family:var(--util)':'';
+      return `<div class="sl-group">
+        <div class="sl-group-head">
+          <div class="sl-loc-icon" style="${iconStyle}">${icon}</div>
+          <div><h3>${esc(label)}</h3><span class="sl-group-meta">${meta}</span></div>
+        </div>
+        <div class="sl-grid">${plist.map((p,i)=>`<div class="sl-photo" data-idx="${i}" data-label="${esc(label)}">
+          <img src="${p.url||p.src}" alt="" loading="lazy">
+          <button class="rm" data-idx="${i}" data-label="${esc(label)}">✕</button>
+        </div>`).join('')}</div>
+        ${byUsers.length?`<div class="sl-entry-meta">
+          ${byUsers.map(u=>`<span class="sl-badge">${esc(u)}</span>`).join('')}
+          <span class="sl-entry-date">${days.length?'יום '+days[0]:''}</span>
+        </div>`:''}
+      </div>`;
+    }).join('');
+    // wire clicks
+    content.querySelectorAll('.sl-photo').forEach(el=>{
+      el.onclick=e=>{ if(e.target.classList.contains('rm')) return;
+        const label=el.dataset.label, idx=+el.dataset.idx;
+        const p=[...groups.get(label)||[]][idx];
+        if(p) openLightbox(p.url||p.src); };
+    });
+    content.querySelectorAll('.rm').forEach(btn=>{
+      btn.onclick=async e=>{ e.stopPropagation();
+        const label=btn.dataset.label, idx=+btn.dataset.idx;
+        const plist=groups.get(label)||[];
+        const photo=plist[idx]; if(!photo) return;
+        if(SB.on) await removeCloudPhoto(photo); else await removeLocalPhoto(photo);
+        refreshQuota(); paint(); };
+    });
+  };
+
   const refreshQuota=async()=>{
     if(!limited){ quota.textContent=''; return; }
     try{ used=await SB.countPhotos(t.id); }catch(e){ return; }
     const left=Math.max(0,PHOTO_LIMIT-used);
     quota.innerHTML=`<div style="display:flex;justify-content:space-between;font-family:var(--util);font-size:13px">
-        <span>${used} מתוך ${PHOTO_LIMIT} תמונות בטיול</span><span>${left?'נשארו '+left:'הגעתם למכסה'}</span></div>
-      <div class="track" style="height:7px;background:var(--sand);border-radius:99px;overflow:hidden;margin-top:5px">
+      <span>${used} מתוך ${PHOTO_LIMIT} תמונות</span><span>${left?'נשארו '+left:'הגעתם למכסה'}</span></div>
+      <div style="height:6px;background:var(--wash);border-radius:99px;overflow:hidden;margin-top:5px;border:1px solid var(--line)">
         <i style="display:block;height:100%;width:${Math.min(100,Math.round(used/PHOTO_LIMIT*100))}%;
-           background:${left?'var(--sea)':'var(--rust)'}"></i></div>
-      ${left?'':'<p class="hint" style="margin:8px 0 0">כדי להוסיף עוד, מחקו תמונות קיימות. אפשר גם לחבר ענן פרטי בהגדרות ולהסיר את המגבלה.</p>'}`;
-    setBusy(left===0);
+           background:${left?'var(--accent)':'#C0392B'};transition:width .4s"></i></div>
+      ${left?'':'<p class="hint" style="margin:6px 0 0">מחקו תמונות כדי להוסיף עוד.</p>'}`;
+    const busy=left===0;
+    [$('#jgal'),$('#jcam')].forEach(el=>{ if(el){ el.disabled=busy; el.closest('label').style.opacity=busy?.5:1; } });
   };
+
+  const flashSaved=()=>{ sv.classList.add('on'); setTimeout(()=>sv.classList.remove('on'),1500); };
+
   const addFiles=async files=>{
-    const place=pl.value==='__other'?(pl2.value||''):pl.value, who=by.value;
+    const place=pl.value==='__other'?(pl2.value||''):pl.value;
+    const who=by.value; localSet('me:'+t.id,who);
+    const day=+(dayPick.value||1);
     let arr=[...files].slice(0,8);
     if(limited){
       const left=Math.max(0,PHOTO_LIMIT-used);
-      if(left===0){ up.textContent='הגעתם למכסת '+PHOTO_LIMIT+' התמונות לטיול.'; return; }
-      if(arr.length>left){ arr=arr.slice(0,left); up.textContent=`נשאר מקום ל-${left} תמונות בלבד, מעלים אותן.`; }
+      if(left===0){ up.textContent='הגעתם למכסה.'; return; }
+      if(arr.length>left){ arr=arr.slice(0,left); }
     }
-    let i=0;
-    for(const f of arr){ i++; up.textContent=`מעלה ${i} מתוך ${arr.length}…`;
-      try{ const blob=await shrink(f);
-        if(SB.on){ const row=await SB.addPhoto(t.id,state.day,blob,{place,by:who,dayTitle:(t.plan[state.day-1]||{}).title||''});
-          if(row){ cloud.push(row); used++; } }
-        else { data.photos=data.photos.concat({src:await blobToDataURL(blob),place,by:who}).slice(0,16); await save(); }
+    for(let i=0;i<arr.length;i++){ up.textContent=`מעלה ${i+1} מתוך ${arr.length}…`;
+      try{ const blob=await shrink(arr[i]);
+        if(SB.on){
+          const row=await SB.addPhoto(t.id,day,blob,{place,by:who,dayTitle:(t.plan[day-1]||{}).title||''});
+          if(row){ allCloud.push({...row,_day:day}); used++; }
+        } else {
+          const key='journal:'+t.id+':'+day;
+          const data=allLocal[day]||(allLocal[day]={photos:[]});
+          data.photos=(data.photos||[]).concat({src:await blobToDataURL(blob),place,by:who,_day:day}).slice(0,20);
+          await store.set(key,data);
+        }
       }catch(e){ up.textContent=e.message; }
-      paint(); }
-    if(!/נשאר מקום/.test(up.textContent)) up.textContent='';
-    refreshQuota(); };
-  $('#jgal').onchange=e=>{ addFiles(e.target.files); e.target.value=''; };
-  $('#jcam').onchange=e=>{ addFiles(e.target.files); e.target.value=''; };
+      paint();
+    }
+    up.textContent=''; flashSaved(); refreshQuota();
+    addRow.classList.remove('open');
+  };
+
+  // tab switching
+  $$('.sl-tab').forEach(btn=>btn.onclick=()=>{
+    slView=btn.dataset.slview; $$('.sl-tab').forEach(b=>b.classList.toggle('on',b===btn)); paint();
+  });
+  $('#slsearch').oninput=e=>{ slSearch=e.target.value; paint(); };
+  // add row toggle
+  $('#sl-add-btn').onclick=()=>addRow.classList.toggle('open');
+  $('#sl-cam-btn').onclick=()=>addRow.classList.add('open');
+  pl.onchange=()=>{ pl2.style.display=pl.value==='__other'?'block':'none'; };
+  by.onchange=()=>localSet('me:'+t.id,by.value);
+  if($('#jgal')) $('#jgal').onchange=e=>{ addFiles(e.target.files); e.target.value=''; };
+  if($('#jcam')) $('#jcam').onchange=e=>{ addFiles(e.target.files); e.target.value=''; };
+
   paint(); refreshQuota();
 }
 function panelStay(){ const t=state.trip,L=(t.extras||{}).lodging||[];
