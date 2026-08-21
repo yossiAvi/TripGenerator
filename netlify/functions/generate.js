@@ -43,7 +43,7 @@ export default async (req) => {
   try { body = await req.json(); } catch { return new Response(JSON.stringify({ error: 'בקשה לא תקינה' }), { status: 400, headers: cors }); }
 
   const messages = body.messages || [];
-  const prompt = messages.map(m => m.content).join('\n').slice(0, 12000);
+  const prompt = messages.map(m => m.content).join('\n').slice(0, 30000);
   if (!prompt) return new Response(JSON.stringify({ error: 'חסרה הנחיה' }), { status: 400, headers: cors });
 
   const rawAnthropicKey = process.env.ANTHROPIC_API_KEY;

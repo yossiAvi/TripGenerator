@@ -1345,7 +1345,7 @@ ${(()=>{const ds=(state.form.daySchedule||[])[i]; if(!ds) return '';
   if(ds.departure) parts.push(`טיסת חזור יוצאת בשעה ${ds.departure} UTC — תכנן שיסיימו ויהיו בשדה תעופה לפחות 3 שעות לפני`);
   if(ds.flightNote) parts.push(ds.flightNote);
   return parts.length?`⚠ יום ${i+1} קבוע מראש: ${parts.join('. ')}. זאת חובה ולא הצעה.\n`:''})()}תכנן את יום ${i+1} מתוך ${n}. נושא: "${sk.title}". בסיס לינה: ${sk.base}. אתמול: ${prev}. ${dateFor(i)?'תאריך: '+dateFor(i)+'.':''}
-מבנה (JSON תקין בלבד): {"title":"","base":"","summary":"משפט","wake":"07:30","depart":"08:45","departNote":"עד 10 מילים","segments":[{"time":"09:15","title":"","place":"שם מדויק לניווט","desc":"עד 16 מילים","stay":"כמה זמן","travel":"זמן ואופן הנסיעה","tip":"עד 10 מילים","cost":"מחיר כניסה או חינם","website":""}],"food":[{"name":"","type":"","note":"עד 8 מילים","price":"€€","dietary":[],"website":""}],"evening":"משפט","backAt":"20:30"${hasKids()?`,"kid":{"emoji":"","simple":"משפט לילד בן חמש","fact":"עובדה כיפית","missions":[""]}`:''}}}
+מבנה (JSON תקין בלבד): {"title":"","base":"","summary":"משפט","wake":"07:30","depart":"08:45","departNote":"עד 10 מילים","segments":[{"time":"09:15","title":"","place":"שם מדויק לניווט","desc":"עד 16 מילים","stay":"כמה זמן","travel":"זמן ואופן הנסיעה","tip":"עד 10 מילים","cost":"מחיר כניסה או חינם","website":""}],"food":[{"name":"","type":"","note":"עד 8 מילים","price":"€€","dietary":[],"website":""}],"evening":"משפט","backAt":"20:30"${hasKids()?`,"kid":{"emoji":"","simple":"משפט לילד בן חמש","fact":"עובדה כיפית","missions":[""]}`:''}}`
 כללים: 4 עד 5 סגמנטים בשעות אמיתיות. 2 מסעדות קרוב למסלול${(()=>{const d=(state.form.dietary||[]).filter(x=>x!=='הכל');return d.length?' (העדפה: '+d.join(', ')+')':''})()} . ב-price: €, €€, או €€€. ב-dietary: מערך של תגים רלוונטיים מתוך [כשר,טבעוני,בשרי,צמחוני,ללא גלוטן], ריק אם לא ידוע. ב-website: כתובת אם ידועה, אחרת "". ב-cost: מחיר כניסה מקורב, אחרת "חינם".${hasKids()?' ב-missions שלוש משימות לילד.':''}`
 };
 
@@ -1404,7 +1404,7 @@ async function build(){
     for(let i=0;i<n;i+=BATCH){ const batch=[];
       for(let j=i;j<Math.min(i+BATCH,n);j++){ mark('d'+(j+1),'run');
         batch.push(makeDay(j).then(d=>{trip.plan[j]=d;mark('d'+(j+1),'done');tick();})
-        .catch(()=>{trip.plan[j]=fallbackDay(trip,j);mark('d'+(j+1),'err');tick();})); }
+        .catch(e=>{console.error('[day '+(j+1)+' error]',e);trip.plan[j]=fallbackDay(trip,j);mark('d'+(j+1),'err');tick();})); }
       await Promise.all(batch);
       if(AI.slow&&i+BATCH<n) await wait(2500); }
 
@@ -1417,6 +1417,7 @@ async function build(){
     mark('save','done'); tick();
     renderSite();
   }catch(err){
+    console.error('[build error]',err);
     if(!AI.hasKey) return startManual('לא הצלחנו להגיע למודל מהאתר הזה, אז עברנו לדרך שלא דורשת מפתח — דרך הצ׳אט שלכם.');
     $('#berr').innerHTML=`<div class="err-box">${esc(err.message)}</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
