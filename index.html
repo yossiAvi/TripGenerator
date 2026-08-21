@@ -668,6 +668,11 @@ const store={
     }catch(e){} }
     if(window.storage&&!SB.on){ try{ await window.storage.set(k,JSON.stringify(v),false); return true; }catch(e){} }
     return localSet(k,v);
+  },
+  async del(k){
+    if(SB.on){ try{ if(k.startsWith('tripdata:')) await SB.rest('trip_shared_data?trip_id=eq.'+k.slice(9),{method:'DELETE'}); }catch(e){} }
+    if(window.storage&&!SB.on){ try{ await window.storage.remove(k); }catch(e){} }
+    localDel(k);
   }
 };
 async function loadSB(){
@@ -694,7 +699,7 @@ const AI={
   modes(){
     if(this.provider==='gemini') return this.gkey?['gemini']:[];
     if(this.provider==='anthropic') return this.key?['anthropic']:['host'];
-    const m=[]; if(this.proxy)m.push('proxy'); if(this.gkey)m.push('gemini'); if(this.key)m.push('anthropic');
+    const m=[]; if(this.gkey)m.push('gemini'); if(this.key)m.push('anthropic'); if(this.proxy)m.push('proxy');
     m.push('host'); return m;
   },
   label(){
@@ -1029,7 +1034,10 @@ async function renderHome(){
     </div>
     ${saved.length?`<div style="padding-bottom:60px"><p class="eyebrow" style="margin-bottom:12px">הטיולים שלכם</p>
       ${saved.map(t=>`<div class="saved-trip"><span><b>${esc(t.title)}</b><br><span class="hint">${esc(t.dest)} · ${t.days} ימים</span></span>
-      <button class="btn btn-ghost btn-sm" data-open="${esc(t.id)}">פתיחה</button></div>`).join('')}</div>`:''}
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-sm" data-open="${esc(t.id)}">פתיחה</button>
+        <button class="btn btn-plain btn-sm" data-del="${esc(t.id)}" title="מחיקה" style="color:#c0392b;padding:0 10px">✕</button>
+      </div></div>`).join('')}</div>`:''}
     <footer>הכול נשמר אצלכם. אפשר לפרסם את האתר בלחיצה כשמסיימים.</footer>
   </div>`;
   wireTop();
@@ -1053,6 +1061,14 @@ async function renderHome(){
   $$('[data-open]').forEach(b=>b.onclick=async()=>{
     const t=await store.get('tripdata:'+b.dataset.open);
     if(t){ state.trip=t; state.tab='now'; state.day=todayIndex(t)||1; renderSite(); } });
+  $$('[data-del]').forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.del;
+    if(!confirm('למחוק את הטיול הזה?')) return;
+    await store.del('tripdata:'+id);
+    const idx=(localGet('trips:index')||[]).filter(x=>x.id!==id);
+    localSet('trips:index',idx);
+    renderHome();
+  });
 }
 
 /* ===================== שלבי האשף ===================== */
@@ -2013,9 +2029,9 @@ async function loadDayMap(){
     for(let i=1;i<valid.length;i++)
       totalKm+=haversineKm(valid[i-1].loc.latitude,valid[i-1].loc.longitude,valid[i].loc.latitude,valid[i].loc.longitude);
     statsEl.innerHTML=`<span class="day-stat">📍 ${valid.length} עצירות</span><span class="day-stat">📏 ${totalKm.toFixed(1)} ק"מ (קו ישר)</span>`;
-    mapEl.innerHTML='';
-    // destroy previous Leaflet instance on same element
+    // destroy previous instance BEFORE clearing DOM
     if(window._dayMap){ try{ window._dayMap.remove(); }catch(e){} window._dayMap=null; }
+    mapEl.innerHTML='';
     const map=window._dayMap=L.map(mapEl,{zoomControl:true,scrollWheelZoom:false,attributionControl:false});
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
     const latlngs=valid.map(v=>[v.loc.latitude,v.loc.longitude]);
@@ -2026,6 +2042,7 @@ async function loadDayMap(){
         .bindPopup(`<b>${esc(v.s.title||v.s.place||'')}</b>${v.s.time?'<br>'+esc(v.s.time):''}`,{maxWidth:200});
     });
     map.fitBounds(latlngs,{padding:[28,28]});
+    setTimeout(()=>{ try{ map.invalidateSize(); map.fitBounds(latlngs,{padding:[28,28]}); }catch(e){} },200);
   }catch(e){ mapEl.innerHTML=''; statsEl.innerHTML=''; }
 }
 function wireDaily(){
