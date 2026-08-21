@@ -756,22 +756,26 @@ function parseJSON(txt){
 async function ask(prompt){
   const modes=AI.modes();
   if(!modes.length) throw new Error('לא הוגדר מפתח.');
-  let blocked=0,status=0;
+  let blocked=0,status=0,lastMsg='';
   for(const mode of modes){
     for(let a=0;a<3;a++){
       let r;
       try{ r=await AI.call(mode,prompt); }catch(e){ blocked++; break; }
       if(r.ok) return r.text;
       status=r.status;
+      // proxy 429 = daily server quota — no point retrying, try next mode
+      if(r.status===429&&mode==='proxy') break;
       if(r.status===429){ await wait(8000*(a+1)); continue; }
       break;
     }
+    if(status===401||status===403){ lastMsg='המפתח נדחה. בדקו אותו בהגדרות.'; continue; }
+    if(status===402){ lastMsg='אין יתרה בחשבון המשויך למפתח.'; continue; }
+    if(status===429&&mode==='proxy'){ lastMsg='__quota__'; continue; }
     if(status===429) throw new Error('הגענו למכסת הבקשות. המתינו דקה ונסו שוב.');
-    if(status===401||status===403) throw new Error('המפתח נדחה. בדקו אותו בהגדרות.');
-    if(status===402) throw new Error('אין יתרה בחשבון המשויך למפתח.');
   }
+  if(lastMsg==='__quota__') throw new Error('__quota__');
   if(blocked&&!status) throw new Error('לא הצלחנו להגיע לשרת המודל.');
-  throw new Error('הבקשה נדחתה (שגיאה '+status+').');
+  throw new Error(lastMsg||'הבקשה נדחתה (שגיאה '+status+').');
 }
 const askJSON=async p=>parseJSON(await ask(p+'\n\nהחזר JSON תקין בלבד, בלי טקסט נוסף ובלי סימני קוד.'));
 async function probeProxy(){
@@ -1434,6 +1438,18 @@ async function build(){
     renderSite();
   }catch(err){
     console.error('[build error]',err);
+    if(err.message==='__quota__'){
+      $('#berr').innerHTML=`<div class="err-box">המכסה היומית של שרת Gemini הסתיימה (20 בקשות/יום בחינם).<br>
+        <b>פתרון:</b> הגדירו מפתח Gemini אישי בהגדרות — חינמי לגמרי מ-aistudio.google.com.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+          <button class="btn btn-primary btn-sm" id="openkey">פתח הגדרות</button>
+          <button class="btn btn-ghost btn-sm" id="retry">נסה שוב</button>
+          <button class="btn btn-plain btn-sm" id="tohome">חזרה</button></div>`;
+      const ok=$('#openkey'); if(ok) ok.onclick=()=>openSheet();
+      const r=$('#retry'); if(r) r.onclick=build;
+      const h=$('#tohome'); if(h) h.onclick=renderHome;
+      return;
+    }
     if(!AI.hasKey) return startManual('לא הצלחנו להגיע למודל מהאתר הזה, אז עברנו לדרך שלא דורשת מפתח — דרך הצ׳אט שלכם.');
     $('#berr').innerHTML=`<div class="err-box">${esc(err.message)}</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
